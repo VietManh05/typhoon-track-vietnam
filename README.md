@@ -4,40 +4,40 @@
 
 ![comparison plot](./result/animation_20230010.gif)
 
-## Table of Contents
+## Mục lục
 
-- [Tổng quan](#overview)
-- [Cài đặt](#installation)
-- [Chuẩn bị dữ liệu](#data-preparation)
-- [Lựa chọn đặc trưng](#feature-selection)
-- [Huấn luyện mô hình](#model-training)
-- [Dự đoán](#prediction)
-- [Giấy phép](#license)
+- [Tổng quan](#tổng-quan)
+- [Cài đặt](#cài-đặt)
+- [Chuẩn bị dữ liệu](#chuẩn-bị-dữ-liệu)
+- [Lựa chọn đặc trưng](#lựa-chọn-đặc-trưng)
+- [Huấn luyện mô hình](#huấn-luyện-mô-hình)
+- [Dự đoán](#dự-đoán)
+- [Giấy phép](#giấy-phép)
 
 ---
 
-## Overview
+## Tổng quan
 
 Dự án này cung cấp một quy trình hoàn chỉnh để dự đoán đường đi của bão bằng mô hình dựa trên LSTM. Mô hình dự đoán đường đi của bão bằng cách sử dụng dữ liệu của 4 điểm thời gian trước để dự báo điểm thời gian tiếp theo. Quy trình bao gồm chuẩn bị dữ liệu, trích xuất đặc trưng, huấn luyện mô hình, dự đoán và trực quan hóa kết quả.
 
 ---
 
-## Installation
+## Cài đặt
 
-### Prerequisites:
+### Yêu cầu:
 - Python 3.x
 - Trình quản lý gói `pip`
 
-### Steps:
+### Các bước:
 
 1. **Clone repository này:**
    ```bash
-   git clone https://github.com/veraleiwengian/typhoon-path-prediction.git
+   git clone https://github.com/VietManh05/typhoon-track-vietnam.git
    ```
 
 2. **Di chuyển vào thư mục repository:**
    ```bash
-   cd typhoon-path-prediction
+   cd typhoon-track-vietnam
    ```
 
 3. **Cài đặt các dependency:**
@@ -47,7 +47,7 @@ Dự án này cung cấp một quy trình hoàn chỉnh để dự đoán đư�
 
 ---
 
-## Data preparation
+## Chuẩn bị dữ liệu
 
 Chúng tôi sử dụng [CMA Tropical Cyclone Best Track Dataset](https://tcdata.typhoon.org.cn/en/zjljsjj.html).
 
@@ -68,7 +68,7 @@ Chúng tôi sử dụng [CMA Tropical Cyclone Best Track Dataset](https://tcdata
 
 ---
 
-## Feature selection
+## Lựa chọn đặc trưng
 
 Chúng tôi cải thiện biểu diễn đặc trưng của mô hình bằng các kỹ thuật sau:
 
@@ -84,7 +84,7 @@ Chúng tôi cải thiện biểu diễn đặc trưng của mô hình bằng cá
 
 ---
 
-## Model training
+## Huấn luyện mô hình
 
 Để huấn luyện mô hình:
    ```bash
@@ -106,7 +106,7 @@ Chúng tôi cải thiện biểu diễn đặc trưng của mô hình bằng cá
 
 ---
 
-## Prediction
+## Dự đoán
 
 Để thực hiện dự đoán:
    ```bash
@@ -118,3 +118,7 @@ Chúng tôi cải thiện biểu diễn đặc trưng của mô hình bằng cá
 - Sau khi dự đoán, một GIF so sánh dữ liệu thực tế và dữ liệu dự đoán sẽ được tạo ra.
 
 ---
+
+## Giấy phép
+
+Dự án này được cấp phép theo **MIT License**. Xem chi tiết trong tệp [LICENSE](./LICENSE).

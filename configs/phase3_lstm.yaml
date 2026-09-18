@@ -1,0 +1,58 @@
+# Phase-3 LSTM baseline experiment config
+# Usage:
+#   from typhoon_vn.training.config_loader import load_config
+#   cfg = load_config("configs/phase3_lstm.yaml")
+
+experiment:
+  name: "phase3_lstm_baseline"
+  seed: 42
+  device: "auto"               # auto | cpu | cuda
+
+dataset:
+  input_len: 4                 # number of 6-h obs steps fed to the model
+  horizon: [1, 2, 4, 8, 12]   # horizon steps (×6 h = 6h,12h,24h,48h,72h)
+  split_by_year: false         # true = leave-last-year-out; false = by storm ID
+  val_ratio: 0.1
+  test_ratio: 0.1
+  random_seed: 42
+
+model:
+  type: "LSTMTrackForecaster"  # LSTMTrackForecaster | Seq2SeqLSTMTrackForecaster |
+                               # AttentionLSTMTrackForecaster | TransformerTrackForecaster |
+                               # PersistenceForecaster | CLIPERForecaster
+  hidden_size: 128
+  num_layers: 2
+  dropout: 0.2
+  # Seq2Seq only:
+  teacher_forcing_ratio: 0.5
+  # Transformer only:
+  d_model: 64
+  nhead: 4
+  n_layers: 2
+  dim_feedforward: 128
+
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  patience: 10                 # early stopping patience
+  gradient_clip: 1.0
+  scheduler: "cosine"          # cosine | plateau | none
+  log_every: 10
+
+loss:
+  reg_loss: "smooth_l1"        # smooth_l1 | haversine
+  reg_weight: 1.0
+  cls_weight: 0.3
+  # horizon_weights: null — defaults to linear growth if null
+
+checkpoint:
+  dir: "checkpoints/phase3_lstm_baseline"
+  save_last: true
+  save_best: true
+
+mlflow:
+  enabled: false
+  tracking_uri: "mlruns"
+  experiment_name: "typhoon_vn_phase3"

@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+.pre-commit-cache
+.env
+data/raw
+data/interim
+data/processed
+data/external
+checkpoints
+mlruns
+mlartifacts

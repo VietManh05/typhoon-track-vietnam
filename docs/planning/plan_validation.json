@@ -1,0 +1,15 @@
+{
+  "status": "pass",
+  "source_checkboxes": 818,
+  "mapped_checkboxes": 818,
+  "high_level_requirements": 155,
+  "wbs_implementation_tasks": 635,
+  "supplemental_tasks": 24,
+  "acceptance_criteria": 28,
+  "priority_slice_tasks": 14,
+  "dependency_nodes": 731,
+  "links_checked": 2710,
+  "source_unchanged": true,
+  "product_tests_run_this_turn": false,
+  "errors": []
+}

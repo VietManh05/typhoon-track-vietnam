@@ -1,0 +1,218 @@
+[
+  [
+    "S01",
+    "Version hóa dữ liệu bằng DVC",
+    "G00, G03",
+    "pyproject.toml; .dvc/; dvc.yaml; docs/data-versioning.md",
+    "Chọn dataset clean nhỏ; track checksum và pipeline dependency; cấu hình remote qua env; không đẩy dữ liệu thật trong task cài đặt.",
+    "Thay input đổi hash/output; dvc repro với fixture tái tạo output; remote cần quyền và storage riêng.",
+    "DVC"
+  ],
+  [
+    "S02",
+    "Lưu sổ thí nghiệm và MLflow run ID",
+    "G12",
+    "docs/experiment-log-template.md; training/pipeline.py",
+    "Mỗi run ghi config, git/source hash, dataset/split/scaler version, metrics và artifact URI; sinh JSON/CSV index.",
+    "Một run smoke có ID truy ngược artifact; log lỗi MLflow không âm thầm mất kết quả training.",
+    "bảng theo dõi thí nghiệm"
+  ],
+  [
+    "S03",
+    "Feature store có version và schema drift",
+    "G04, G05",
+    "features/store.py; tests/test_feature_store.py",
+    "Ghi manifest tên/order/dtype/units/version; fingerprint schema; test cột thêm/thiếu/đổi kiểu/thứ tự.",
+    "Store round-trip giữ schema; incompatible schema bị từ chối trước train/serve.",
+    "feature store"
+  ],
+  [
+    "S04",
+    "Quantile regression 10/50/90%",
+    "G09, G13",
+    "models/uncertainty.py; training/losses.py; tests/test_quantiles.py",
+    "Thêm output quantile và pinball loss; kiểm tra crossing; so coverage/width trên calibration; không hiểu quantile lat/lon là xác suất polygon.",
+    "Synthetic distribution có test loss/ordering; báo cáo calibration độc lập; chỉ chọn nếu validation chứng minh hữu ích.",
+    "Quantile Regression"
+  ],
+  [
+    "S05",
+    "Leave-one-season-out validation",
+    "G06, G12",
+    "training/cross_validation.py; tests/test_cross_validation.py",
+    "Sinh folds theo mùa; storm qua năm thuộc một fold; fit scaler từng train fold; giữ final test riêng.",
+    "Không giao storm/season theo policy; aggregate metrics từng fold, không tái sử dụng scaler fit toàn bộ.",
+    "leave-one-season-out"
+  ],
+  [
+    "S06",
+    "Thí nghiệm độ dài chuỗi 4/6/8",
+    "G13, G14",
+    "configs/ablation/; reports/evaluation/",
+    "Cố định split/seed/budget; chạy ba configs; thống kê số sample khả dụng để so sánh công bằng.",
+    "Báo cáo validation cùng horizon và mẫu chung; không chọn config theo final test.",
+    "độ dài chuỗi input"
+  ],
+  [
+    "S07",
+    "Adapter forecast môi trường GFS/ECMWF tùy chọn",
+    "G01, G04",
+    "ingestion/providers/environment.py; tests/test_environment_forecast.py",
+    "Phân biệt forecast issuance/valid time và reanalysis; cache run/lead/grid; fallback khi field chưa phát hành.",
+    "Point-in-time join không chọn run sau issue_time; ghi optional nếu chưa có nguồn/quyền truy cập.",
+    "GFS/ECMWF"
+  ],
+  [
+    "S08",
+    "Import và chuẩn hóa nhãn thiệt hại/đổ bộ",
+    "G01, G02",
+    "ingestion/providers/vietnam.py; tests/test_impact_labels.py",
+    "Parse nhãn PCTT tách khỏi target track; mapping tên/mã tỉnh theo ngày hiệu lực; giữ source/checksum.",
+    "Không đưa nhãn hậu sự kiện thành input forecast; duplicate/conflict có evidence.",
+    "thiệt hại"
+  ],
+  [
+    "S09",
+    "Cắt/giao cone với tỉnh và bờ biển",
+    "G02, G11, G18",
+    "inference/impact.py; tests/test_impact_geometry.py",
+    "Dùng geodesic/polygon và spatial query; tách proximity, probability vùng tâm và hazard thật; định nghĩa ETA hoặc trả không đủ dữ liệu.",
+    "Fixture giao/không giao/chạm biên; endpoint không gọi tâm-cone là gió/lũ; UI nêu giới hạn.",
+    "tỉnh/thành"
+  ],
+  [
+    "S10",
+    "Hiển thị so sánh dự báo chính thức",
+    "G01, G13, G21",
+    "evaluation/official_comparison.py; viz/frontend/",
+    "Import bản tin phát hành thực tế; ghép cùng issue_time, valid_time, storm; overlay hai nguồn có nhãn.",
+    "Không so best-track tương lai với forecast như cùng loại; không có bản tin thì hiển thị unavailable.",
+    "song song dự báo"
+  ],
+  [
+    "S11",
+    "Giao diện Việt/Anh",
+    "G21",
+    "viz/frontend/src/i18n/; tests/frontend/",
+    "Externalize labels, errors, disclaimer, units, datetime; VN là mặc định đề xuất; nhớ lựa chọn ngôn ngữ.",
+    "Chuyển VI/EN cập nhật toàn UI, không chỉ tiêu đề; UTC/giờ VN có nhãn; dữ liệu null không thành 0.",
+    "Đa ngôn ngữ"
+  ],
+  [
+    "S12",
+    "Màu/chú giải cường độ có tài liệu nguồn",
+    "G21",
+    "viz/frontend/src/theme/; docs/frontend.md",
+    "Quy định palette có contrast và ký hiệu bổ trợ; chỉ gọi chuẩn NCHMF khi đã xác minh tài liệu chính thức.",
+    "Người không phân biệt màu vẫn hiểu severity; legend luôn hiện và unknown có style riêng.",
+    "theme/màu"
+  ],
+  [
+    "S13",
+    "Kênh email/SMS/Telegram/Zalo qua adapter",
+    "G22",
+    "alerts/channels/; tests/test_alert_channels.py",
+    "Định nghĩa transport interface; fake adapter trước, mỗi provider là task con riêng; credentials env, retry/idempotency/dead-letter.",
+    "Test adapter không gửi thật; gửi tới người thật chỉ khi có chỉ dẫn rõ về người nhận/nội dung và thông tin tài khoản.",
+    "email/SMS"
+  ],
+  [
+    "S14",
+    "Webhook tích hợp tùy chọn",
+    "G17, G22",
+    "api/webhooks.py; tests/test_webhooks.py",
+    "Thiết kế payload version, chữ ký, timestamp chống replay và delivery ID; mock receiver; chặn URL nội bộ nếu user-configurable.",
+    "Signature sai/replay bị reject; retry không nhân bản side effect; không đăng ký/gửi bên ngoài trong task test.",
+    "API/webhook"
+  ],
+  [
+    "S15",
+    "Lịch ingestion theo mùa bão",
+    "G01, G19",
+    "ingestion/schedule.py; infra/scheduler/",
+    "Tách lịch cập nhật lịch sử và live; định nghĩa timezone, mùa 6–11 theo roadmap; backfill checkpoint và retry tránh trùng.",
+    "Fake clock kiểm tra trong/ngoài mùa, qua năm, outage; task không tự tạo automation Codex.",
+    "job lịch"
+  ],
+  [
+    "S16",
+    "Chính sách checkpoint retention",
+    "G12, G15",
+    "training/checkpoint_retention.py; tests/test_retention.py",
+    "Dry-run trước; giữ best/last/promoted/pinned; chỉ xóa file thuộc run manifest và trong root đã kiểm tra.",
+    "Fixture chứng minh không xóa promoted hoặc file người dùng; đường dẫn escape bị reject.",
+    "dọn dẹp checkpoint"
+  ],
+  [
+    "S17",
+    "Pipeline retrain định kỳ",
+    "G14, G15, G25",
+    " .github/workflows/retrain.yml; docs/retraining.md",
+    "Config lịch/budget/seed/split/evaluation gate; run thủ công với fixture trước; chưa cấu hình lịch chạy thật nếu chưa có compute.",
+    "Pipeline tạo staging candidate có provenance; không tự promotion chỉ vì training xong; final test không biến thành objective tune.",
+    "retrain định kỳ"
+  ],
+  [
+    "S18",
+    "Autoscaling và ngân sách tải",
+    "G23, G24, G26",
+    "infra/deploy/; tests/load/; docs/capacity.md",
+    "Đo p95/memory/CPU/queue với tải synthetic; chốt SLO và min/max replicas dựa kết quả; ghi chi phí theo hosting khi chọn.",
+    "Có load report và trigger/hysteresis; không tuyên bố đáp ứng mùa bão khi chưa chạy hạ tầng thật.",
+    "autoscaling"
+  ],
+  [
+    "S19",
+    "Backup DB/model và phục hồi",
+    "G18, G15, G24",
+    "scripts/backup/; tests/integration/test_restore.py; docs/runbook.md",
+    "Backup metadata/model/scaler/schema; retention và integrity; khôi phục DB/model sang môi trường mới; chốt RPO/RTO sau đo.",
+    "Restore drill truy vấn observation và tái tạo forecast; backup tồn tại nhưng chưa restore không đủ DoD.",
+    "backup"
+  ],
+  [
+    "S20",
+    "Giám sát drift và sai số trễ",
+    "G13, G19, G26",
+    "operations/monitoring.py; infra/monitoring/",
+    "Lưu train reference distributions; tính missing/schema/input drift; join forecast với actual chỉ cho đánh giá hậu nghiệm.",
+    "Drift spike fixture được phát hiện; không dùng observed future làm input; cảnh báo có sample size và model version.",
+    "trôi"
+  ],
+  [
+    "S21",
+    "Báo cáo cuối mùa",
+    "G13, G26, G27",
+    "reports/post-season/; docs/model-card.md",
+    "Tổng hợp error/coverage theo horizon, vùng, cường độ, nguồn; ghi case xấu, thiếu dữ liệu và model changes.",
+    "Mọi số liệu truy về prediction run/dataset; không tuyên bố vượt nghiệp vụ nếu thiếu official comparison phù hợp.",
+    "post-season"
+  ],
+  [
+    "S22",
+    "Slide/video bàn giao",
+    "G28",
+    "docs/acceptance/demo-script.md; reports/demo/",
+    "Chuẩn bị kịch bản 6 demos, screenshots và recording nếu môi trường hỗ trợ; ghi demo vs real, version và lỗi đã biết.",
+    "Người khác chạy theo kịch bản; video/slide mô tả đúng sản phẩm đã nghiệm thu.",
+    "slide/video"
+  ],
+  [
+    "S23",
+    "Chọn hosting và diễn tập release/rollback",
+    "G24, G25",
+    "docs/deployment.md; infra/deploy/",
+    "Ghi yêu cầu availability, region, storage, secret/TLS; chọn provider sau khi có constraint thực; chuẩn bị staging config và rollback checklist.",
+    "Staging smoke+rollback có evidence trước production; provisioning/trả phí cần tài khoản và phạm vi triển khai cụ thể.",
+    "nền tảng triển khai"
+  ],
+  [
+    "S24",
+    "Đóng gói CLI clean-data và kiểm tra provenance",
+    "G01, G03, G04, G05",
+    "src/typhoon_vn/cli.py; scripts/run_phase2.py; tests/test_cli.py",
+    "Thay placeholder bằng orchestration callable; input/output/config flags; validate path; giữ metadata qua merge/bridge/export.",
+    "CLI fixture raw→clean→features có provenance; raw hash không đổi; config/path sai exit nonzero.",
+    "clean-data"
+  ]
+]

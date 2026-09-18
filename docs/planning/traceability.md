@@ -1,0 +1,857 @@
+# Đối chiếu nguồn và kế hoạch
+
+- SHA-256 tài liệu nguồn: f10aabd3717391a95745e80cc06ffb75df30983d2f1feffbff67ffd48426d943.
+- Mỗi checkbox nguồn xuất hiện đúng một lần trong chỉ mục.
+- Tổng quan trỏ tới nhóm thực hiện; WBS trỏ tới task; DoD trỏ tới tiêu chí.
+- Coverage của kế hoạch không phải tỷ lệ implementation hoàn thành.
+
+## Tổng quan
+
+- REQ-001 · dòng [48](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:48) · Fork/clone `typhoon-track-vietnam` làm base, tạo repo mới `typhoon-vn-forecast-system` → [G00](wbs-00.md#gate-g00).
+- REQ-002 · dòng [49](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:49) · Thiết lập cấu trúc thư mục chuẩn: → [G00](wbs-00.md#gate-g00).
+- REQ-003 · dòng [54](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:54) · Viết `README.md` gốc mô tả kiến trúc (sơ đồ ở mục 1) → [G00](wbs-00.md#gate-g00).
+- REQ-004 · dòng [55](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:55) · Tạo `.gitignore` (loại trừ `data/raw`, `checkpoints/*.pth`, `.env`) → [G00](wbs-00.md#gate-g00).
+- REQ-005 · dòng [56](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:56) · Chọn license (giữ MIT như repo gốc) + `CONTRIBUTING.md` → [G00](wbs-00.md#gate-g00).
+- REQ-006 · dòng [57](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:57) · Thiết lập quy ước commit (Conventional Commits) + pre-commit hook (black, isort, flake8) → [G00](wbs-00.md#gate-g00).
+- REQ-007 · dòng [61](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:61) · Chọn Python version cố định (vd 3.11), tạo `pyproject.toml`/`poetry.lock` thay cho `requirements.txt` rời rạc → [G00](wbs-00.md#gate-g00).
+- REQ-008 · dòng [62](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:62) · Tách `requirements-train.txt` (torch, cartopy) và `requirements-api.txt` (fastapi, uvicorn) để image nhẹ hơn → [G00](wbs-00.md#gate-g00).
+- REQ-009 · dòng [63](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:63) · Viết `Makefile`/`justfile` với các lệnh: `make setup`, `make clean-data`, `make train`, `make serve`, `make test` → [G00](wbs-00.md#gate-g00).
+- REQ-010 · dòng [64](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:64) · Cấu hình biến môi trường qua `.env` + `pydantic-settings` (đường dẫn data, model registry, API keys) → [G00](wbs-00.md#gate-g00).
+- REQ-011 · dòng [65](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:65) · Thiết lập Docker Compose dev (Python service + Postgres/PostGIS + Redis + MinIO cho lưu checkpoint) → [G00](wbs-00.md#gate-g00).
+- REQ-012 · dòng [69](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:69) · Cài đặt DVC (Data Version Control) hoặc lakeFS để version hoá `cleaned_data.csv` và các checkpoint → [G00](wbs-00.md#gate-g00).
+- REQ-013 · dòng [70](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:70) · Cài đặt MLflow hoặc Weights & Biases để log experiment (loss, hyperparameter, artifact) → [G00](wbs-00.md#gate-g00).
+- REQ-014 · dòng [71](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:71) · Tạo bảng theo dõi thí nghiệm (spreadsheet/Notion) đối chiếu với MLflow run ID → [G00](wbs-00.md#gate-g00).
+- REQ-015 · dòng [79](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:79) · Viết script tải tự động toàn bộ `CMABSTdata/*.txt` từ CMA (thay vì thao tác tay), có retry + checksum → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-016 · dòng [80](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:80) · Parse lại toàn bộ lịch sử (1949–hiện tại), không giới hạn 1 năm → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-017 · dòng [81](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:81) · Chuẩn hoá `typhoonID` thành định dạng quốc tế (vd theo JTWC ID) để dễ đối chiếu đa nguồn → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-018 · dòng [85](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:85) · Tích hợp **IBTrACS** (NOAA, tổng hợp đa cơ quan JTWC/JMA/CMA/HKO) làm nguồn chuẩn hoá chính → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-019 · dòng [86](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:86) · Tích hợp **JMA Best Track** (Cơ quan Khí tượng Nhật Bản) làm nguồn đối chiếu chéo → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-020 · dòng [87](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:87) · Tích hợp **JTWC Best Track** (Mỹ) cho các cơn bão ở Tây Bắc Thái Bình Dương → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-021 · dòng [88](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:88) · Viết module hợp nhất (`merge_sources.py`) xử lý trùng lặp/khác biệt giữa các nguồn (theo thời gian + vị trí gần nhau) → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-022 · dòng [92](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:92) · Thu thập dữ liệu công báo bão của **Trung tâm Dự báo KTTV Quốc gia (NCHMF)** — bản tin lịch sử, vị trí tâm bão theo giờ VN → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-023 · dòng [93](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:93) · Thu thập dữ liệu thiệt hại/đổ bộ lịch sử (tỉnh/thành bị ảnh hưởng) từ Ban Chỉ đạo PCTT để làm tập nhãn phụ (impact labeling) → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-024 · dòng [94](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:94) · Số hoá ranh giới hành chính Việt Nam (GADM/OpenStreetMap) phục vụ tính "khoảng cách tới bờ biển VN gần nhất" → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-025 · dòng [95](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:95) · Thu thập dữ liệu đường bờ biển chi tiết (GSHHG) cho việc tính landfall (đổ bộ) → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-026 · dòng [99](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:99) · Tải **SST (nhiệt độ mặt nước biển)** từ NOAA OISST — bão cần SST > 26.5°C để duy trì cường độ → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-027 · dòng [100](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:100) · Tải dữ liệu tái phân tích **ERA5** (ECMWF): áp suất mực biển, gió 850hPa/200hPa (shear gió), độ ẩm → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-028 · dòng [101](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:101) · (Tuỳ chọn nâng cao) Tải trường dự báo số trị **GFS/ECMWF** để làm đặc trưng bổ sung theo thời gian thực khi inference → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-029 · dòng [102](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:102) · Viết pipeline crawl + cache dữ liệu môi trường theo lưới lat/lon/thời gian khớp với vị trí bão → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-030 · dòng [106](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:106) · Thiết kế schema lưu trữ thống nhất (Parquet, phân vùng theo năm) trong `/data/raw` → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-031 · dòng [107](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:107) · Viết job lịch (cron/Airflow) để tự động cập nhật dữ liệu mùa bão mới hàng tuần/hàng ngày trong mùa bão (6–11 hàng năm) → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-032 · dòng [108](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:108) · Ghi log nguồn gốc (data lineage) cho mỗi bản ghi: nguồn, thời gian tải, phiên bản → [G01](wbs-01.md#gate-g01), [G02](wbs-02.md#gate-g02).
+- REQ-033 · dòng [116](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:116) · Tái cấu trúc `data_clean.py` thành pipeline theo bước rõ ràng (parse → validate → dedupe → merge → export) → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-034 · dòng [117](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:117) · Viết bộ validate: toạ độ hợp lệ (VN quan tâm 0–30°N, 100–140°E), áp suất 850–1050 hPa, tốc độ gió ≥ 0 → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-035 · dòng [118](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:118) · Xử lý giá trị thiếu bằng nội suy theo chuỗi thời gian của từng cơn bão (không dùng 0 mặc định như bản gốc) → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-036 · dòng [119](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:119) · Loại bỏ/gắn cờ các bản ghi trùng lặp giữa nguồn CMA/JMA/JTWC/IBTrACS (ưu tiên IBTrACS đã hợp nhất) → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-037 · dòng [120](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:120) · Chuẩn hoá đơn vị nhất quán (m/s vs knot cho gió; hPa cho áp suất) giữa các nguồn khác nhau → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-038 · dòng [124](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:124) · Giữ và kiểm thử lại hàm `haversine`, `calculate_bearing`, `calculate_new_position` bằng unit test (so khớp giá trị đã biết) → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-039 · dòng [125](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:125) · Thêm đặc trưng **tốc độ di chuyển** (km/h) và **gia tốc thay đổi hướng** (Δbearing/Δt) → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-040 · dòng [126](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:126) · Thêm đặc trưng **khoảng cách & bearing tới đường bờ biển Việt Nam gần nhất** → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-041 · dòng [127](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:127) · Thêm đặc trưng **khoảng cách tới các mốc địa lý** (Hoàng Sa, Trường Sa, các cảng chính) — hỗ trợ diễn giải cho người dùng → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-042 · dòng [128](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:128) · Giữ biến đổi chu kỳ sin/cos cho giờ/ngày/tháng/ngày-trong-năm (như bản gốc) nhưng thêm **chu kỳ mùa bão** (tháng 6–12 là mùa cao điểm) → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-043 · dòng [132](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:132) · Chuẩn hoá lại `I` (cấp độ) và `END` theo one-hot **cố định danh sách lớp** (không suy ra động từ dữ liệu để tránh lệch chiều giữa train/test) → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-044 · dòng [133](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:133) · Thêm đặc trưng SST tại vị trí tâm bão + gradient SST xung quanh → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-045 · dòng [134](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:134) · Thêm đặc trưng wind shear (chênh lệch gió 850hPa–200hPa) — yếu tố quan trọng cho cường độ hoá/suy yếu → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-046 · dòng [135](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:135) · Thêm đặc trưng khí áp môi trường xung quanh (áp cao cận nhiệt đới chi phối hướng đi) → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-047 · dòng [139](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:139) · Tính min-max/mean-std **chỉ trên tập train**, lưu lại scaler (pickle/json) để áp dụng cho val/test/inference → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-048 · dòng [140](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:140) · Viết class `FeatureScaler` để đảm bảo `normalize`/`denormalize` dùng chung tham số đã fit, không tính lại mỗi lần → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-049 · dòng [141](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:141) · Đóng gói toàn bộ bước feature engineering thành `sklearn.Pipeline`-style hoặc custom `FeatureBuilder` để tái sử dụng giữa training và serving → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-050 · dòng [145](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:145) · Thiết lập feature store đơn giản (Parquet có versioning hoặc Feast) để đảm bảo tính nhất quán train/serve → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-051 · dòng [146](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:146) · Viết script kiểm tra "schema drift" khi có cột mới/thiếu giữa các lần chạy → [G03](wbs-03.md#gate-g03), [G04](wbs-04.md#gate-g04), [G05](wbs-05.md#gate-g05).
+- REQ-052 · dòng [154](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:154) · Viết lại `TyphoonDataset` hỗ trợ **cửa sổ trượt cấu hình được** (không cố định 4 bước input) → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-053 · dòng [155](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:155) · Hỗ trợ **dự đoán nhiều bước tương lai (multi-horizon)**: 6h, 12h, 24h, 48h, 72h — giống sản phẩm dự báo thực tế → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-054 · dòng [156](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:156) · Sửa lỗi tách train/val: chia theo **typhoonID** (toàn bộ 1 cơn bão vào 1 tập), không chia theo index tuần tự để tránh rò rỉ → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-055 · dòng [157](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:157) · Thêm tuỳ chọn chia theo **năm** (train các năm cũ, validate/test năm gần nhất) mô phỏng kịch bản triển khai thực tế → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-056 · dòng [158](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:158) · Viết `collate_fn` xử lý chuỗi độ dài khác nhau (padding + mask) nếu dùng kiến trúc attention → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-057 · dòng [162](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:162) · **Baseline**: giữ nguyên `TropicalCycloneLSTM` (bản gốc) làm mốc so sánh → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-058 · dòng [163](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:163) · **Seq2Seq LSTM (Encoder-Decoder)**: dự đoán chuỗi nhiều bước thay vì 1 điểm → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-059 · dòng [164](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:164) · **LSTM + Attention**: cho phép mô hình tập trung vào các điểm lịch sử quan trọng → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-060 · dòng [165](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:165) · **Transformer nhỏ (Temporal Fusion Transformer hoặc Informer-lite)**: thử nghiệm cho chuỗi dài & nhiều đặc trưng ngoại sinh (SST, shear) → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-061 · dòng [166](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:166) · **Mô hình vật lý kết hợp (hybrid)**: dùng CLIPER (Climatology and Persistence) làm baseline cổ điển để so sánh với deep learning → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-062 · dòng [167](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:167) · Tách output thành 2 đầu riêng: **hồi quy vị trí** (lat/lon hoặc distance/bearing) và **phân loại cường độ/trạng thái** (thay vì gộp chung 1 vector loss như bản gốc) → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-063 · dòng [171](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:171) · Thử **Monte Carlo Dropout** khi inference để sinh nhiều đường đi khả dĩ → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-064 · dòng [172](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:172) · Thử **Quantile Regression** (dự đoán khoảng tin cậy 10–90%) cho vị trí tương lai → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-065 · dòng [173](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:173) · Thử **Deep Ensemble** (huấn luyện N mô hình với seed khác nhau, lấy phân phối) → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-066 · dòng [174](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:174) · Viết hàm tính bán kính "cone" theo horizon (giống cách NHC/NCHMF công bố vùng có thể ảnh hưởng) → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-067 · dòng [178](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:178) · Giữ `SmoothL1Loss` cho hồi quy vị trí (đã hợp lý trong bản gốc), nhưng tách trọng số riêng cho từng horizon (phạt nặng hơn ở bước xa) → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-068 · dòng [179](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:179) · Thêm `CrossEntropyLoss` riêng cho phần phân loại cường độ/trạng thái → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-069 · dòng [180](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:180) · Thử loss theo khoảng cách Haversine trực tiếp (thay vì lat/lon thô) để tối ưu đúng theo mét/km thực tế → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-070 · dòng [181](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:181) · Giữ `AdamW` (đã hợp lý), thêm scheduler (CosineAnnealingLR hoặc ReduceLROnPlateau) → [G06](wbs-06.md#gate-g06), [G07](wbs-07.md#gate-g07), [G08](wbs-08.md#gate-g08), [G09](wbs-09.md#gate-g09), [G10](wbs-10.md#gate-g10), [G11](wbs-11.md#gate-g11).
+- REQ-071 · dòng [189](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:189) · Thêm **early stopping** (patience theo validation loss) thay vì chạy đủ `num_epochs` cố định → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-072 · dòng [190](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:190) · Thêm **gradient clipping** để ổn định huấn luyện LSTM sâu → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-073 · dòng [191](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:191) · Tích hợp logging vào MLflow/W&B (loss theo epoch, learning rate, sample dự đoán trực quan) → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-074 · dòng [192](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:192) · Thêm checkpoint "last" và "best" riêng biệt, dọn dẹp checkpoint cũ tự động → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-075 · dòng [193](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:193) · Hỗ trợ resume training từ checkpoint kèm optimizer state (bản gốc chỉ load `state_dict` của model) → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-076 · dòng [194](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:194) · Viết cấu hình bằng YAML/Hydra thay vì chỉ `argparse` để dễ quản lý nhiều thí nghiệm → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-077 · dòng [198](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:198) · Định nghĩa metric chuẩn ngành: **Track error (km)** tại từng horizon (24h/48h/72h) — so sánh được với số liệu công bố của NCHMF/JTWC → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-078 · dòng [199](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:199) · Tính **Along-track error** và **Cross-track error** riêng biệt (chuẩn khí tượng, không chỉ MSE thô) → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-079 · dòng [200](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:200) · Tính độ chính xác phân loại cường độ (accuracy/F1 theo từng cấp bão) → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-080 · dòng [201](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:201) · Viết script **backtesting** trên các cơn bão lịch sử ảnh hưởng Việt Nam nổi bật (vd Damrey 2017, Molave 2020, Noru 2022, Yagi 2024) để đánh giá định tính → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-081 · dòng [202](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:202) · So sánh với baseline CLIPER và với dự báo chính thức đã công bố (nếu có dữ liệu) để biết mô hình có "ăn được" dự báo nghiệp vụ không → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-082 · dòng [206](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:206) · Thiết lập **cross-validation theo mùa bão** (leave-one-season-out) thay vì 1 lần chia 90/10 như bản gốc → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-083 · dòng [207](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:207) · Dùng Optuna/Ray Tune để tìm `hidden_size`, `num_layers`, `dropout`, `learning_rate` tối ưu → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-084 · dòng [208](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:208) · Phân tích độ nhạy của mô hình theo độ dài chuỗi input (4 điểm như bản gốc có đủ chưa? thử 6, 8 điểm) → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-085 · dòng [212](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:212) · Đăng ký mọi mô hình đạt ngưỡng chất lượng vào MLflow Model Registry (kèm metric, phiên bản dữ liệu) → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-086 · dòng [213](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:213) · Viết quy tắc promote: "staging" → "production" chỉ khi track error thấp hơn mô hình hiện tại trên tập test cố định → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-087 · dòng [214](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:214) · Tạo GitHub Actions job tự động chạy lại đánh giá khi có PR thay đổi model/feature code → [G12](wbs-12.md#gate-g12), [G13](wbs-13.md#gate-g13), [G14](wbs-14.md#gate-g14), [G15](wbs-15.md#gate-g15).
+- REQ-088 · dòng [222](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:222) · Tách logic inference khỏi script CLI, viết class `TyphoonForecaster` tái sử dụng được (load model 1 lần, serve nhiều request) → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-089 · dòng [223](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:223) · Viết hàm "rolling forecast": từ 4 điểm quan trắc gần nhất, sinh dự báo 24h/48h/72h bằng cách feed lại chính đầu ra (autoregressive) — có kiểm soát sai số tích luỹ → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-090 · dòng [224](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:224) · Tích hợp bước denormalize/restore bearing (giữ logic đã có trong `share_func.py`, đóng gói lại thành hàm `postprocess_prediction`) → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-091 · dòng [225](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:225) · Thêm cơ chế fallback (nếu thiếu đặc trưng môi trường thời gian thực, dùng giá trị trung bình lịch sử) → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-092 · dòng [229](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:229) · Thiết kế endpoint `POST /forecast` — nhận `typhoonID` hoặc chuỗi quan trắc thô, trả về danh sách điểm dự báo + cone bất định → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-093 · dòng [230](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:230) · Thiết kế endpoint `GET /typhoons/active` — danh sách bão đang hoạt động (từ nguồn dữ liệu cập nhật) → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-094 · dòng [231](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:231) · Thiết kế endpoint `GET /typhoons/{id}/track` — lịch sử + dự báo của 1 cơn bão cụ thể → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-095 · dòng [232](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:232) · Thiết kế endpoint `GET /typhoons/{id}/impact` — ước tính khu vực/tỉnh thành VN có khả năng ảnh hưởng (dựa khoảng cách + bán kính gió mạnh) → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-096 · dòng [233](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:233) · Viết schema Pydantic cho request/response, sinh OpenAPI docs tự động → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-097 · dòng [234](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:234) · Thêm health-check endpoint (`/health`) và version endpoint (`/version`) báo cáo model version đang chạy → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-098 · dòng [235](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:235) · Thêm rate limiting & API key cơ bản nếu public hoá → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-099 · dòng [239](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:239) · Viết worker (Celery/RQ) định kỳ (vd mỗi 30–60 phút trong mùa bão) kéo dữ liệu vị trí bão mới nhất từ NCHMF/JTWC → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-100 · dòng [240](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:240) · Khi có điểm quan trắc mới, tự động trigger lại inference và lưu kết quả vào DB (Postgres/PostGIS) → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-101 · dòng [241](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:241) · Thiết lập cache (Redis) cho các dự báo mới nhất để giảm tải tính toán lặp lại → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-102 · dòng [245](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:245) · Thiết kế schema PostGIS: bảng `observations`, `forecasts`, `typhoons`, `alerts` → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-103 · dòng [246](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:246) · Viết migration (Alembic) cho schema trên → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-104 · dòng [247](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:247) · Lưu lịch sử mọi lần dự báo (audit trail) để sau này đánh giá lại độ chính xác thực tế → [G16](wbs-16.md#gate-g16), [G17](wbs-17.md#gate-g17), [G18](wbs-18.md#gate-g18), [G19](wbs-19.md#gate-g19), [G20](wbs-20.md#gate-g20).
+- REQ-105 · dòng [255](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:255) · Chọn framework (React/Next.js hoặc Vue) + thư viện bản đồ (Leaflet, Mapbox GL, hoặc deck.gl) — thay thế Cartopy tĩnh trong bản gốc bằng bản đồ tương tác → [G21](wbs-21.md#gate-g21).
+- REQ-106 · dòng [256](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:256) · Thiết kế hệ thống theme/màu (đỏ/cam/vàng theo cấp độ bão, giống chuẩn hiển thị của NCHMF) → [G21](wbs-21.md#gate-g21).
+- REQ-107 · dòng [260](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:260) · **Trang tổng quan**: danh sách bão đang hoạt động ở Biển Đông/Tây Bắc Thái Bình Dương → [G21](wbs-21.md#gate-g21).
+- REQ-108 · dòng [261](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:261) · **Trang chi tiết bão**: bản đồ hiển thị đường đi lịch sử (đường liền) + đường đi dự báo (đường đứt) + cone bất định (vùng tô mờ mở rộng theo thời gian — tái hiện ý tưởng so sánh actual vs predicted của `draw_map.py` nhưng dạng tương tác) → [G21](wbs-21.md#gate-g21).
+- REQ-109 · dòng [262](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:262) · **Lớp phủ vùng ảnh hưởng Việt Nam**: highlight tỉnh/thành nằm trong bán kính cảnh báo → [G21](wbs-21.md#gate-g21).
+- REQ-110 · dòng [263](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:263) · **Timeline slider**: cho phép tua qua các thời điểm quan trắc/dự báo (giống hiệu ứng GIF gốc nhưng người dùng điều khiển được) → [G21](wbs-21.md#gate-g21).
+- REQ-111 · dòng [264](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:264) · **Bảng thông số**: áp suất, sức gió, cấp bão, hướng di chuyển tại thời điểm đang xem → [G21](wbs-21.md#gate-g21).
+- REQ-112 · dòng [265](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:265) · Responsive cho mobile (người dân vùng ảnh hưởng thường tra cứu bằng điện thoại) → [G21](wbs-21.md#gate-g21).
+- REQ-113 · dòng [269](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:269) · Cho phép nhập vị trí (tỉnh/thành hoặc toạ độ) để xem "khoảng cách còn lại tới bờ", "thời gian ước tính ảnh hưởng" → [G21](wbs-21.md#gate-g21).
+- REQ-114 · dòng [270](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:270) · Hiển thị mức độ tin cậy mô hình rõ ràng (disclaimer: đây là công cụ *hỗ trợ tham khảo*, không thay thế bản tin chính thức của NCHMF) → [G21](wbs-21.md#gate-g21).
+- REQ-115 · dòng [271](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:271) · Đa ngôn ngữ (Việt/Anh) → [G21](wbs-21.md#gate-g21).
+- REQ-116 · dòng [279](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:279) · Thiết kế cơ chế đăng ký nhận cảnh báo theo khu vực (email/SMS/Telegram bot/Zalo OA) → [G22](wbs-22.md#gate-g22).
+- REQ-117 · dòng [280](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:280) · Viết rule engine: kích hoạt cảnh báo khi bão dự báo vào bán kính X km quanh khu vực đăng ký trong Y giờ tới → [G22](wbs-22.md#gate-g22).
+- REQ-118 · dòng [281](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:281) · Viết template nội dung cảnh báo rõ ràng, có nguồn tham chiếu, khuyến cáo không thay thế cảnh báo chính thức → [G22](wbs-22.md#gate-g22).
+- REQ-119 · dòng [282](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:282) · Test cơ chế chống spam cảnh báo (throttle theo thời gian) → [G22](wbs-22.md#gate-g22).
+- REQ-120 · dòng [286](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:286) · Đối chiếu song song dự báo của hệ thống với bản tin NCHMF để hiển thị "so sánh 2 nguồn" minh bạch cho người dùng → [G22](wbs-22.md#gate-g22).
+- REQ-121 · dòng [287](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:287) · Cân nhắc API/webhook để cơ quan phòng chống thiên tai địa phương có thể lấy dữ liệu (nếu dự án mở rộng quy mô) → [G22](wbs-22.md#gate-g22).
+- REQ-122 · dòng [295](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:295) · Test các hàm toán học trong `share_func.py` (haversine, bearing, calculate\_new\_position) với giá trị tham chiếu đã biết → [G23](wbs-23.md#gate-g23).
+- REQ-123 · dòng [296](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:296) · Test `FeatureBuilder`/scaler: đảm bảo normalize → denormalize khôi phục đúng giá trị gốc → [G23](wbs-23.md#gate-g23).
+- REQ-124 · dòng [297](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:297) · Test `TyphoonDataset`: đảm bảo không rò rỉ dữ liệu giữa các cơn bão/tập train-val → [G23](wbs-23.md#gate-g23).
+- REQ-125 · dòng [298](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:298) · Test model forward pass (shape đầu vào/ra đúng như kỳ vọng) → [G23](wbs-23.md#gate-g23).
+- REQ-126 · dòng [302](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:302) · Test toàn bộ pipeline: raw data → cleaned → feature → dataset → train 1 epoch nhỏ → predict, chạy trong CI với dữ liệu mẫu nhỏ → [G23](wbs-23.md#gate-g23).
+- REQ-127 · dòng [303](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:303) · Test API end-to-end (gửi request `/forecast` mẫu, kiểm tra response schema + giá trị hợp lý) → [G23](wbs-23.md#gate-g23).
+- REQ-128 · dòng [304](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:304) · Test worker cập nhật dữ liệu thời gian thực (mock nguồn NCHMF) → [G23](wbs-23.md#gate-g23).
+- REQ-129 · dòng [308](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:308) · Backtest trên tập cơn bão giữ lại hoàn toàn (không dùng để train/tune) — báo cáo track error theo horizon → [G23](wbs-23.md#gate-g23).
+- REQ-130 · dòng [309](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:309) · Test độ ổn định: nhiễu nhỏ đầu vào (vd sai số quan trắc) không làm output đổi đột ngột → [G23](wbs-23.md#gate-g23).
+- REQ-131 · dòng [310](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:310) · Test edge case: bão đổi hướng đột ngột, bão gần bờ, bão suy yếu thành áp thấp → [G23](wbs-23.md#gate-g23).
+- REQ-132 · dòng [314](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:314) · Test hiển thị bản đồ với dữ liệu giả lập nhiều kịch bản (bão xa, bão gần, nhiều bão cùng lúc) → [G23](wbs-23.md#gate-g23).
+- REQ-133 · dòng [315](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:315) · Test responsive & accessibility cơ bản → [G23](wbs-23.md#gate-g23).
+- REQ-134 · dòng [323](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:323) · Viết Dockerfile riêng cho: training service, API service, worker, frontend → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-135 · dòng [324](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:324) · Viết `docker-compose.prod.yml` (API + Postgres/PostGIS + Redis + Nginx reverse proxy) → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-136 · dòng [328](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:328) · GitHub Actions: lint + unit test + build image khi push → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-137 · dòng [329](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:329) · Pipeline riêng cho "retrain định kỳ" (vd đầu mỗi mùa bão) chạy trên GPU runner/cloud, tự động đăng ký model mới nếu vượt baseline → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-138 · dòng [330](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:330) · Pipeline deploy tự động (staging → production) sau khi test pass → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-139 · dòng [334](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:334) · Chọn nền tảng triển khai (VPS Việt Nam để độ trễ thấp / cloud quốc tế có CDN) — cân nhắc tính sẵn sàng cao trong đúng mùa bão → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-140 · dòng [335](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:335) · Thiết lập autoscaling cho API khi có bão lớn (traffic tăng đột biến) → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-141 · dòng [336](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:336) · Giám sát hệ thống: Prometheus + Grafana (uptime, latency API, tỉ lệ lỗi worker cập nhật dữ liệu) → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-142 · dòng [337](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:337) · Giám sát mô hình (model monitoring): theo dõi phân phối input thực tế có "trôi" (drift) so với lúc train không → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-143 · dòng [338](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:338) · Thiết lập backup định kỳ cho DB và model registry → [G24](wbs-24.md#gate-g24), [G25](wbs-25.md#gate-g25), [G26](wbs-26.md#gate-g26).
+- REQ-144 · dòng [344](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:344) · Cập nhật `README.md` chính với hướng dẫn cài đặt full-stack (data → train → serve → frontend) → [G27](wbs-27.md#gate-g27), [G28](wbs-28.md#gate-g28).
+- REQ-145 · dòng [345](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:345) · Viết tài liệu kiến trúc chi tiết (`docs/architecture.md`) kèm sơ đồ → [G27](wbs-27.md#gate-g27), [G28](wbs-28.md#gate-g28).
+- REQ-146 · dòng [346](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:346) · Viết tài liệu mô tả từng đặc trưng dữ liệu (data dictionary) — kế thừa và mở rộng phần "Lựa chọn đặc trưng" đã có trong README gốc → [G27](wbs-27.md#gate-g27), [G28](wbs-28.md#gate-g28).
+- REQ-147 · dòng [347](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:347) · Viết hướng dẫn vận hành (runbook): xử lý khi worker lỗi, khi model registry lỗi, khi có bão lớn tải cao → [G27](wbs-27.md#gate-g27), [G28](wbs-28.md#gate-g28).
+- REQ-148 · dòng [348](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:348) · Viết báo cáo đánh giá mô hình định kỳ theo mùa bão (post-season report), so sánh với thực tế đã xảy ra → [G27](wbs-27.md#gate-g27), [G28](wbs-28.md#gate-g28).
+- REQ-149 · dòng [349](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:349) · Viết tuyên bố miễn trừ trách nhiệm rõ ràng (công cụ tham khảo, không thay thế cơ quan khí tượng chính thức) → [G27](wbs-27.md#gate-g27), [G28](wbs-28.md#gate-g28).
+- REQ-150 · dòng [350](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:350) · Chuẩn bị slide/video demo bàn giao → [G27](wbs-27.md#gate-g27), [G28](wbs-28.md#gate-g28).
+- REQ-151 · dòng [371](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:371) · **Chất lượng/độ trễ dữ liệu nguồn** (CMA/NCHMF có thể cập nhật chậm hoặc định dạng thay đổi) → cần cơ chế giám sát & cảnh báo khi pipeline ingestion lỗi → [G01](wbs-01.md#gate-g01), [G06](wbs-06.md#gate-g06), [G11](wbs-11.md#gate-g11), [G23](wbs-23.md#gate-g23), [G26](wbs-26.md#gate-g26).
+- REQ-152 · dòng [372](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:372) · **Sai số tích luỹ khi dự báo nhiều bước (autoregressive)** → ưu tiên kiến trúc seq2seq/direct multi-horizon thay vì lặp lại 1-bước như bản gốc → [G01](wbs-01.md#gate-g01), [G06](wbs-06.md#gate-g06), [G11](wbs-11.md#gate-g11), [G23](wbs-23.md#gate-g23), [G26](wbs-26.md#gate-g26).
+- REQ-153 · dòng [373](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:373) · **Rò rỉ dữ liệu (data leakage)** trong chia train/val — lỗi đã tồn tại trong repo mẫu, phải sửa triệt để trước khi tin vào bất kỳ số liệu đánh giá nào → [G01](wbs-01.md#gate-g01), [G06](wbs-06.md#gate-g06), [G11](wbs-11.md#gate-g11), [G23](wbs-23.md#gate-g23), [G26](wbs-26.md#gate-g26).
+- REQ-154 · dòng [374](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:374) · **Kỳ vọng sai của người dùng** về độ chính xác dự báo bão (bản chất là bài toán bất định cao) → cần truyền thông rõ bằng "cone of uncertainty" thay vì 1 đường đi khẳng định → [G01](wbs-01.md#gate-g01), [G06](wbs-06.md#gate-g06), [G11](wbs-11.md#gate-g11), [G23](wbs-23.md#gate-g23), [G26](wbs-26.md#gate-g26).
+- REQ-155 · dòng [375](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:375) · **Tải hệ thống tăng vọt** khi có bão lớn ảnh hưởng trực tiếp Việt Nam → cần autoscaling/kiểm thử tải trước mùa bão → [G01](wbs-01.md#gate-g01), [G06](wbs-06.md#gate-g06), [G11](wbs-11.md#gate-g11), [G23](wbs-23.md#gate-g23), [G26](wbs-26.md#gate-g26).
+
+## WBS và DoD
+
+- Dòng [387](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:387) · [T00-001](wbs-00.md#t00-001) · Tạo repository `typhoon-vn-forecast-system`.
+- Dòng [388](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:388) · [T00-002](wbs-00.md#t00-002) · Tạo `main`, `develop`.
+- Dòng [389](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:389) · [T00-003](wbs-00.md#t00-003) · Tạo branch theo feature.
+- Dòng [390](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:390) · [T00-004](wbs-00.md#t00-004) · Thiết lập `.gitignore`.
+- Dòng [391](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:391) · [T00-005](wbs-00.md#t00-005) · Tạo `README.md`.
+- Dòng [392](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:392) · [T00-006](wbs-00.md#t00-006) · Tạo `LICENSE`.
+- Dòng [393](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:393) · [T00-007](wbs-00.md#t00-007) · Tạo `CONTRIBUTING.md`.
+- Dòng [394](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:394) · [T00-008](wbs-00.md#t00-008) · Thiết lập Conventional Commits.
+- Dòng [395](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:395) · [T00-009](wbs-00.md#t00-009) · Thiết lập pre-commit.
+- Dòng [396](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:396) · [T00-010](wbs-00.md#t00-010) · Chạy lint lần đầu.
+- Dòng [397](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:397) · [T00-011](wbs-00.md#t00-011) · Commit cấu trúc ban đầu.
+- Dòng [402](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:402) · [T00-012](wbs-00.md#t00-012) · Tạo `data/raw`.
+- Dòng [403](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:403) · [T00-013](wbs-00.md#t00-013) · Tạo `data/interim`.
+- Dòng [404](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:404) · [T00-014](wbs-00.md#t00-014) · Tạo `data/processed`.
+- Dòng [405](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:405) · [T00-015](wbs-00.md#t00-015) · Tạo `data/external`.
+- Dòng [406](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:406) · [T00-016](wbs-00.md#t00-016) · Tạo `src/ingestion`.
+- Dòng [407](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:407) · [T00-017](wbs-00.md#t00-017) · Tạo `src/preprocessing`.
+- Dòng [408](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:408) · [T00-018](wbs-00.md#t00-018) · Tạo `src/features`.
+- Dòng [409](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:409) · [T00-019](wbs-00.md#t00-019) · Tạo `src/datasets`.
+- Dòng [410](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:410) · [T00-020](wbs-00.md#t00-020) · Tạo `src/models`.
+- Dòng [411](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:411) · [T00-021](wbs-00.md#t00-021) · Tạo `src/training`.
+- Dòng [412](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:412) · [T00-022](wbs-00.md#t00-022) · Tạo `src/inference`.
+- Dòng [413](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:413) · [T00-023](wbs-00.md#t00-023) · Tạo `src/evaluation`.
+- Dòng [414](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:414) · [T00-024](wbs-00.md#t00-024) · Tạo `src/alerts`.
+- Dòng [415](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:415) · [T00-025](wbs-00.md#t00-025) · Tạo `api`.
+- Dòng [416](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:416) · [T00-026](wbs-00.md#t00-026) · Tạo `frontend`.
+- Dòng [417](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:417) · [T00-027](wbs-00.md#t00-027) · Tạo `tests/unit`.
+- Dòng [418](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:418) · [T00-028](wbs-00.md#t00-028) · Tạo `tests/integration`.
+- Dòng [419](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:419) · [T00-029](wbs-00.md#t00-029) · Tạo `tests/model`.
+- Dòng [420](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:420) · [T00-030](wbs-00.md#t00-030) · Tạo `configs`.
+- Dòng [421](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:421) · [T00-031](wbs-00.md#t00-031) · Tạo `docs`.
+- Dòng [426](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:426) · [T00-032](wbs-00.md#t00-032) · Khóa Python version.
+- Dòng [427](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:427) · [T00-033](wbs-00.md#t00-033) · Tạo `pyproject.toml`.
+- Dòng [428](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:428) · [T00-034](wbs-00.md#t00-034) · Tạo environment.
+- Dòng [429](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:429) · [T00-035](wbs-00.md#t00-035) · Cài PyTorch.
+- Dòng [430](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:430) · [T00-036](wbs-00.md#t00-036) · Cài Pandas/NumPy.
+- Dòng [431](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:431) · [T00-037](wbs-00.md#t00-037) · Cài Scikit-learn.
+- Dòng [432](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:432) · [T00-038](wbs-00.md#t00-038) · Cài FastAPI/Uvicorn.
+- Dòng [433](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:433) · [T00-039](wbs-00.md#t00-039) · Cài SQLAlchemy/Alembic.
+- Dòng [434](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:434) · [T00-040](wbs-00.md#t00-040) · Cài Pytest.
+- Dòng [435](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:435) · [T00-041](wbs-00.md#t00-041) · Cài MLflow.
+- Dòng [436](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:436) · [T00-042](wbs-00.md#t00-042) · Cài Optuna.
+- Dòng [437](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:437) · [T00-043](wbs-00.md#t00-043) · Tạo `.env.example`.
+- Dòng [438](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:438) · [T00-044](wbs-00.md#t00-044) · Tạo config loader.
+- Dòng [439](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:439) · [T00-045](wbs-00.md#t00-045) · Tạo Makefile/justfile.
+- Dòng [448](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:448) · [T01-001](wbs-01.md#t01-001) · Xác định URL/source.
+- Dòng [449](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:449) · [T01-002](wbs-01.md#t01-002) · Viết downloader.
+- Dòng [450](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:450) · [T01-003](wbs-01.md#t01-003) · Tạo thư mục raw CMA.
+- Dòng [451](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:451) · [T01-004](wbs-01.md#t01-004) · Download một file mẫu.
+- Dòng [452](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:452) · [T01-005](wbs-01.md#t01-005) · Kiểm tra HTTP status.
+- Dòng [453](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:453) · [T01-006](wbs-01.md#t01-006) · Retry request.
+- Dòng [454](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:454) · [T01-007](wbs-01.md#t01-007) · Timeout request.
+- Dòng [455](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:455) · [T01-008](wbs-01.md#t01-008) · Kiểm tra file rỗng.
+- Dòng [456](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:456) · [T01-009](wbs-01.md#t01-009) · Tính checksum.
+- Dòng [457](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:457) · [T01-010](wbs-01.md#t01-010) · Ghi metadata download.
+- Dòng [458](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:458) · [T01-011](wbs-01.md#t01-011) · Download toàn bộ lịch sử.
+- Dòng [459](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:459) · [T01-012](wbs-01.md#t01-012) · Log lỗi từng file.
+- Dòng [464](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:464) · [T01-013](wbs-01.md#t01-013) · Đọc file raw.
+- Dòng [465](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:465) · [T01-014](wbs-01.md#t01-014) · Nhận diện storm ID.
+- Dòng [466](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:466) · [T01-015](wbs-01.md#t01-015) · Parse timestamp.
+- Dòng [467](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:467) · [T01-016](wbs-01.md#t01-016) · Parse latitude.
+- Dòng [468](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:468) · [T01-017](wbs-01.md#t01-017) · Parse longitude.
+- Dòng [469](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:469) · [T01-018](wbs-01.md#t01-018) · Parse wind.
+- Dòng [470](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:470) · [T01-019](wbs-01.md#t01-019) · Parse pressure nếu có.
+- Dòng [471](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:471) · [T01-020](wbs-01.md#t01-020) · Chuẩn hóa đơn vị.
+- Dòng [472](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:472) · [T01-021](wbs-01.md#t01-021) · Xử lý missing.
+- Dòng [473](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:473) · [T01-022](wbs-01.md#t01-022) · Xuất DataFrame chuẩn.
+- Dòng [474](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:474) · [T01-023](wbs-01.md#t01-023) · Xuất Parquet.
+- Dòng [475](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:475) · [T01-024](wbs-01.md#t01-024) · Viết test parser.
+- Dòng [480](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:480) · [T01-025](wbs-01.md#t01-025) · Tạo downloader.
+- Dòng [481](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:481) · [T01-026](wbs-01.md#t01-026) · Cache file.
+- Dòng [482](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:482) · [T01-027](wbs-01.md#t01-027) · Tạo parser.
+- Dòng [483](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:483) · [T01-028](wbs-01.md#t01-028) · Chọn agency fields.
+- Dòng [484](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:484) · [T01-029](wbs-01.md#t01-029) · Chuẩn hóa storm ID.
+- Dòng [485](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:485) · [T01-030](wbs-01.md#t01-030) · Chuẩn hóa timestamp.
+- Dòng [486](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:486) · [T01-031](wbs-01.md#t01-031) · Chuẩn hóa lat/lon.
+- Dòng [487](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:487) · [T01-032](wbs-01.md#t01-032) · Chuẩn hóa wind/pressure.
+- Dòng [488](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:488) · [T01-033](wbs-01.md#t01-033) · Lưu source agency.
+- Dòng [489](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:489) · [T01-034](wbs-01.md#t01-034) · Validate dữ liệu.
+- Dòng [490](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:490) · [T01-035](wbs-01.md#t01-035) · Export Parquet.
+- Dòng [493](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:493) · [T01-036](wbs-01.md#t01-036) · Tạo provider.
+- Dòng [494](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:494) · [T01-037](wbs-01.md#t01-037) · Downloader.
+- Dòng [495](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:495) · [T01-038](wbs-01.md#t01-038) · Parser.
+- Dòng [496](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:496) · [T01-039](wbs-01.md#t01-039) · Mapping schema.
+- Dòng [497](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:497) · [T01-040](wbs-01.md#t01-040) · Unit conversion.
+- Dòng [498](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:498) · [T01-041](wbs-01.md#t01-041) · Validation.
+- Dòng [499](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:499) · [T01-042](wbs-01.md#t01-042) · Export.
+- Dòng [502](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:502) · [T01-043](wbs-01.md#t01-043) · Tạo provider.
+- Dòng [503](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:503) · [T01-044](wbs-01.md#t01-044) · Downloader.
+- Dòng [504](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:504) · [T01-045](wbs-01.md#t01-045) · Parser.
+- Dòng [505](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:505) · [T01-046](wbs-01.md#t01-046) · Mapping schema.
+- Dòng [506](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:506) · [T01-047](wbs-01.md#t01-047) · Unit conversion.
+- Dòng [507](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:507) · [T01-048](wbs-01.md#t01-048) · Validation.
+- Dòng [508](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:508) · [T01-049](wbs-01.md#t01-049) · Export.
+- Dòng [511](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:511) · [T01-050](wbs-01.md#t01-050) · Xác định nguồn được phép sử dụng.
+- Dòng [512](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:512) · [T01-051](wbs-01.md#t01-051) · Xác định format.
+- Dòng [513](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:513) · [T01-052](wbs-01.md#t01-052) · Tạo provider interface.
+- Dòng [514](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:514) · [T01-053](wbs-01.md#t01-053) · Viết parser tương ứng với nguồn thực tế.
+- Dòng [515](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:515) · [T01-054](wbs-01.md#t01-054) · Parse thời điểm phát hành.
+- Dòng [516](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:516) · [T01-055](wbs-01.md#t01-055) · Parse vị trí tâm bão.
+- Dòng [517](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:517) · [T01-056](wbs-01.md#t01-056) · Parse cường độ.
+- Dòng [518](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:518) · [T01-057](wbs-01.md#t01-057) · Parse dự báo nếu nguồn cung cấp.
+- Dòng [519](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:519) · [T01-058](wbs-01.md#t01-058) · Lưu bản gốc.
+- Dòng [520](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:520) · [T01-059](wbs-01.md#t01-059) · Lưu metadata.
+- Dòng [521](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:521) · [T01-060](wbs-01.md#t01-060) · Test với dữ liệu mẫu.
+- Dòng [526](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:526) · [T01-061](wbs-01.md#t01-061) · Chuẩn hóa tên cột.
+- Dòng [527](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:527) · [T01-062](wbs-01.md#t01-062) · Chuẩn hóa timezone.
+- Dòng [528](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:528) · [T01-063](wbs-01.md#t01-063) · Chuẩn hóa đơn vị.
+- Dòng [529](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:529) · [T01-064](wbs-01.md#t01-064) · Chuẩn hóa storm ID.
+- Dòng [530](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:530) · [T01-065](wbs-01.md#t01-065) · Match storm giữa các nguồn.
+- Dòng [531](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:531) · [T01-066](wbs-01.md#t01-066) · Match timestamp.
+- Dòng [532](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:532) · [T01-067](wbs-01.md#t01-067) · Tính khoảng cách giữa các vị trí.
+- Dòng [533](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:533) · [T01-068](wbs-01.md#t01-068) · Phát hiện duplicate.
+- Dòng [534](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:534) · [T01-069](wbs-01.md#t01-069) · Đánh dấu conflict.
+- Dòng [535](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:535) · [T01-070](wbs-01.md#t01-070) · Xác định priority source.
+- Dòng [536](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:536) · [T01-071](wbs-01.md#t01-071) · Tạo master dataset.
+- Dòng [537](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:537) · [T01-072](wbs-01.md#t01-072) · Lưu provenance.
+- Dòng [540](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:540) · [T01-073](wbs-01.md#t01-073) · Validate latitude.
+- Dòng [541](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:541) · [T01-074](wbs-01.md#t01-074) · Validate longitude.
+- Dòng [542](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:542) · [T01-075](wbs-01.md#t01-075) · Validate timestamp.
+- Dòng [543](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:543) · [T01-076](wbs-01.md#t01-076) · Validate wind.
+- Dòng [544](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:544) · [T01-077](wbs-01.md#t01-077) · Validate pressure.
+- Dòng [545](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:545) · [T01-078](wbs-01.md#t01-078) · Kiểm tra duplicate.
+- Dòng [546](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:546) · [T01-079](wbs-01.md#t01-079) · Kiểm tra missing.
+- Dòng [547](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:547) · [T01-080](wbs-01.md#t01-080) · Kiểm tra timestamp tăng dần.
+- Dòng [548](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:548) · [T01-081](wbs-01.md#t01-081) · Kiểm tra vị trí nhảy bất thường.
+- Dòng [549](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:549) · [T01-082](wbs-01.md#t01-082) · Gắn cờ suspicious thay vì âm thầm xóa.
+- Dòng [550](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:550) · [T01-083](wbs-01.md#t01-083) · Sinh báo cáo quality.
+- Dòng [557](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:557) · [T02-001](wbs-02.md#t02-001) · Chọn nguồn coastline.
+- Dòng [558](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:558) · [T02-002](wbs-02.md#t02-002) · Tải dữ liệu.
+- Dòng [559](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:559) · [T02-003](wbs-02.md#t02-003) · Kiểm tra CRS.
+- Dòng [560](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:560) · [T02-004](wbs-02.md#t02-004) · Chuẩn hóa CRS.
+- Dòng [561](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:561) · [T02-005](wbs-02.md#t02-005) · Simplify cho frontend nếu cần.
+- Dòng [562](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:562) · [T02-006](wbs-02.md#t02-006) · Tạo spatial index.
+- Dòng [563](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:563) · [T02-007](wbs-02.md#t02-007) · Test khoảng cách tới bờ.
+- Dòng [566](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:566) · [T02-008](wbs-02.md#t02-008) · Tải ranh giới tỉnh/thành.
+- Dòng [567](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:567) · [T02-009](wbs-02.md#t02-009) · Kiểm tra CRS.
+- Dòng [568](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:568) · [T02-010](wbs-02.md#t02-010) · Chuẩn hóa tên tỉnh.
+- Dòng [569](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:569) · [T02-011](wbs-02.md#t02-011) · Tạo GeoJSON.
+- Dòng [570](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:570) · [T02-012](wbs-02.md#t02-012) · Tạo spatial index.
+- Dòng [571](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:571) · [T02-013](wbs-02.md#t02-013) · Test point-in-polygon.
+- Dòng [572](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:572) · [T02-014](wbs-02.md#t02-014) · Test nearest province.
+- Dòng [575](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:575) · [T02-015](wbs-02.md#t02-015) · Tạo danh sách các mốc cần theo dõi.
+- Dòng [576](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:576) · [T02-016](wbs-02.md#t02-016) · Lưu latitude/longitude.
+- Dòng [577](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:577) · [T02-017](wbs-02.md#t02-017) · Tạo ID duy nhất.
+- Dòng [578](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:578) · [T02-018](wbs-02.md#t02-018) · Tạo hàm khoảng cách.
+- Dòng [579](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:579) · [T02-019](wbs-02.md#t02-019) · Test kết quả.
+- Dòng [586](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:586) · [T03-001](wbs-03.md#t03-001) · `parse()`.
+- Dòng [587](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:587) · [T03-002](wbs-03.md#t03-002) · `validate()`.
+- Dòng [588](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:588) · [T03-003](wbs-03.md#t03-003) · `deduplicate()`.
+- Dòng [589](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:589) · [T03-004](wbs-03.md#t03-004) · `merge()`.
+- Dòng [590](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:590) · [T03-005](wbs-03.md#t03-005) · `sort()`.
+- Dòng [591](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:591) · [T03-006](wbs-03.md#t03-006) · `interpolate()`.
+- Dòng [592](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:592) · [T03-007](wbs-03.md#t03-007) · `feature()`.
+- Dòng [593](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:593) · [T03-008](wbs-03.md#t03-008) · `export()`.
+- Dòng [596](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:596) · [T03-009](wbs-03.md#t03-009) · Thống kê missing.
+- Dòng [597](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:597) · [T03-010](wbs-03.md#t03-010) · Phân biệt missing thật và giá trị không hợp lệ.
+- Dòng [598](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:598) · [T03-011](wbs-03.md#t03-011) · Nội suy theo từng storm.
+- Dòng [599](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:599) · [T03-012](wbs-03.md#t03-012) · Không dùng 0 mặc định cho dữ liệu chưa biết.
+- Dòng [600](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:600) · [T03-013](wbs-03.md#t03-013) · Gắn cờ dữ liệu được nội suy.
+- Dòng [601](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:601) · [T03-014](wbs-03.md#t03-014) · Test interpolation.
+- Dòng [604](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:604) · [T03-015](wbs-03.md#t03-015) · Chuẩn hóa UTC.
+- Dòng [605](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:605) · [T03-016](wbs-03.md#t03-016) · Kiểm tra duplicate timestamp.
+- Dòng [606](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:606) · [T03-017](wbs-03.md#t03-017) · Sắp xếp theo thời gian.
+- Dòng [607](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:607) · [T03-018](wbs-03.md#t03-018) · Kiểm tra khoảng cách thời gian.
+- Dòng [608](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:608) · [T03-019](wbs-03.md#t03-019) · Resample nếu cần.
+- Dòng [609](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:609) · [T03-020](wbs-03.md#t03-020) · Ghi lại quy tắc resampling.
+- Dòng [616](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:616) · [T04-001](wbs-04.md#t04-001) · latitude.
+- Dòng [617](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:617) · [T04-002](wbs-04.md#t04-002) · longitude.
+- Dòng [618](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:618) · [T04-003](wbs-04.md#t04-003) · delta latitude.
+- Dòng [619](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:619) · [T04-004](wbs-04.md#t04-004) · delta longitude.
+- Dòng [620](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:620) · [T04-005](wbs-04.md#t04-005) · Position lag 1.
+- Dòng [621](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:621) · [T04-006](wbs-04.md#t04-006) · Position lag 2.
+- Dòng [622](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:622) · [T04-007](wbs-04.md#t04-007) · Position lag 3.
+- Dòng [625](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:625) · [T04-008](wbs-04.md#t04-008) · Haversine distance.
+- Dòng [626](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:626) · [T04-009](wbs-04.md#t04-009) · Bearing.
+- Dòng [627](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:627) · [T04-010](wbs-04.md#t04-010) · Speed.
+- Dòng [628](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:628) · [T04-011](wbs-04.md#t04-011) · Acceleration.
+- Dòng [629](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:629) · [T04-012](wbs-04.md#t04-012) · Bearing change.
+- Dòng [630](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:630) · [T04-013](wbs-04.md#t04-013) · Turning rate.
+- Dòng [631](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:631) · [T04-014](wbs-04.md#t04-014) · Direction sin/cos.
+- Dòng [634](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:634) · [T04-015](wbs-04.md#t04-015) · Distance to coastline.
+- Dòng [635](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:635) · [T04-016](wbs-04.md#t04-016) · Bearing to coastline.
+- Dòng [636](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:636) · [T04-017](wbs-04.md#t04-017) · Nearest coastline point.
+- Dòng [637](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:637) · [T04-018](wbs-04.md#t04-018) · Distance to nearest province.
+- Dòng [640](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:640) · [T04-019](wbs-04.md#t04-019) · Hour.
+- Dòng [641](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:641) · [T04-020](wbs-04.md#t04-020) · Hour sin/cos.
+- Dòng [642](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:642) · [T04-021](wbs-04.md#t04-021) · Day.
+- Dòng [643](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:643) · [T04-022](wbs-04.md#t04-022) · Day sin/cos.
+- Dòng [644](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:644) · [T04-023](wbs-04.md#t04-023) · Month.
+- Dòng [645](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:645) · [T04-024](wbs-04.md#t04-024) · Month sin/cos.
+- Dòng [646](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:646) · [T04-025](wbs-04.md#t04-025) · Day of year.
+- Dòng [647](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:647) · [T04-026](wbs-04.md#t04-026) · Day-of-year sin/cos.
+- Dòng [648](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:648) · [T04-027](wbs-04.md#t04-027) · Season flag.
+- Dòng [651](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:651) · [T04-028](wbs-04.md#t04-028) · Wind.
+- Dòng [652](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:652) · [T04-029](wbs-04.md#t04-029) · Pressure.
+- Dòng [653](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:653) · [T04-030](wbs-04.md#t04-030) · Intensity category.
+- Dòng [654](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:654) · [T04-031](wbs-04.md#t04-031) · Wind change.
+- Dòng [655](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:655) · [T04-032](wbs-04.md#t04-032) · Pressure change.
+- Dòng [658](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:658) · [T04-033](wbs-04.md#t04-033) · Download SST.
+- Dòng [659](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:659) · [T04-034](wbs-04.md#t04-034) · Match timestamp.
+- Dòng [660](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:660) · [T04-035](wbs-04.md#t04-035) · Match grid.
+- Dòng [661](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:661) · [T04-036](wbs-04.md#t04-036) · Sample SST at storm center.
+- Dòng [662](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:662) · [T04-037](wbs-04.md#t04-037) · Calculate SST gradient.
+- Dòng [663](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:663) · [T04-038](wbs-04.md#t04-038) · Validate missing.
+- Dòng [664](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:664) · [T04-039](wbs-04.md#t04-039) · Cache extracted feature.
+- Dòng [667](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:667) · [T04-040](wbs-04.md#t04-040) · Load ERA5.
+- Dòng [668](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:668) · [T04-041](wbs-04.md#t04-041) · Extract sea-level pressure.
+- Dòng [669](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:669) · [T04-042](wbs-04.md#t04-042) · Extract 850 hPa wind.
+- Dòng [670](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:670) · [T04-043](wbs-04.md#t04-043) · Extract 200 hPa wind.
+- Dòng [671](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:671) · [T04-044](wbs-04.md#t04-044) · Extract humidity if available.
+- Dòng [672](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:672) · [T04-045](wbs-04.md#t04-045) · Calculate wind shear.
+- Dòng [673](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:673) · [T04-046](wbs-04.md#t04-046) · Validate units.
+- Dòng [674](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:674) · [T04-047](wbs-04.md#t04-047) · Cache features.
+- Dòng [677](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:677) · [T04-048](wbs-04.md#t04-048) · Tạo danh sách feature chính thức.
+- Dòng [678](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:678) · [T04-049](wbs-04.md#t04-049) · Đặt dtype.
+- Dòng [679](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:679) · [T04-050](wbs-04.md#t04-050) · Đặt đơn vị.
+- Dòng [680](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:680) · [T04-051](wbs-04.md#t04-051) · Đặt mô tả.
+- Dòng [681](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:681) · [T04-052](wbs-04.md#t04-052) · Đặt nguồn.
+- Dòng [682](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:682) · [T04-053](wbs-04.md#t04-053) · Đặt missing policy.
+- Dòng [683](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:683) · [T04-054](wbs-04.md#t04-054) · Tạo data dictionary.
+- Dòng [689](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:689) · [T05-001](wbs-05.md#t05-001) · Chia train/validation/test trước khi fit scaler.
+- Dòng [690](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:690) · [T05-002](wbs-05.md#t05-002) · Fit scaler chỉ trên train.
+- Dòng [691](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:691) · [T05-003](wbs-05.md#t05-003) · Save scaler.
+- Dòng [692](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:692) · [T05-004](wbs-05.md#t05-004) · Load scaler khi inference.
+- Dòng [693](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:693) · [T05-005](wbs-05.md#t05-005) · Transform train.
+- Dòng [694](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:694) · [T05-006](wbs-05.md#t05-006) · Transform validation.
+- Dòng [695](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:695) · [T05-007](wbs-05.md#t05-007) · Transform test.
+- Dòng [696](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:696) · [T05-008](wbs-05.md#t05-008) · Test inverse transform.
+- Dòng [697](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:697) · [T05-009](wbs-05.md#t05-009) · Test không có leakage.
+- Dòng [706](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:706) · [T06-001](wbs-06.md#t06-001) · Chọn sequence length.
+- Dòng [707](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:707) · [T06-002](wbs-06.md#t06-002) · Hỗ trợ cấu hình sequence length.
+- Dòng [708](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:708) · [T06-003](wbs-06.md#t06-003) · Tạo sliding window.
+- Dòng [709](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:709) · [T06-004](wbs-06.md#t06-004) · Tạo input tensor.
+- Dòng [710](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:710) · [T06-005](wbs-06.md#t06-005) · Tạo target tensor.
+- Dòng [711](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:711) · [T06-006](wbs-06.md#t06-006) · Kiểm tra boundary từng storm.
+- Dòng [714](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:714) · [T06-007](wbs-06.md#t06-007) · 6h.
+- Dòng [715](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:715) · [T06-008](wbs-06.md#t06-008) · 12h.
+- Dòng [716](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:716) · [T06-009](wbs-06.md#t06-009) · 24h.
+- Dòng [717](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:717) · [T06-010](wbs-06.md#t06-010) · 48h.
+- Dòng [718](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:718) · [T06-011](wbs-06.md#t06-011) · 72h.
+- Dòng [719](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:719) · [T06-012](wbs-06.md#t06-012) · Kiểm tra target tồn tại.
+- Dòng [720](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:720) · [T06-013](wbs-06.md#t06-013) · Bỏ sample không đủ target.
+- Dòng [723](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:723) · [T06-014](wbs-06.md#t06-014) · Split theo storm ID.
+- Dòng [724](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:724) · [T06-015](wbs-06.md#t06-015) · Kiểm tra không overlap storm.
+- Dòng [725](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:725) · [T06-016](wbs-06.md#t06-016) · Có tùy chọn split theo năm.
+- Dòng [726](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:726) · [T06-017](wbs-06.md#t06-017) · Lưu danh sách train IDs.
+- Dòng [727](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:727) · [T06-018](wbs-06.md#t06-018) · Lưu validation IDs.
+- Dòng [728](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:728) · [T06-019](wbs-06.md#t06-019) · Lưu test IDs.
+- Dòng [729](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:729) · [T06-020](wbs-06.md#t06-020) · Test leakage.
+- Dòng [732](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:732) · [T06-021](wbs-06.md#t06-021) · Test shape.
+- Dòng [733](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:733) · [T06-022](wbs-06.md#t06-022) · Test dtype.
+- Dòng [734](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:734) · [T06-023](wbs-06.md#t06-023) · Test window.
+- Dòng [735](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:735) · [T06-024](wbs-06.md#t06-024) · Test horizon.
+- Dòng [736](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:736) · [T06-025](wbs-06.md#t06-025) · Test mask.
+- Dòng [737](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:737) · [T06-026](wbs-06.md#t06-026) · Test storm boundary.
+- Dòng [744](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:744) · [T07-001](wbs-07.md#t07-001) · Implement persistence.
+- Dòng [745](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:745) · [T07-002](wbs-07.md#t07-002) · Generate 6h.
+- Dòng [746](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:746) · [T07-003](wbs-07.md#t07-003) · Generate 12h.
+- Dòng [747](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:747) · [T07-004](wbs-07.md#t07-004) · Generate 24h.
+- Dòng [748](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:748) · [T07-005](wbs-07.md#t07-005) · Generate 48h.
+- Dòng [749](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:749) · [T07-006](wbs-07.md#t07-006) · Generate 72h.
+- Dòng [750](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:750) · [T07-007](wbs-07.md#t07-007) · Evaluate.
+- Dòng [753](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:753) · [T07-008](wbs-07.md#t07-008) · Xác định dữ liệu/phương pháp phù hợp.
+- Dòng [754](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:754) · [T07-009](wbs-07.md#t07-009) · Implement baseline.
+- Dòng [755](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:755) · [T07-010](wbs-07.md#t07-010) · Generate forecasts.
+- Dòng [756](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:756) · [T07-011](wbs-07.md#t07-011) · Evaluate.
+- Dòng [757](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:757) · [T07-012](wbs-07.md#t07-012) · Save metrics.
+- Dòng [766](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:766) · [T08-001](wbs-08.md#t08-001) · Tạo BaseModel.
+- Dòng [767](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:767) · [T08-002](wbs-08.md#t08-002) · Xác định input size.
+- Dòng [768](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:768) · [T08-003](wbs-08.md#t08-003) · Xác định hidden size.
+- Dòng [769](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:769) · [T08-004](wbs-08.md#t08-004) · Xác định number of layers.
+- Dòng [770](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:770) · [T08-005](wbs-08.md#t08-005) · Xác định dropout.
+- Dòng [771](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:771) · [T08-006](wbs-08.md#t08-006) · Tạo LSTM.
+- Dòng [772](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:772) · [T08-007](wbs-08.md#t08-007) · Tạo output head.
+- Dòng [773](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:773) · [T08-008](wbs-08.md#t08-008) · Viết forward.
+- Dòng [774](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:774) · [T08-009](wbs-08.md#t08-009) · Kiểm tra tensor shape.
+- Dòng [777](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:777) · [T08-010](wbs-08.md#t08-010) · Output 6h.
+- Dòng [778](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:778) · [T08-011](wbs-08.md#t08-011) · Output 12h.
+- Dòng [779](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:779) · [T08-012](wbs-08.md#t08-012) · Output 24h.
+- Dòng [780](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:780) · [T08-013](wbs-08.md#t08-013) · Output 48h.
+- Dòng [781](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:781) · [T08-014](wbs-08.md#t08-014) · Output 72h.
+- Dòng [782](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:782) · [T08-015](wbs-08.md#t08-015) · Kiểm tra lat/lon.
+- Dòng [785](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:785) · [T08-016](wbs-08.md#t08-016) · Tạo wind head.
+- Dòng [786](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:786) · [T08-017](wbs-08.md#t08-017) · Tạo pressure head.
+- Dòng [787](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:787) · [T08-018](wbs-08.md#t08-018) · Tạo category head nếu dữ liệu hỗ trợ.
+- Dòng [788](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:788) · [T08-019](wbs-08.md#t08-019) · Kiểm tra output shape.
+- Dòng [791](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:791) · [T08-020](wbs-08.md#t08-020) · Forward test.
+- Dòng [792](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:792) · [T08-021](wbs-08.md#t08-021) · Batch-size test.
+- Dòng [793](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:793) · [T08-022](wbs-08.md#t08-022) · Sequence-length test.
+- Dòng [794](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:794) · [T08-023](wbs-08.md#t08-023) · Gradient test.
+- Dòng [795](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:795) · [T08-024](wbs-08.md#t08-024) · Save/load test.
+- Dòng [802](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:802) · [T09-001](wbs-09.md#t09-001) · Encoder.
+- Dòng [803](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:803) · [T09-002](wbs-09.md#t09-002) · Decoder.
+- Dòng [804](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:804) · [T09-003](wbs-09.md#t09-003) · Hidden state.
+- Dòng [805](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:805) · [T09-004](wbs-09.md#t09-004) · Multi-step output.
+- Dòng [806](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:806) · [T09-005](wbs-09.md#t09-005) · Teacher forcing nếu sử dụng.
+- Dòng [807](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:807) · [T09-006](wbs-09.md#t09-006) · Test inference.
+- Dòng [810](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:810) · [T09-007](wbs-09.md#t09-007) · Tạo attention layer.
+- Dòng [811](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:811) · [T09-008](wbs-09.md#t09-008) · Tính attention score.
+- Dòng [812](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:812) · [T09-009](wbs-09.md#t09-009) · Softmax.
+- Dòng [813](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:813) · [T09-010](wbs-09.md#t09-010) · Context vector.
+- Dòng [814](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:814) · [T09-011](wbs-09.md#t09-011) · Kết hợp output.
+- Dòng [815](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:815) · [T09-012](wbs-09.md#t09-012) · Visualize attention nếu cần.
+- Dòng [818](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:818) · [T09-013](wbs-09.md#t09-013) · Positional encoding.
+- Dòng [819](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:819) · [T09-014](wbs-09.md#t09-014) · Encoder.
+- Dòng [820](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:820) · [T09-015](wbs-09.md#t09-015) · Attention.
+- Dòng [821](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:821) · [T09-016](wbs-09.md#t09-016) · Feed-forward.
+- Dòng [822](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:822) · [T09-017](wbs-09.md#t09-017) · Output head.
+- Dòng [823](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:823) · [T09-018](wbs-09.md#t09-018) · Train baseline.
+- Dòng [824](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:824) · [T09-019](wbs-09.md#t09-019) · Compare với LSTM.
+- Dòng [832](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:832) · [T10-001](wbs-10.md#t10-001) · Position loss.
+- Dòng [833](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:833) · [T10-002](wbs-10.md#t10-002) · Intensity loss.
+- Dòng [834](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:834) · [T10-003](wbs-10.md#t10-003) · Horizon weights.
+- Dòng [835](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:835) · [T10-004](wbs-10.md#t10-004) · Haversine-based evaluation/loss nếu triển khai.
+- Dòng [836](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:836) · [T10-005](wbs-10.md#t10-005) · AdamW.
+- Dòng [837](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:837) · [T10-006](wbs-10.md#t10-006) · Learning-rate scheduler.
+- Dòng [838](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:838) · [T10-007](wbs-10.md#t10-007) · Gradient clipping.
+- Dòng [839](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:839) · [T10-008](wbs-10.md#t10-008) · Kiểm tra NaN loss.
+- Dòng [840](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:840) · [T10-009](wbs-10.md#t10-009) · Log từng thành phần loss.
+- Dòng [847](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:847) · [T11-001](wbs-11.md#t11-001) · Giữ dropout khi inference.
+- Dòng [848](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:848) · [T11-002](wbs-11.md#t11-002) · Chạy nhiều sample.
+- Dòng [849](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:849) · [T11-003](wbs-11.md#t11-003) · Lưu trajectories.
+- Dòng [850](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:850) · [T11-004](wbs-11.md#t11-004) · Tính mean trajectory.
+- Dòng [851](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:851) · [T11-005](wbs-11.md#t11-005) · Tính quantile.
+- Dòng [852](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:852) · [T11-006](wbs-11.md#t11-006) · Tính radius.
+- Dòng [855](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:855) · [T11-007](wbs-11.md#t11-007) · Train model seed 1.
+- Dòng [856](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:856) · [T11-008](wbs-11.md#t11-008) · Train seed 2.
+- Dòng [857](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:857) · [T11-009](wbs-11.md#t11-009) · Train seed 3.
+- Dòng [858](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:858) · [T11-010](wbs-11.md#t11-010) · Gom predictions.
+- Dòng [859](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:859) · [T11-011](wbs-11.md#t11-011) · Tính mean.
+- Dòng [860](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:860) · [T11-012](wbs-11.md#t11-012) · Tính dispersion.
+- Dòng [863](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:863) · [T11-013](wbs-11.md#t11-013) · Xác định radius theo horizon.
+- Dòng [864](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:864) · [T11-014](wbs-11.md#t11-014) · Tạo polygon.
+- Dòng [865](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:865) · [T11-015](wbs-11.md#t11-015) · Kiểm tra polygon hợp lệ.
+- Dòng [866](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:866) · [T11-016](wbs-11.md#t11-016) · Xuất GeoJSON.
+- Dòng [867](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:867) · [T11-017](wbs-11.md#t11-017) · Hiển thị trên map.
+- Dòng [875](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:875) · [T12-001](wbs-12.md#t12-001) · YAML config.
+- Dòng [876](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:876) · [T12-002](wbs-12.md#t12-002) · Seed.
+- Dòng [877](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:877) · [T12-003](wbs-12.md#t12-003) · Deterministic settings phù hợp.
+- Dòng [878](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:878) · [T12-004](wbs-12.md#t12-004) · Data loader.
+- Dòng [879](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:879) · [T12-005](wbs-12.md#t12-005) · Optimizer.
+- Dòng [880](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:880) · [T12-006](wbs-12.md#t12-006) · Scheduler.
+- Dòng [881](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:881) · [T12-007](wbs-12.md#t12-007) · Training loop.
+- Dòng [882](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:882) · [T12-008](wbs-12.md#t12-008) · Validation loop.
+- Dòng [883](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:883) · [T12-009](wbs-12.md#t12-009) · Early stopping.
+- Dòng [884](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:884) · [T12-010](wbs-12.md#t12-010) · Gradient clipping.
+- Dòng [885](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:885) · [T12-011](wbs-12.md#t12-011) · Best checkpoint.
+- Dòng [886](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:886) · [T12-012](wbs-12.md#t12-012) · Last checkpoint.
+- Dòng [887](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:887) · [T12-013](wbs-12.md#t12-013) · Resume training.
+- Dòng [888](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:888) · [T12-014](wbs-12.md#t12-014) · Log metrics.
+- Dòng [889](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:889) · [T12-015](wbs-12.md#t12-015) · Log artifacts.
+- Dòng [890](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:890) · [T12-016](wbs-12.md#t12-016) · Log config.
+- Dòng [891](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:891) · [T12-017](wbs-12.md#t12-017) · Log dataset version.
+- Dòng [898](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:898) · [T13-001](wbs-13.md#t13-001) · Haversine prediction vs actual.
+- Dòng [899](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:899) · [T13-002](wbs-13.md#t13-002) · Tính 6h.
+- Dòng [900](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:900) · [T13-003](wbs-13.md#t13-003) · Tính 12h.
+- Dòng [901](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:901) · [T13-004](wbs-13.md#t13-004) · Tính 24h.
+- Dòng [902](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:902) · [T13-005](wbs-13.md#t13-005) · Tính 48h.
+- Dòng [903](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:903) · [T13-006](wbs-13.md#t13-006) · Tính 72h.
+- Dòng [904](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:904) · [T13-007](wbs-13.md#t13-007) · Mean.
+- Dòng [905](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:905) · [T13-008](wbs-13.md#t13-008) · Median.
+- Dòng [906](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:906) · [T13-009](wbs-13.md#t13-009) · RMSE/percentile nếu phù hợp.
+- Dòng [909](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:909) · [T13-010](wbs-13.md#t13-010) · Xác định reference track.
+- Dòng [910](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:910) · [T13-011](wbs-13.md#t13-011) · Tính along-track error.
+- Dòng [911](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:911) · [T13-012](wbs-13.md#t13-012) · Tính cross-track error.
+- Dòng [912](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:912) · [T13-013](wbs-13.md#t13-013) · Kiểm tra đơn vị km.
+- Dòng [915](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:915) · [T13-014](wbs-13.md#t13-014) · MAE wind.
+- Dòng [916](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:916) · [T13-015](wbs-13.md#t13-015) · MAE pressure.
+- Dòng [917](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:917) · [T13-016](wbs-13.md#t13-016) · Accuracy/F1 category nếu có nhãn.
+- Dòng [920](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:920) · [T13-017](wbs-13.md#t13-017) · Chọn storms test.
+- Dòng [921](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:921) · [T13-018](wbs-13.md#t13-018) · Không train bằng test storms.
+- Dòng [922](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:922) · [T13-019](wbs-13.md#t13-019) · Chạy forecast từng mốc.
+- Dòng [923](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:923) · [T13-020](wbs-13.md#t13-020) · So actual/predicted.
+- Dòng [924](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:924) · [T13-021](wbs-13.md#t13-021) · Sinh biểu đồ.
+- Dòng [925](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:925) · [T13-022](wbs-13.md#t13-022) · Tạo bảng metric.
+- Dòng [926](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:926) · [T13-023](wbs-13.md#t13-023) · Phân tích case tốt.
+- Dòng [927](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:927) · [T13-024](wbs-13.md#t13-024) · Phân tích case xấu.
+- Dòng [933](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:933) · [T14-001](wbs-14.md#t14-001) · Chọn search space.
+- Dòng [934](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:934) · [T14-002](wbs-14.md#t14-002) · hidden size.
+- Dòng [935](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:935) · [T14-003](wbs-14.md#t14-003) · layers.
+- Dòng [936](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:936) · [T14-004](wbs-14.md#t14-004) · dropout.
+- Dòng [937](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:937) · [T14-005](wbs-14.md#t14-005) · learning rate.
+- Dòng [938](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:938) · [T14-006](wbs-14.md#t14-006) · batch size.
+- Dòng [939](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:939) · [T14-007](wbs-14.md#t14-007) · sequence length.
+- Dòng [940](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:940) · [T14-008](wbs-14.md#t14-008) · horizon weights.
+- Dòng [941](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:941) · [T14-009](wbs-14.md#t14-009) · Chạy Optuna.
+- Dòng [942](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:942) · [T14-010](wbs-14.md#t14-010) · Lưu trial.
+- Dòng [943](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:943) · [T14-011](wbs-14.md#t14-011) · Chọn best config.
+- Dòng [944](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:944) · [T14-012](wbs-14.md#t14-012) · Re-train best config.
+- Dòng [945](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:945) · [T14-013](wbs-14.md#t14-013) · Đánh giá trên test một lần cuối.
+- Dòng [951](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:951) · [T15-001](wbs-15.md#t15-001) · Cài MLflow.
+- Dòng [952](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:952) · [T15-002](wbs-15.md#t15-002) · Log model.
+- Dòng [953](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:953) · [T15-003](wbs-15.md#t15-003) · Log metrics.
+- Dòng [954](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:954) · [T15-004](wbs-15.md#t15-004) · Log params.
+- Dòng [955](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:955) · [T15-005](wbs-15.md#t15-005) · Log dataset version.
+- Dòng [956](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:956) · [T15-006](wbs-15.md#t15-006) · Tạo model registry.
+- Dòng [957](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:957) · [T15-007](wbs-15.md#t15-007) · Đặt version.
+- Dòng [958](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:958) · [T15-008](wbs-15.md#t15-008) · Staging.
+- Dòng [959](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:959) · [T15-009](wbs-15.md#t15-009) · Production.
+- Dòng [960](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:960) · [T15-010](wbs-15.md#t15-010) · Quy tắc promote.
+- Dòng [961](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:961) · [T15-011](wbs-15.md#t15-011) · Rollback model.
+- Dòng [968](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:968) · [T16-001](wbs-16.md#t16-001) · Load model một lần.
+- Dòng [969](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:969) · [T16-002](wbs-16.md#t16-002) · Load scaler.
+- Dòng [970](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:970) · [T16-003](wbs-16.md#t16-003) · Load feature schema.
+- Dòng [971](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:971) · [T16-004](wbs-16.md#t16-004) · Validate input.
+- Dòng [972](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:972) · [T16-005](wbs-16.md#t16-005) · Build features.
+- Dòng [973](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:973) · [T16-006](wbs-16.md#t16-006) · Predict.
+- Dòng [974](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:974) · [T16-007](wbs-16.md#t16-007) · Denormalize.
+- Dòng [975](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:975) · [T16-008](wbs-16.md#t16-008) · Generate uncertainty.
+- Dòng [976](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:976) · [T16-009](wbs-16.md#t16-009) · Generate impact.
+- Dòng [977](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:977) · [T16-010](wbs-16.md#t16-010) · Return standardized result.
+- Dòng [980](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:980) · [T16-011](wbs-16.md#t16-011) · Lấy observations gần nhất.
+- Dòng [981](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:981) · [T16-012](wbs-16.md#t16-012) · Tạo input window.
+- Dòng [982](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:982) · [T16-013](wbs-16.md#t16-013) · Predict bước tiếp.
+- Dòng [983](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:983) · [T16-014](wbs-16.md#t16-014) · Sinh multi-horizon.
+- Dòng [984](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:984) · [T16-015](wbs-16.md#t16-015) · Kiểm soát autoregressive error.
+- Dòng [985](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:985) · [T16-016](wbs-16.md#t16-016) · Validate output.
+- Dòng [988](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:988) · [T16-017](wbs-16.md#t16-017) · Phát hiện thiếu environmental feature.
+- Dòng [989](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:989) · [T16-018](wbs-16.md#t16-018) · Dùng fallback hợp lệ.
+- Dòng [990](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:990) · [T16-019](wbs-16.md#t16-019) · Gắn cờ `fallback_used`.
+- Dòng [991](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:991) · [T16-020](wbs-16.md#t16-020) · Log fallback.
+- Dòng [997](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:997) · [T17-001](wbs-17.md#t17-001) · Tạo FastAPI app.
+- Dòng [998](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:998) · [T17-002](wbs-17.md#t17-002) · `/health`.
+- Dòng [999](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:999) · [T17-003](wbs-17.md#t17-003) · `/version`.
+- Dòng [1000](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1000) · [T17-004](wbs-17.md#t17-004) · `/forecast`.
+- Dòng [1001](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1001) · [T17-005](wbs-17.md#t17-005) · `/typhoons/active`.
+- Dòng [1002](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1002) · [T17-006](wbs-17.md#t17-006) · `/typhoons/{id}/track`.
+- Dòng [1003](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1003) · [T17-007](wbs-17.md#t17-007) · `/typhoons/{id}/impact`.
+- Dòng [1004](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1004) · [T17-008](wbs-17.md#t17-008) · Pydantic request schemas.
+- Dòng [1005](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1005) · [T17-009](wbs-17.md#t17-009) · Pydantic response schemas.
+- Dòng [1006](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1006) · [T17-010](wbs-17.md#t17-010) · Error handler.
+- Dòng [1007](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1007) · [T17-011](wbs-17.md#t17-011) · Logging.
+- Dòng [1008](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1008) · [T17-012](wbs-17.md#t17-012) · OpenAPI.
+- Dòng [1009](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1009) · [T17-013](wbs-17.md#t17-013) · API key nếu public.
+- Dòng [1010](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1010) · [T17-014](wbs-17.md#t17-014) · Rate limit nếu public.
+- Dòng [1019](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1019) · [T18-001](wbs-18.md#t18-001) · `typhoons`.
+- Dòng [1020](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1020) · [T18-002](wbs-18.md#t18-002) · `observations`.
+- Dòng [1021](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1021) · [T18-003](wbs-18.md#t18-003) · `forecasts`.
+- Dòng [1022](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1022) · [T18-004](wbs-18.md#t18-004) · `forecast_points`.
+- Dòng [1023](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1023) · [T18-005](wbs-18.md#t18-005) · `alerts`.
+- Dòng [1024](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1024) · [T18-006](wbs-18.md#t18-006) · `model_versions`.
+- Dòng [1025](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1025) · [T18-007](wbs-18.md#t18-007) · `users`.
+- Dòng [1026](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1026) · [T18-008](wbs-18.md#t18-008) · `subscriptions`.
+- Dòng [1029](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1029) · [T18-009](wbs-18.md#t18-009) · Alembic init.
+- Dòng [1030](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1030) · [T18-010](wbs-18.md#t18-010) · Initial migration.
+- Dòng [1031](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1031) · [T18-011](wbs-18.md#t18-011) · Index.
+- Dòng [1032](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1032) · [T18-012](wbs-18.md#t18-012) · Spatial index.
+- Dòng [1033](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1033) · [T18-013](wbs-18.md#t18-013) · Foreign keys.
+- Dòng [1034](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1034) · [T18-014](wbs-18.md#t18-014) · Constraints.
+- Dòng [1037](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1037) · [T18-015](wbs-18.md#t18-015) · Lưu thời điểm dự báo.
+- Dòng [1038](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1038) · [T18-016](wbs-18.md#t18-016) · Lưu model version.
+- Dòng [1039](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1039) · [T18-017](wbs-18.md#t18-017) · Lưu input version.
+- Dòng [1040](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1040) · [T18-018](wbs-18.md#t18-018) · Lưu output.
+- Dòng [1041](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1041) · [T18-019](wbs-18.md#t18-019) · Lưu forecast run ID.
+- Dòng [1047](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1047) · [T19-001](wbs-19.md#t19-001) · Tạo worker.
+- Dòng [1048](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1048) · [T19-002](wbs-19.md#t19-002) · Scheduler.
+- Dòng [1049](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1049) · [T19-003](wbs-19.md#t19-003) · Fetch latest source.
+- Dòng [1050](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1050) · [T19-004](wbs-19.md#t19-004) · Validate new records.
+- Dòng [1051](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1051) · [T19-005](wbs-19.md#t19-005) · Detect new observation.
+- Dòng [1052](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1052) · [T19-006](wbs-19.md#t19-006) · Trigger inference.
+- Dòng [1053](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1053) · [T19-007](wbs-19.md#t19-007) · Save forecast.
+- Dòng [1054](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1054) · [T19-008](wbs-19.md#t19-008) · Update cache.
+- Dòng [1055](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1055) · [T19-009](wbs-19.md#t19-009) · Retry failure.
+- Dòng [1056](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1056) · [T19-010](wbs-19.md#t19-010) · Log worker status.
+- Dòng [1062](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1062) · [T20-001](wbs-20.md#t20-001) · Cache active typhoons.
+- Dòng [1063](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1063) · [T20-002](wbs-20.md#t20-002) · Cache latest forecast.
+- Dòng [1064](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1064) · [T20-003](wbs-20.md#t20-003) · Cache API response.
+- Dòng [1065](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1065) · [T20-004](wbs-20.md#t20-004) · TTL.
+- Dòng [1066](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1066) · [T20-005](wbs-20.md#t20-005) · Cache invalidation.
+- Dòng [1067](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1067) · [T20-006](wbs-20.md#t20-006) · Test cache hit/miss.
+- Dòng [1074](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1074) · [T21-001](wbs-21.md#t21-001) · Tạo React/Next.js.
+- Dòng [1075](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1075) · [T21-002](wbs-21.md#t21-002) · Router.
+- Dòng [1076](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1076) · [T21-003](wbs-21.md#t21-003) · API client.
+- Dòng [1077](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1077) · [T21-004](wbs-21.md#t21-004) · State management.
+- Dòng [1078](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1078) · [T21-005](wbs-21.md#t21-005) · CSS/theme.
+- Dòng [1079](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1079) · [T21-006](wbs-21.md#t21-006) · Environment config.
+- Dòng [1082](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1082) · [T21-007](wbs-21.md#t21-007) · Leaflet.
+- Dòng [1083](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1083) · [T21-008](wbs-21.md#t21-008) · Vietnam boundary.
+- Dòng [1084](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1084) · [T21-009](wbs-21.md#t21-009) · Coastline.
+- Dòng [1085](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1085) · [T21-010](wbs-21.md#t21-010) · Storm marker.
+- Dòng [1086](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1086) · [T21-011](wbs-21.md#t21-011) · Historical track.
+- Dòng [1087](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1087) · [T21-012](wbs-21.md#t21-012) · Forecast track.
+- Dòng [1088](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1088) · [T21-013](wbs-21.md#t21-013) · Cone.
+- Dòng [1089](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1089) · [T21-014](wbs-21.md#t21-014) · Province layer.
+- Dòng [1092](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1092) · [T21-015](wbs-21.md#t21-015) · Active storm list.
+- Dòng [1093](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1093) · [T21-016](wbs-21.md#t21-016) · Storm status.
+- Dòng [1094](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1094) · [T21-017](wbs-21.md#t21-017) · Map.
+- Dòng [1095](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1095) · [T21-018](wbs-21.md#t21-018) · Legend.
+- Dòng [1096](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1096) · [T21-019](wbs-21.md#t21-019) · Last update.
+- Dòng [1097](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1097) · [T21-020](wbs-21.md#t21-020) · Data source.
+- Dòng [1100](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1100) · [T21-021](wbs-21.md#t21-021) · Storm name.
+- Dòng [1101](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1101) · [T21-022](wbs-21.md#t21-022) · Position.
+- Dòng [1102](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1102) · [T21-023](wbs-21.md#t21-023) · Wind.
+- Dòng [1103](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1103) · [T21-024](wbs-21.md#t21-024) · Pressure.
+- Dòng [1104](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1104) · [T21-025](wbs-21.md#t21-025) · Direction.
+- Dòng [1105](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1105) · [T21-026](wbs-21.md#t21-026) · Speed.
+- Dòng [1106](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1106) · [T21-027](wbs-21.md#t21-027) · Forecast table.
+- Dòng [1107](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1107) · [T21-028](wbs-21.md#t21-028) · Timeline.
+- Dòng [1110](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1110) · [T21-029](wbs-21.md#t21-029) · Select province.
+- Dòng [1111](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1111) · [T21-030](wbs-21.md#t21-030) · Calculate distance.
+- Dòng [1112](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1112) · [T21-031](wbs-21.md#t21-031) · Display ETA.
+- Dòng [1113](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1113) · [T21-032](wbs-21.md#t21-032) · Display impact level.
+- Dòng [1114](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1114) · [T21-033](wbs-21.md#t21-033) · Display uncertainty.
+- Dòng [1115](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1115) · [T21-034](wbs-21.md#t21-034) · Show source/time.
+- Dòng [1118](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1118) · [T21-035](wbs-21.md#t21-035) · Responsive map.
+- Dòng [1119](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1119) · [T21-036](wbs-21.md#t21-036) · Responsive cards.
+- Dòng [1120](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1120) · [T21-037](wbs-21.md#t21-037) · Responsive timeline.
+- Dòng [1121](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1121) · [T21-038](wbs-21.md#t21-038) · Test mobile width.
+- Dòng [1122](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1122) · [T21-039](wbs-21.md#t21-039) · Test tablet.
+- Dòng [1128](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1128) · [T22-001](wbs-22.md#t22-001) · Thiết kế alert rule.
+- Dòng [1129](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1129) · [T22-002](wbs-22.md#t22-002) · Distance threshold.
+- Dòng [1130](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1130) · [T22-003](wbs-22.md#t22-003) · Time threshold.
+- Dòng [1131](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1131) · [T22-004](wbs-22.md#t22-004) · Severity.
+- Dòng [1132](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1132) · [T22-005](wbs-22.md#t22-005) · Subscription area.
+- Dòng [1133](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1133) · [T22-006](wbs-22.md#t22-006) · Generate message.
+- Dòng [1134](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1134) · [T22-007](wbs-22.md#t22-007) · Add source.
+- Dòng [1135](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1135) · [T22-008](wbs-22.md#t22-008) · Add issue time.
+- Dòng [1136](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1136) · [T22-009](wbs-22.md#t22-009) · Add disclaimer.
+- Dòng [1137](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1137) · [T22-010](wbs-22.md#t22-010) · Send channel.
+- Dòng [1138](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1138) · [T22-011](wbs-22.md#t22-011) · Retry.
+- Dòng [1139](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1139) · [T22-012](wbs-22.md#t22-012) · Throttle.
+- Dòng [1140](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1140) · [T22-013](wbs-22.md#t22-013) · Alert history.
+- Dòng [1147](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1147) · [T23-001](wbs-23.md#t23-001) · Haversine.
+- Dòng [1148](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1148) · [T23-002](wbs-23.md#t23-002) · Bearing.
+- Dòng [1149](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1149) · [T23-003](wbs-23.md#t23-003) · Position.
+- Dòng [1150](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1150) · [T23-004](wbs-23.md#t23-004) · Feature builder.
+- Dòng [1151](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1151) · [T23-005](wbs-23.md#t23-005) · Scaler.
+- Dòng [1152](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1152) · [T23-006](wbs-23.md#t23-006) · Dataset.
+- Dòng [1153](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1153) · [T23-007](wbs-23.md#t23-007) · Model.
+- Dòng [1154](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1154) · [T23-008](wbs-23.md#t23-008) · Cone.
+- Dòng [1155](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1155) · [T23-009](wbs-23.md#t23-009) · Alert rules.
+- Dòng [1158](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1158) · [T23-010](wbs-23.md#t23-010) · Raw → clean.
+- Dòng [1159](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1159) · [T23-011](wbs-23.md#t23-011) · Clean → feature.
+- Dòng [1160](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1160) · [T23-012](wbs-23.md#t23-012) · Feature → dataset.
+- Dòng [1161](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1161) · [T23-013](wbs-23.md#t23-013) · Dataset → train.
+- Dòng [1162](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1162) · [T23-014](wbs-23.md#t23-014) · Train → model.
+- Dòng [1163](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1163) · [T23-015](wbs-23.md#t23-015) · Model → inference.
+- Dòng [1164](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1164) · [T23-016](wbs-23.md#t23-016) · Inference → API.
+- Dòng [1165](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1165) · [T23-017](wbs-23.md#t23-017) · API → frontend.
+- Dòng [1168](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1168) · [T23-018](wbs-23.md#t23-018) · Missing observation.
+- Dòng [1169](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1169) · [T23-019](wbs-23.md#t23-019) · Missing SST.
+- Dòng [1170](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1170) · [T23-020](wbs-23.md#t23-020) · Missing wind shear.
+- Dòng [1171](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1171) · [T23-021](wbs-23.md#t23-021) · Sudden turn.
+- Dòng [1172](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1172) · [T23-022](wbs-23.md#t23-022) · Near coastline.
+- Dòng [1173](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1173) · [T23-023](wbs-23.md#t23-023) · Weakening storm.
+- Dòng [1174](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1174) · [T23-024](wbs-23.md#t23-024) · Invalid coordinate.
+- Dòng [1175](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1175) · [T23-025](wbs-23.md#t23-025) · Duplicate observation.
+- Dòng [1176](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1176) · [T23-026](wbs-23.md#t23-026) · Multiple active storms.
+- Dòng [1179](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1179) · [T23-027](wbs-23.md#t23-027) · API concurrent requests.
+- Dòng [1180](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1180) · [T23-028](wbs-23.md#t23-028) · Database load.
+- Dòng [1181](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1181) · [T23-029](wbs-23.md#t23-029) · Cache load.
+- Dòng [1182](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1182) · [T23-030](wbs-23.md#t23-030) · Worker retry.
+- Dòng [1183](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1183) · [T23-031](wbs-23.md#t23-031) · Traffic spike scenario.
+- Dòng [1189](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1189) · [T24-001](wbs-24.md#t24-001) · Backend Dockerfile.
+- Dòng [1190](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1190) · [T24-002](wbs-24.md#t24-002) · Worker Dockerfile.
+- Dòng [1191](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1191) · [T24-003](wbs-24.md#t24-003) · Frontend Dockerfile.
+- Dòng [1192](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1192) · [T24-004](wbs-24.md#t24-004) · Training image nếu cần.
+- Dòng [1193](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1193) · [T24-005](wbs-24.md#t24-005) · Postgres service.
+- Dòng [1194](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1194) · [T24-006](wbs-24.md#t24-006) · Redis service.
+- Dòng [1195](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1195) · [T24-007](wbs-24.md#t24-007) · Network.
+- Dòng [1196](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1196) · [T24-008](wbs-24.md#t24-008) · Volumes.
+- Dòng [1197](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1197) · [T24-009](wbs-24.md#t24-009) · Environment.
+- Dòng [1198](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1198) · [T24-010](wbs-24.md#t24-010) · Health checks.
+- Dòng [1199](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1199) · [T24-011](wbs-24.md#t24-011) · Production compose.
+- Dòng [1205](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1205) · [T25-001](wbs-25.md#t25-001) · GitHub Actions.
+- Dòng [1206](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1206) · [T25-002](wbs-25.md#t25-002) · Install dependencies.
+- Dòng [1207](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1207) · [T25-003](wbs-25.md#t25-003) · Lint.
+- Dòng [1208](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1208) · [T25-004](wbs-25.md#t25-004) · Unit test.
+- Dòng [1209](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1209) · [T25-005](wbs-25.md#t25-005) · Integration test.
+- Dòng [1210](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1210) · [T25-006](wbs-25.md#t25-006) · Build backend.
+- Dòng [1211](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1211) · [T25-007](wbs-25.md#t25-007) · Build frontend.
+- Dòng [1212](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1212) · [T25-008](wbs-25.md#t25-008) · Build Docker image.
+- Dòng [1213](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1213) · [T25-009](wbs-25.md#t25-009) · Security/basic dependency check nếu phù hợp.
+- Dòng [1214](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1214) · [T25-010](wbs-25.md#t25-010) · Deploy staging.
+- Dòng [1215](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1215) · [T25-011](wbs-25.md#t25-011) · Model evaluation gate.
+- Dòng [1216](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1216) · [T25-012](wbs-25.md#t25-012) · Production deployment.
+- Dòng [1217](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1217) · [T25-013](wbs-25.md#t25-013) · Rollback.
+- Dòng [1224](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1224) · [T26-001](wbs-26.md#t26-001) · API uptime.
+- Dòng [1225](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1225) · [T26-002](wbs-26.md#t26-002) · API latency.
+- Dòng [1226](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1226) · [T26-003](wbs-26.md#t26-003) · Error rate.
+- Dòng [1227](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1227) · [T26-004](wbs-26.md#t26-004) · Worker status.
+- Dòng [1228](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1228) · [T26-005](wbs-26.md#t26-005) · Database status.
+- Dòng [1229](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1229) · [T26-006](wbs-26.md#t26-006) · Redis status.
+- Dòng [1230](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1230) · [T26-007](wbs-26.md#t26-007) · CPU.
+- Dòng [1231](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1231) · [T26-008](wbs-26.md#t26-008) · RAM.
+- Dòng [1232](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1232) · [T26-009](wbs-26.md#t26-009) · Disk.
+- Dòng [1235](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1235) · [T26-010](wbs-26.md#t26-010) · Last update timestamp.
+- Dòng [1236](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1236) · [T26-011](wbs-26.md#t26-011) · Missing rate.
+- Dòng [1237](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1237) · [T26-012](wbs-26.md#t26-012) · Schema drift.
+- Dòng [1238](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1238) · [T26-013](wbs-26.md#t26-013) · Source failure.
+- Dòng [1239](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1239) · [T26-014](wbs-26.md#t26-014) · Data delay.
+- Dòng [1242](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1242) · [T26-015](wbs-26.md#t26-015) · Input distribution.
+- Dòng [1243](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1243) · [T26-016](wbs-26.md#t26-016) · Feature drift.
+- Dòng [1244](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1244) · [T26-017](wbs-26.md#t26-017) · Prediction distribution.
+- Dòng [1245](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1245) · [T26-018](wbs-26.md#t26-018) · Error after actual track arrives.
+- Dòng [1246](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1246) · [T26-019](wbs-26.md#t26-019) · Model version.
+- Dòng [1252](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1252) · [T27-001](wbs-27.md#t27-001) · Architecture.
+- Dòng [1253](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1253) · [T27-002](wbs-27.md#t27-002) · Data source.
+- Dòng [1254](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1254) · [T27-003](wbs-27.md#t27-003) · Data dictionary.
+- Dòng [1255](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1255) · [T27-004](wbs-27.md#t27-004) · Feature engineering.
+- Dòng [1256](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1256) · [T27-005](wbs-27.md#t27-005) · Dataset.
+- Dòng [1257](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1257) · [T27-006](wbs-27.md#t27-006) · Model.
+- Dòng [1258](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1258) · [T27-007](wbs-27.md#t27-007) · Training.
+- Dòng [1259](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1259) · [T27-008](wbs-27.md#t27-008) · Evaluation.
+- Dòng [1260](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1260) · [T27-009](wbs-27.md#t27-009) · API.
+- Dòng [1261](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1261) · [T27-010](wbs-27.md#t27-010) · Database.
+- Dòng [1262](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1262) · [T27-011](wbs-27.md#t27-011) · Frontend.
+- Dòng [1263](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1263) · [T27-012](wbs-27.md#t27-012) · Deployment.
+- Dòng [1264](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1264) · [T27-013](wbs-27.md#t27-013) · Runbook.
+- Dòng [1265](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1265) · [T27-014](wbs-27.md#t27-014) · User guide.
+- Dòng [1266](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1266) · [T27-015](wbs-27.md#t27-015) · Disclaimer.
+- Dòng [1273](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1273) · [T28-001](wbs-28.md#t28-001) · Chọn một cơn bão.
+- Dòng [1274](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1274) · [T28-002](wbs-28.md#t28-002) · Hiển thị lịch sử.
+- Dòng [1275](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1275) · [T28-003](wbs-28.md#t28-003) · Chứng minh data pipeline.
+- Dòng [1278](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1278) · [T28-004](wbs-28.md#t28-004) · Load model.
+- Dòng [1279](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1279) · [T28-005](wbs-28.md#t28-005) · Nhập observation.
+- Dòng [1280](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1280) · [T28-006](wbs-28.md#t28-006) · Sinh 6/12/24/48/72h.
+- Dòng [1281](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1281) · [T28-007](wbs-28.md#t28-007) · Hiển thị metric.
+- Dòng [1284](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1284) · [T28-008](wbs-28.md#t28-008) · Actual track.
+- Dòng [1285](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1285) · [T28-009](wbs-28.md#t28-009) · Forecast track.
+- Dòng [1286](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1286) · [T28-010](wbs-28.md#t28-010) · Cone.
+- Dòng [1287](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1287) · [T28-011](wbs-28.md#t28-011) · Province impact.
+- Dòng [1290](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1290) · [T28-012](wbs-28.md#t28-012) · Swagger.
+- Dòng [1291](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1291) · [T28-013](wbs-28.md#t28-013) · POST forecast.
+- Dòng [1292](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1292) · [T28-014](wbs-28.md#t28-014) · Response.
+- Dòng [1293](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1293) · [T28-015](wbs-28.md#t28-015) · Error handling.
+- Dòng [1296](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1296) · [T28-016](wbs-28.md#t28-016) · Mock observation mới.
+- Dòng [1297](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1297) · [T28-017](wbs-28.md#t28-017) · Worker nhận dữ liệu.
+- Dòng [1298](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1298) · [T28-018](wbs-28.md#t28-018) · Trigger inference.
+- Dòng [1299](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1299) · [T28-019](wbs-28.md#t28-019) · Dashboard cập nhật.
+- Dòng [1302](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1302) · [T28-020](wbs-28.md#t28-020) · Tạo subscription.
+- Dòng [1303](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1303) · [T28-021](wbs-28.md#t28-021) · Kích hoạt rule.
+- Dòng [1304](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1304) · [T28-022](wbs-28.md#t28-022) · Sinh cảnh báo.
+- Dòng [1305](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1305) · [T28-023](wbs-28.md#t28-023) · Kiểm tra throttle.
+- Dòng [1313](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1313) · [A29-001](acceptance.md#a29-001) · Có dữ liệu lịch sử có provenance.
+- Dòng [1314](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1314) · [A29-002](acceptance.md#a29-002) · Có pipeline ingestion tự động.
+- Dòng [1315](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1315) · [A29-003](acceptance.md#a29-003) · Có validation và cleaning.
+- Dòng [1316](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1316) · [A29-004](acceptance.md#a29-004) · Có feature engineering.
+- Dòng [1317](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1317) · [A29-005](acceptance.md#a29-005) · Không có data leakage.
+- Dòng [1318](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1318) · [A29-006](acceptance.md#a29-006) · Có train/validation/test độc lập.
+- Dòng [1319](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1319) · [A29-007](acceptance.md#a29-007) · Có baseline.
+- Dòng [1320](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1320) · [A29-008](acceptance.md#a29-008) · Có ít nhất một model ML hoạt động.
+- Dòng [1321](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1321) · [A29-009](acceptance.md#a29-009) · Có multi-horizon forecast.
+- Dòng [1322](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1322) · [A29-010](acceptance.md#a29-010) · Có metric theo km.
+- Dòng [1323](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1323) · [A29-011](acceptance.md#a29-011) · Có backtest.
+- Dòng [1324](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1324) · [A29-012](acceptance.md#a29-012) · Có uncertainty/cone.
+- Dòng [1325](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1325) · [A29-013](acceptance.md#a29-013) · Có model version.
+- Dòng [1326](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1326) · [A29-014](acceptance.md#a29-014) · Có inference service.
+- Dòng [1327](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1327) · [A29-015](acceptance.md#a29-015) · Có FastAPI.
+- Dòng [1328](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1328) · [A29-016](acceptance.md#a29-016) · Có PostgreSQL/PostGIS.
+- Dòng [1329](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1329) · [A29-017](acceptance.md#a29-017) · Có dashboard bản đồ.
+- Dòng [1330](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1330) · [A29-018](acceptance.md#a29-018) · Có actual + forecast track.
+- Dòng [1331](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1331) · [A29-019](acceptance.md#a29-019) · Có vùng ảnh hưởng.
+- Dòng [1332](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1332) · [A29-020](acceptance.md#a29-020) · Có cảnh báo nếu triển khai.
+- Dòng [1333](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1333) · [A29-021](acceptance.md#a29-021) · Có unit/integration/model tests.
+- Dòng [1334](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1334) · [A29-022](acceptance.md#a29-022) · Có Docker.
+- Dòng [1335](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1335) · [A29-023](acceptance.md#a29-023) · Có CI/CD cơ bản.
+- Dòng [1336](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1336) · [A29-024](acceptance.md#a29-024) · Có logging/monitoring cơ bản.
+- Dòng [1337](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1337) · [A29-025](acceptance.md#a29-025) · Có tài liệu cài đặt.
+- Dòng [1338](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1338) · [A29-026](acceptance.md#a29-026) · Có tài liệu kiến trúc.
+- Dòng [1339](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1339) · [A29-027](acceptance.md#a29-027) · Có báo cáo đánh giá.
+- Dòng [1340](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1340) · [A29-028](acceptance.md#a29-028) · Có disclaimer rõ ràng.
+
+## Phân rã thêm yêu cầu tổng quan
+
+- [S01](supplemental_tasks.md#s01) — Version hóa dữ liệu bằng DVC; nguồn: REQ-012
+- [S02](supplemental_tasks.md#s02) — Lưu sổ thí nghiệm và MLflow run ID; nguồn: REQ-014
+- [S03](supplemental_tasks.md#s03) — Feature store có version và schema drift; nguồn: REQ-050
+- [S04](supplemental_tasks.md#s04) — Quantile regression 10/50/90%; nguồn: REQ-064
+- [S05](supplemental_tasks.md#s05) — Leave-one-season-out validation; nguồn: REQ-082
+- [S06](supplemental_tasks.md#s06) — Thí nghiệm độ dài chuỗi 4/6/8; nguồn: REQ-084
+- [S07](supplemental_tasks.md#s07) — Adapter forecast môi trường GFS/ECMWF tùy chọn; nguồn: REQ-028
+- [S08](supplemental_tasks.md#s08) — Import và chuẩn hóa nhãn thiệt hại/đổ bộ; nguồn: REQ-023
+- [S09](supplemental_tasks.md#s09) — Cắt/giao cone với tỉnh và bờ biển; nguồn: REQ-023, REQ-109, REQ-113
+- [S10](supplemental_tasks.md#s10) — Hiển thị so sánh dự báo chính thức; nguồn: REQ-120
+- [S11](supplemental_tasks.md#s11) — Giao diện Việt/Anh; nguồn: REQ-115
+- [S12](supplemental_tasks.md#s12) — Màu/chú giải cường độ có tài liệu nguồn; nguồn: REQ-106
+- [S13](supplemental_tasks.md#s13) — Kênh email/SMS/Telegram/Zalo qua adapter; nguồn: REQ-116
+- [S14](supplemental_tasks.md#s14) — Webhook tích hợp tùy chọn; nguồn: REQ-121
+- [S15](supplemental_tasks.md#s15) — Lịch ingestion theo mùa bão; nguồn: REQ-031
+- [S16](supplemental_tasks.md#s16) — Chính sách checkpoint retention; nguồn: REQ-074
+- [S17](supplemental_tasks.md#s17) — Pipeline retrain định kỳ; nguồn: REQ-137
+- [S18](supplemental_tasks.md#s18) — Autoscaling và ngân sách tải; nguồn: REQ-140, REQ-155
+- [S19](supplemental_tasks.md#s19) — Backup DB/model và phục hồi; nguồn: REQ-143
+- [S20](supplemental_tasks.md#s20) — Giám sát drift và sai số trễ; nguồn: REQ-142
+- [S21](supplemental_tasks.md#s21) — Báo cáo cuối mùa; nguồn: REQ-148
+- [S22](supplemental_tasks.md#s22) — Slide/video bàn giao; nguồn: REQ-150
+- [S23](supplemental_tasks.md#s23) — Chọn hosting và diễn tập release/rollback; nguồn: REQ-139
+- [S24](supplemental_tasks.md#s24) — Đóng gói CLI clean-data và kiểm tra provenance; nguồn: REQ-009

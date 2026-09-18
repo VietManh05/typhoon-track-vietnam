@@ -1,0 +1,272 @@
+[
+  [
+    0,
+    "Nền tảng repository và môi trường",
+    ".gitignore; pyproject.toml; Makefile; src/typhoon_vn/cli.py; .pre-commit-config.yaml",
+    "Không",
+    "Cấu trúc hiện có, Python 3.11.9 và quy ước dự án",
+    "Môi trường tái tạo được; lệnh thật có exit code đúng; không đưa dữ liệu, secrets, checkpoint vào Git",
+    "Có phần nền tảng; CLI vẫn placeholder; toàn bộ cây làm việc untracked"
+  ],
+  [
+    1,
+    "Ingestion và nguồn gốc dữ liệu",
+    "src/typhoon_vn/ingestion/; tests/test_ingestion.py; docs/data-ingestion.md",
+    "G00",
+    "Mẫu nguồn có giấy phép/điều kiện sử dụng và dữ liệu raw bất biến",
+    "Raw → canonical giữ source, checksum, đơn vị gốc, UTC; dữ liệu lỗi có lý do; retry hữu hạn",
+    "Có downloader/parser/merge; chưa xác nhận hoạt động với tất cả nguồn thật"
+  ],
+  [
+    2,
+    "Dữ liệu không gian",
+    "src/typhoon_vn/ingestion/providers/geospatial.py; src/typhoon_vn/features/geo.py; data/external/; tests/test_geospatial.py",
+    "G00",
+    "Coastline/ranh giới có phiên bản, ngày hiệu lực, giấy phép và CRS",
+    "WGS84 nhất quán; khoảng cách theo km; polygon hợp lệ; giữ provenance và attribution",
+    "Có adapter; chưa xác minh dữ liệu ranh giới/đường bờ thật"
+  ],
+  [
+    3,
+    "Làm sạch và thời gian",
+    "src/typhoon_vn/features/cleaning.py; src/typhoon_vn/features/bridge.py; scripts/run_phase2.py; tests/test_features.py",
+    "G01",
+    "Canonical observations và quy tắc ưu tiên nguồn",
+    "Không sửa raw; không nội suy qua cơn bão; không dùng tương lai cho feature phục vụ inference; báo cáo số dòng thay đổi",
+    "Có pipeline; cần kiểm thử leakage và thời gian"
+  ],
+  [
+    4,
+    "Feature engineering",
+    "src/typhoon_vn/features/build.py; src/typhoon_vn/features/schema.py; src/typhoon_vn/features/store.py; docs/data-dictionary.md; tests/test_features.py",
+    "G02, G03",
+    "Track sạch, timestamp UTC, dữ liệu môi trường có available_at",
+    "Mỗi feature có dtype, đơn vị, nguồn, missing policy; train/serve cùng thuật toán và thứ tự; chỉ dùng thông tin đã có tại issue_time",
+    "Có feature builder; môi trường và hợp đồng train/serve cần kiểm chứng"
+  ],
+  [
+    5,
+    "Scaling không rò rỉ",
+    "src/typhoon_vn/features/scaling.py; tests/test_scaling_contract.py",
+    "G04, G06",
+    "Feature schema đóng băng và split manifest theo storm",
+    "Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước",
+    "Có scaler; cần tích hợp artifact manifest và kiểm thử parity"
+  ],
+  [
+    6,
+    "Dataset và phân chia tập",
+    "src/typhoon_vn/datasets/typhoon_dataset.py; tests/test_dataset.py; data/processed/splits/",
+    "G03, G04",
+    "Dữ liệu chưa scale, storm ID đã hợp nhất, policy thời gian",
+    "Storm không giao nhau; target đúng issue_time+horizon; thiếu mốc không lấy hàng kế tiếp thay thế; mask/shape/dtype đúng",
+    "Có dataset; chọn feature trước khi tạo feature và split storm qua năm cần sửa"
+  ],
+  [
+    7,
+    "Baseline cổ điển",
+    "src/typhoon_vn/models/baselines.py; tests/test_baselines.py; docs/baselines.md",
+    "G06",
+    "Cùng split, cùng issue_time/horizon và tọa độ vật lý",
+    "Persistence có xử lý wrap longitude; CLIPER thật cần phương pháp/dữ liệu kiểm chứng; heuristic phải đặt tên trung thực",
+    "Có persistence và damped-persistence mang tên CLIPER; chưa chứng minh CLIPER nghiệp vụ"
+  ],
+  [
+    8,
+    "LSTM cơ sở",
+    "src/typhoon_vn/models/base.py; src/typhoon_vn/models/lstm.py; tests/test_models.py",
+    "G05, G06",
+    "Tensor contract, feature schema, target schema và vocabulary cố định",
+    "Forward B×H×2; logits đúng số lớp; gradients hữu hạn; save/load giữ kết quả; batch/sequence linh hoạt",
+    "Có model và test cũ; chưa chạy lại"
+  ],
+  [
+    9,
+    "Seq2Seq, attention và Transformer",
+    "src/typhoon_vn/models/lstm.py; src/typhoon_vn/models/transformer.py; tests/test_models.py; configs/",
+    "G12, G13",
+    "LSTM baseline đã có validation report và ngân sách thử nghiệm",
+    "Chạy cùng split/scaler; mask không ảnh hưởng bởi padding; teacher forcing chỉ khi train; lựa chọn dựa validation",
+    "Có kiến trúc; chưa có bằng chứng tốt hơn baseline"
+  ],
+  [
+    10,
+    "Loss và tối ưu",
+    "src/typhoon_vn/training/losses.py; src/typhoon_vn/training/trainer.py; tests/test_training.py",
+    "G08",
+    "Target units, loss weights và model parameters",
+    "Loss hữu hạn; từng thành phần được log; horizon weights có hiệu lực; optimizer/scheduler có test",
+    "Có loss/trainer; cần kiểm chứng case NaN và scheduler"
+  ],
+  [
+    11,
+    "Bất định và cone",
+    "src/typhoon_vn/models/uncertainty.py; src/typhoon_vn/inference/service.py; tests/test_uncertainty.py",
+    "G13, G14",
+    "Model đã chọn bằng validation; bộ calibration độc lập với final test",
+    "Phân biệt độ phân tán và coverage; cone GeoJSON hợp lệ; không nhận radius minh họa là xác suất đã hiệu chuẩn",
+    "Có uncertainty helper; API baseline dùng radius minh họa"
+  ],
+  [
+    12,
+    "Training tái lập",
+    "src/typhoon_vn/training/trainer.py; src/typhoon_vn/training/pipeline.py; configs/phase3_lstm.yaml; src/typhoon_vn/cli.py; tests/test_training.py",
+    "G05, G06, G08, G10",
+    "Config hợp lệ, split manifest, scaler fit train và dataset hash",
+    "Lệnh train chạy thật; 1 epoch smoke; best/last khác mục đích; resume đủ optimizer/scheduler/RNG/history; log provenance",
+    "Trainer có; pipeline.py và config loader chưa có; checkpoint save thiếu state"
+  ],
+  [
+    13,
+    "Đánh giá và backtest",
+    "src/typhoon_vn/evaluation/metrics.py; src/typhoon_vn/evaluation/backtest.py; tests/test_evaluation.py; reports/evaluation/",
+    "G07, G12",
+    "Checkpoint, split IDs, targets vật lý, predictions có issue_time",
+    "Metric km theo 6/12/24/48/72h; baseline cùng mẫu; storms giữ lại; không dùng final test để tune",
+    "Có metrics/backtest; chưa xác minh giá trị chuẩn và báo cáo dữ liệu thật"
+  ],
+  [
+    14,
+    "Tuning và kiểm định theo mùa",
+    "src/typhoon_vn/training/tuning.py; configs/search-space.yaml; tests/test_tuning.py",
+    "G09, G13",
+    "Train/validation folds theo mùa, ngân sách trials và seed",
+    "Fit scaler riêng từng fold; objective dùng validation; thử seq_len 4/6/8; final test niêm phong đến model-selection freeze",
+    "Chưa thấy tuning pipeline"
+  ],
+  [
+    15,
+    "Model registry và promotion",
+    "src/typhoon_vn/training/registry.py; src/typhoon_vn/training/pipeline.py; tests/test_registry.py; docs/model-registry.md",
+    "G11, G14",
+    "Model/feature/scaler/config/checksum, validation/calibration metrics và dataset version",
+    "Bundle có version và checksum; promotion có gate; artifact lỗi bị từ chối; rollback trở về cùng model/scaler/schema",
+    "Chưa có registry/bundle loader; code inference đang tham chiếu module thiếu"
+  ],
+  [
+    16,
+    "Dịch vụ inference",
+    "src/typhoon_vn/inference/service.py; src/typhoon_vn/inference/artifacts.py; tests/test_inference.py",
+    "G15",
+    "Artifact đã kiểm tra, chuỗi fixes có source và thời gian",
+    "Load một lần; shared feature/scaler; output vật lý; fallback có cờ; request đồng thời không đổi state model",
+    "Vừa viết bản nháp; baseline có, trained path thiếu load_bundle/predict_bundle"
+  ],
+  [
+    17,
+    "FastAPI",
+    "src/typhoon_vn/api/app.py; src/typhoon_vn/api/schemas.py; tests/test_api.py; tests/test_health.py",
+    "G16, G18",
+    "Inference đã test và repository dữ liệu vận hành",
+    "Contract/OpenAPI đúng; 404/422/401/429/503 có test; response có provenance, issue time, uncertainty, disclaimer",
+    "Vừa viết endpoints, auth, rate limit; chưa chạy test mới"
+  ],
+  [
+    18,
+    "Database, PostGIS và migration",
+    "src/typhoon_vn/operations/store.py; migrations/; alembic.ini; tests/test_store.py; tests/integration/test_postgis.py",
+    "G00, G02",
+    "Logical schema quan trắc/dự báo, SRID 4326 và yêu cầu audit",
+    "Migration upgrade/downgrade; FK/unique/index/spatial index; transaction; không dùng create_all thay migration production",
+    "Nháp SQLAlchemy SQLite/Postgres; thiếu PostGIS geometry, Alembic và đủ bảng"
+  ],
+  [
+    19,
+    "Worker thời gian thực",
+    "src/typhoon_vn/operations/worker.py; src/typhoon_vn/ingestion/; tests/test_worker.py; infra/scheduler/",
+    "G01, G17, G20",
+    "Provider adapter đã kiểm thử, freshness window và cấu hình lịch",
+    "Phát hiện observation mới; idempotency; retry/backoff hữu hạn; forecast/cache cập nhật; thất bại nhìn thấy",
+    "Worker hiện chỉ đọc snapshot JSON và sinh forecast; chưa có scheduler/provider live"
+  ],
+  [
+    20,
+    "Redis và invalidation",
+    "src/typhoon_vn/operations/cache.py; src/typhoon_vn/api/app.py; tests/test_cache.py",
+    "G17",
+    "Forecast/input/model revision và Redis configuration",
+    "Có read/write, hit/miss, TTL; observation/model mới invalidates; Redis hỏng vẫn phục vụ đúng qua DB",
+    "API nháp mới setex; chưa đọc Redis, chưa invalidation tests"
+  ],
+  [
+    21,
+    "Frontend và bản đồ",
+    "viz/frontend/; tests/frontend/; docs/frontend.md",
+    "G02, G17",
+    "API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực",
+    "React/TypeScript + Leaflet là phương án dự kiến; actual/forecast/cone rõ; mobile/a11y; nguồn/thời gian/disclaimer luôn hiện",
+    "Chưa có dashboard; static mount trong API chưa phải frontend"
+  ],
+  [
+    22,
+    "Alert engine và kênh tích hợp",
+    "src/typhoon_vn/operations/worker.py; src/typhoon_vn/alerts/; tests/test_alerts.py; docs/alerts.md",
+    "G19, G21",
+    "Forecast hợp lệ, subscription có quyền sở hữu và quy tắc radius/lead time",
+    "Boundary radius/lead được test; throttle bền vững, không gửi trùng; draft mặc định; adapter gửi thử bằng fake transport",
+    "Có rule/draft chưa test; chưa có channel adapters hoặc quản lý người nhận"
+  ],
+  [
+    23,
+    "Kiểm thử xuyên hệ thống",
+    "tests/; tests/integration/; tests/model/; tests/frontend/; tests/load/",
+    "G19, G21, G22",
+    "Các contract trước đã có unit tests và fixtures nhỏ",
+    "Raw→train→bundle→inference→API→UI chạy; failure modes có assertion; load đo được thay vì tuyên bố production-ready",
+    "Có 6 file test cũ; chưa có kiểm thử chuỗi hoàn chỉnh"
+  ],
+  [
+    24,
+    "Container và cấu hình production",
+    "infra/docker/; docker-compose.yml; docker-compose.prod.yml; infra/nginx/",
+    "G23",
+    "Build backend/frontend/worker đã pass và model artifact kiểm chứng",
+    "Image riêng đúng extras; non-root; healthchecks; secrets ngoài image; volume/network; compose smoke",
+    "Có Dockerfile/compose dev; chưa chạy Docker trên môi trường này"
+  ],
+  [
+    25,
+    "CI/CD và phát hành",
+    " .github/workflows/; infra/deploy/; docs/deployment.md",
+    "G24",
+    "Tests/lint/build tái lập và hosting được người dùng chọn",
+    "PR có checks; model-evaluation gate; staging smoke; rollback; production deploy cần credentials và release scope rõ",
+    "Chưa thấy CI; chưa có remote/hosting được cấu hình"
+  ],
+  [
+    26,
+    "Monitoring, drift và backup",
+    "infra/monitoring/; src/typhoon_vn/operations/monitoring.py; scripts/backup/; docs/runbook.md",
+    "G24",
+    "Metrics endpoints, baseline feature distribution và kho backup",
+    "Prometheus/Grafana; latency/error/worker freshness; drift đo được; backup có restore drill; không log secrets",
+    "Có counters đơn giản nháp; thiếu latency, drift, dashboard và restore"
+  ],
+  [
+    27,
+    "Tài liệu và hướng dẫn",
+    "README.md; docs/; docs/runbook.md; docs/model-card.md",
+    "G26",
+    "Bằng chứng test và interfaces thực tế của các nhóm đã nghiệm thu",
+    "Quickstart được chạy lại từ sạch; tài liệu theo version; demo/real và giới hạn mô hình tách rõ",
+    "Có tài liệu giai đoạn đầu; README lệch code"
+  ],
+  [
+    28,
+    "Demo và nghiệm thu",
+    "docs/acceptance/; reports/; tests/integration/; viz/frontend/",
+    "G23, G25, G26, G27",
+    "Release candidate, checklist DoD, fixtures và evidence",
+    "Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực",
+    "Chưa nghiệm thu"
+  ],
+  [
+    29,
+    "Definition of Done toàn dự án",
+    "docs/planning/acceptance.md; docs/acceptance/",
+    "G28",
+    "Kết quả từng nhóm và evidence gắn với version",
+    "Mỗi tiêu chí đóng bằng test/report/demo; mục cần nguồn/tài khoản phải chờ bằng chứng thực tế",
+    "Tất cả tiêu chí chưa được nghiệm thu"
+  ]
+]

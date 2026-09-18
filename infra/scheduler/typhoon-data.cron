@@ -1,0 +1,13 @@
+# Use UTC. Set PROJECT_DIR and activate the Python 3.11 virtual environment.
+# Daily during Vietnam's typical typhoon season (June-November).
+15 2 * 6-11 * cd PROJECT_DIR && python -m typhoon_vn.ingestion.cli fetch ibtracs
+30 2 * 6-11 * cd PROJECT_DIR && python -m typhoon_vn.ingestion.cli fetch jma
+
+# Weekly outside that season (Monday, UTC). CMA's annual archive is also checked
+# weekly; a 404 for a not-yet-published current-year file should be reviewed.
+15 2 * 12,1-5 1 cd PROJECT_DIR && python -m typhoon_vn.ingestion.cli fetch ibtracs
+30 2 * 12,1-5 1 cd PROJECT_DIR && python -m typhoon_vn.ingestion.cli fetch jma
+45 2 * * 1 cd PROJECT_DIR && python -m typhoon_vn.ingestion.cli fetch cma
+
+# ERA5 requires a configured CDS API account and should be orchestrated with a
+# bounded request manifest, not blindly scheduled from cron.

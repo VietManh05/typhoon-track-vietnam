@@ -1,0 +1,128 @@
+[
+  [
+    "R01",
+    "Kiểm kê trạng thái làm việc",
+    "Không",
+    "git status --short; git log -1; git diff --stat; rg --files src tests",
+    "docs/planning/evidence/R01-inventory.md",
+    "Phân biệt file cũ, file mới của phiên, module thiếu và dữ liệu phải giữ. Kiểm tra có commit nền chưa; không add/xóa hàng loạt.",
+    "Liệt kê đường dẫn thật; ghi rõ git diff rỗng không chứng minh không có thay đổi nếu toàn bộ file untracked."
+  ],
+  [
+    "R02",
+    "Kiểm tra Python và extras",
+    "R01",
+    ".venv/Scripts/python.exe --version; pip check; import numpy,pandas,torch,fastapi,sqlalchemy,redis",
+    "docs/planning/evidence/R02-environment.md",
+    "Ghi phiên bản, exit code và dependency conflicts; kiểm tra API extras riêng với training extras.",
+    "Python 3.11; pip check/import smoke pass hoặc ghi lỗi cụ thể; không ghi pass khi chưa chạy."
+  ],
+  [
+    "R03",
+    "Cô lập checkpoint khi chạy test",
+    "R02",
+    "tests/test_training.py; Trainer.save_checkpoint",
+    "tests/test_training.py và fixture tmp_path",
+    "Test trainer đang dùng checkpoint_dir mặc định; chuyển test sang tmp_path trước full pytest; giữ nguyên checkpoint có sẵn.",
+    "Test chỉ ghi tmp_path; hash checkpoint có sẵn không đổi."
+  ],
+  [
+    "R04",
+    "Chạy baseline pytest",
+    "R03",
+    ".venv/Scripts/python.exe -m pytest -q --junitxml=<evidence>",
+    "docs/planning/evidence/R04-pytest.xml và R04-baseline.md",
+    "Chạy suite một lần sau cài dependencies; phân loại lỗi có sẵn/lỗi integration mới; không chạy training demo dài.",
+    "Ghi passed/failed/skipped/duration, command và exit code; mỗi lỗi có tên test và reproducer."
+  ],
+  [
+    "R05",
+    "Chốt schema và thời gian",
+    "R04",
+    "ingestion/models.py; features/schema.py; api/schemas.py",
+    "docs/contracts/observations.md; tests/contracts/test_observations.py",
+    "Map latitude/longitude→lat/lon, native wind→m/s, UTC, source/checksum và issue/valid/downloaded times.",
+    "Một fixture qua ba lớp giữ tọa độ, đơn vị, UTC, provenance; reject naive datetime, NaN và unknown units."
+  ],
+  [
+    "R06",
+    "Sửa target theo thời gian thực",
+    "R05",
+    "datasets/typhoon_dataset.py; fixture có gap",
+    "tests/test_dataset.py; dataset implementation",
+    "Thêm test issue 00 UTC, thiếu +12 nhưng có +18, duplicate time và target không đủ; sửa timestamp lookup hoặc policy reject interval.",
+    "Không lấy +18 thay +12; target đúng 6/12/24/48/72h; không vượt storm boundary."
+  ],
+  [
+    "R07",
+    "Sửa split storm/năm",
+    "R06",
+    "split_by_storm_or_year; storm qua 31/12→01/01",
+    "tests/test_dataset.py; split manifest",
+    "Test test_ratio=0, val_ratio=0, tổng ratio>=1, tập nhỏ và storm qua năm. Lưu IDs/seed/hash.",
+    "Storm không giao tập; ratio=0 không ép lấy một storm; không mất hàng; errors rõ."
+  ],
+  [
+    "R08",
+    "Chốt feature order",
+    "R07",
+    "FeatureBuilder; _default_feature_cols; dataset _build",
+    "docs/contracts/features.md; tests/test_feature_contract.py",
+    "Xử lý chọn default features trước derived features; dùng một feature path; giữ vocabulary/order cố định.",
+    "Training và serving cùng input cho cùng matrix; missing/extra/reordered columns được phát hiện."
+  ],
+  [
+    "R09",
+    "Kiểm chứng scaler train-only",
+    "R08",
+    "FeatureScaler; split manifest; fixtures held-out extrema",
+    "tests/test_scaling_contract.py; scaler artifact schema",
+    "Thay val/test cực trị; test NaN/Inf/all-missing columns; save/load và round-trip.",
+    "Train stats không đổi; fill/order được lưu; finite round-trip sai số <=1e-6; inference không fit lại."
+  ],
+  [
+    "R10",
+    "Sửa checkpoint/resume",
+    "R09",
+    "Trainer; tiny deterministic CPU model/loader",
+    "tests/test_training_resume.py; trainer.py",
+    "So 2 epochs liên tục với 1+resume; save sau history/scheduler; lưu best_epoch, patience, optimizer, scheduler và RNG; reject empty/nonfinite validation.",
+    "LR/history/epoch/early stop nhất quán; weights khớp trong dung sai công bố; không tạo best giả."
+  ],
+  [
+    "R11",
+    "Hoàn thiện bundle contract",
+    "R10",
+    "Model constructor; scaler/schema/dataset hash",
+    "docs/contracts/model-bundle.md; training/pipeline.py hoặc inference/artifacts.py",
+    "Chốt version/config/features/horizons/scaler/checksum/calibration metadata; tạo interface load_bundle/predict_bundle đang thiếu.",
+    "Load/reload có test; corrupted checksum/schema mismatch bị reject; không nhận artifact chưa tin cậy."
+  ],
+  [
+    "R12",
+    "Nối CLI train và integration smoke",
+    "R11",
+    "configs/phase3_lstm.yaml; CLI placeholder; synthetic fixture",
+    "cli.py; tests/integration/test_training_bundle.py",
+    "Đọc/validate config, split storm, fit train scaler, train 1 epoch nhỏ, export/reload bundle, forecast 5 horizons trong tmp_path.",
+    "CLI chạy thật exit 0; config sai exit nonzero; output có provenance; demo không được gọi là metric bão thật."
+  ],
+  [
+    "R13",
+    "Nghiệm thu inference/API nháp",
+    "R12",
+    "inference/service.py; api/app.py; schemas.py; test DB",
+    "tests/test_inference.py; tests/test_api.py",
+    "Test observations/storm ID, stale/future, missing artifact, trained/baseline, auth, 429 và load-once.",
+    "Forecast qua bundle fixture; status đúng; source/time/model/uncertainty/disclaimer đủ; không NaN hoặc freshness cache sai."
+  ],
+  [
+    "R14",
+    "Đối chiếu gap vận hành",
+    "R13",
+    "Store create_all; Redis setex; worker JSON snapshot",
+    "docs/planning/evidence/R14-operational-gaps.md",
+    "Map migration/PostGIS, Redis read/invalidation, live provider/scheduler, alert ownership vào G18/G19/G20/G22.",
+    "Mỗi gap có task ID/reproducer/DoD; không tuyên bố production-ready; tiếp tục backlog theo phụ thuộc."
+  ]
+]

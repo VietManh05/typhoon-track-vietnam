@@ -1,12 +1,13 @@
 """Thread-safe, reusable forecasting with explicit model provenance."""
+
 import hashlib
-import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from threading import RLock
 
 from typhoon_vn.api.schemas import ForecastPoint, ForecastRequest, ForecastResponse
 from typhoon_vn.features.geo import bearing_deg, destination_point, haversine_km
+
 
 def circle(lat, lon, radius):
     ring = []
@@ -15,18 +16,24 @@ def circle(lat, lon, radius):
         ring.append([x, y])
     return {"type": "Polygon", "coordinates": [ring]}
 
+
 class TyphoonForecaster:
     def __init__(self, artifact: Path | None = None, allow_baseline=True):
         self.lock = RLock()
         self.bundle = None
         if artifact:
             from typhoon_vn.training.pipeline import load_bundle
+
             self.bundle = load_bundle(artifact)
         elif not allow_baseline:
             raise ValueError("A promoted model artifact is required")
-        self.version = self.bundle["manifest"]["version"] if self.bundle else "persistence-v1"
+        self.version = (
+            self.bundle["manifest"]["version"] if self.bundle else "persistence-v1"
+        )
         self.kind = "trained-model" if self.bundle else "motion-baseline"
-        self.dataset = self.bundle["manifest"]["dataset_version"] if self.bundle else "none"
+        self.dataset = (
+            self.bundle["manifest"]["dataset_version"] if self.bundle else "none"
+        )
 
     def key(self, request):
         body = request.model_dump_json() + self.version
@@ -50,33 +57,59 @@ class TyphoonForecaster:
             raise ValueError("Observation timestamp is in the future")
         if self.bundle:
             from typhoon_vn.training.pipeline import predict_bundle
+
             with self.lock:
                 coords, classes = predict_bundle(self.bundle, fixes, request.horizons)
-            radii = [self.bundle["manifest"]["validation_radius_km"][str(h)]
-                     for h in request.horizons]
-            uncertainty = "80th percentile validation radial error; not calibrated coverage"
-            warnings.append("Experimental model; held-out validation is not operational certification")
+            radii = [
+                self.bundle["manifest"]["validation_radius_km"][str(h)]
+                for h in request.horizons
+            ]
+            uncertainty = (
+                "80th percentile validation radial error; not calibrated coverage"
+            )
+            warnings.append(
+                "Experimental model; held-out validation is not operational certification"
+            )
         else:
             direction = bearing_deg(first.lat, first.lon, last.lat, last.lon)
-            coords = [destination_point(last.lat, last.lon, direction, speed*h)
-                      for h in request.horizons]
+            coords = [
+                destination_point(last.lat, last.lon, direction, speed * h)
+                for h in request.horizons
+            ]
             classes = [last.intensity] * len(coords)
-            radii = [max(30.0, h*5.0) for h in request.horizons]
-            uncertainty = "Illustrative radius 5 km/hour (minimum 30 km); not calibrated"
-            warnings.append("Untrained constant-motion baseline; illustrative uncertainty")
+            radii = [max(30.0, h * 5.0) for h in request.horizons]
+            uncertainty = (
+                "Illustrative radius 5 km/hour (minimum 30 km); not calibrated"
+            )
+            warnings.append(
+                "Untrained constant-motion baseline; illustrative uncertainty"
+            )
         if any(f.source == "synthetic-demo" for f in fixes):
             warnings.append("SYNTHETIC DEMO DATA - not a real storm")
         points = [
-            ForecastPoint(horizon_hours=h, valid_time=last.timestamp+timedelta(hours=h),
-                          lat=float(lat), lon=float(lon), intensity=str(intensity),
-                          radius_km=float(radius), cone=circle(lat, lon, radius))
+            ForecastPoint(
+                horizon_hours=h,
+                valid_time=last.timestamp + timedelta(hours=h),
+                lat=float(lat),
+                lon=float(lon),
+                intensity=str(intensity),
+                radius_km=float(radius),
+                cone=circle(lat, lon, radius),
+            )
             for h, (lat, lon), intensity, radius in zip(
-                request.horizons, coords, classes, radii)
+                request.horizons, coords, classes, radii
+            )
         ]
         return ForecastResponse(
-            forecast_id=self.key(request), storm_id=request.storm_id,
-            issue_time=last.timestamp, generated_at=datetime.now(timezone.utc),
-            model_version=self.version, model_kind=self.kind, dataset_version=self.dataset,
-            sources=sorted({f.source for f in fixes}), uncertainty_method=uncertainty,
-            warnings=warnings, points=points,
+            forecast_id=self.key(request),
+            storm_id=request.storm_id,
+            issue_time=last.timestamp,
+            generated_at=datetime.now(timezone.utc),
+            model_version=self.version,
+            model_kind=self.kind,
+            dataset_version=self.dataset,
+            sources=sorted({f.source for f in fixes}),
+            uncertainty_method=uncertainty,
+            warnings=warnings,
+            points=points,
         )

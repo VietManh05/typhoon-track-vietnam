@@ -1,0 +1,38 @@
+[
+  {
+    "id": "hoang_sa",
+    "name_vi": "Quần đảo Hoàng Sa",
+    "name_en": "Paracel Islands",
+    "sovereignty": "Việt Nam (TP. Đà Nẵng)",
+    "lat": 16.5,
+    "lon": 112.0,
+    "radius_km": 150
+  },
+  {
+    "id": "truong_sa",
+    "name_vi": "Quần đảo Trường Sa",
+    "name_en": "Spratly Islands",
+    "sovereignty": "Việt Nam (Tỉnh Khánh Hòa)",
+    "lat": 9.5,
+    "lon": 114.0,
+    "radius_km": 250
+  },
+  {
+    "id": "bach_long_vi",
+    "name_vi": "Đảo Bạch Long Vĩ",
+    "name_en": "Bach Long Vi Island",
+    "sovereignty": "Việt Nam (TP. Hải Phòng)",
+    "lat": 20.13,
+    "lon": 107.72,
+    "radius_km": 25
+  },
+  {
+    "id": "phu_quoc",
+    "name_vi": "TP. Phú Quốc",
+    "name_en": "Phu Quoc Island",
+    "sovereignty": "Việt Nam (Tỉnh Kiên Giang)",
+    "lat": 10.22,
+    "lon": 103.96,
+    "radius_km": 40
+  }
+]

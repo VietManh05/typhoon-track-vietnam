@@ -1,21 +1,26 @@
 """Validate planning structure without touching product code or running training."""
-from pathlib import Path
-import ast
+
 import hashlib
 import json
 import re
+from pathlib import Path
 
 root = Path.cwd()
 out = root / "docs/planning"
 catalog = json.loads((out / "task_catalog.json").read_text(encoding="utf-8"))
 source = root / catalog["source_file"]
 errors = []
+
+
 def check(ok, message):
     if not ok:
         errors.append(message)
 
-check(hashlib.sha256(source.read_bytes()).hexdigest() == catalog["source_sha256"],
-      "Source roadmap hash changed")
+
+check(
+    hashlib.sha256(source.read_bytes()).hexdigest() == catalog["source_sha256"],
+    "Source roadmap hash changed",
+)
 lines = source.read_text(encoding="utf-8").splitlines()
 expected = {i for i, line in enumerate(lines, 1) if re.match(r"^- \[[ xX]\]", line)}
 source_items = catalog["requirements"] + catalog["tasks"]
@@ -31,7 +36,19 @@ for t in catalog["tasks"] + catalog["supplemental_tasks"]:
     check((out / t["file"]).exists(), f"Missing card file: {t['id']}")
     card = (out / t["file"]).read_text(encoding="utf-8-sig")
     check(f'id="{t["anchor"]}"' in card, f"Missing anchor: {t['id']}")
-    check(t["status"] == "pending", f"Unverified WBS task marked complete: {t['id']}")
+    check(
+        t["status"] in {"pending", "in_progress", "complete"},
+        f"Invalid task status for {t['id']}: {t['status']}",
+    )
+    if t["status"] == "complete":
+        evidence = out / t["evidence"]
+        check(evidence.is_file(), f"Completed task missing evidence: {t['id']}")
+        if evidence.is_file():
+            evidence_text = evidence.read_text(encoding="utf-8-sig").lower()
+            check(
+                "complete" in evidence_text or "pass" in evidence_text,
+                f"Completed task evidence lacks result: {t['id']}",
+            )
     deps = re.findall(r"G\d{2}", t["dependencies"])
     if t.get("depends_on_task"):
         deps.append(t["depends_on_task"])
@@ -39,6 +56,8 @@ for t in catalog["tasks"] + catalog["supplemental_tasks"]:
 for t in catalog["priority_tasks"]:
     graph[t["id"]] = re.findall(r"R\d{2}", t["depends_on"])
 seen, visiting = set(), set()
+
+
 def visit(node):
     if node in visiting:
         errors.append("Dependency cycle at " + node)
@@ -51,6 +70,8 @@ def visit(node):
         visit(dep)
     visiting.remove(node)
     seen.add(node)
+
+
 for key in graph:
     visit(key)
 link_count = 0
@@ -80,12 +101,13 @@ report = {
     "priority_slice_tasks": len(catalog["priority_tasks"]),
     "dependency_nodes": len(graph),
     "links_checked": link_count,
-    "source_unchanged": hashlib.sha256(source.read_bytes()).hexdigest() == catalog["source_sha256"],
+    "source_unchanged": hashlib.sha256(source.read_bytes()).hexdigest()
+    == catalog["source_sha256"],
     "product_tests_run_this_turn": False,
     "errors": errors,
 }
 (out / "plan_validation.json").write_text(
-    json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+)
 print(json.dumps(report, ensure_ascii=False, indent=2))
 raise SystemExit(bool(errors))
-

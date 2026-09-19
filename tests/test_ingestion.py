@@ -93,7 +93,6 @@ class EnvironmentAndScheduleTests(unittest.TestCase):
         self.assertEqual(update_cadence(date(2024, 9, 1)), "daily")
         self.assertTrue(should_run_weekly(date(2024, 1, 1)))
 
-
     def test_builds_era5_pressure_level_request(self) -> None:
         request = Era5PressureLevelRequest(
             years=("2024",),
@@ -106,6 +105,7 @@ class EnvironmentAndScheduleTests(unittest.TestCase):
 
         self.assertEqual(payload["pressure_level"], ["850", "200"])
         self.assertIn("relative_humidity", payload["variable"])
+
 
 if __name__ == "__main__":
     unittest.main()

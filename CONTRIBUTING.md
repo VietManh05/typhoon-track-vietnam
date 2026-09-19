@@ -2,20 +2,19 @@
 
 ## Before contributing
 
-1. Use Python 3.11 and create `.env` from `.env.example`; never commit it.
-2. Install the development tools with `python -m pip install -e ".[api,dev,experiment]"`.
-3. Install the repository hooks with `pre-commit install`.
-4. Keep raw data, credentials, model checkpoints, and generated experiment
-   artefacts out of Git. Version approved datasets with DVC instead.
+1. Use Python 3.11 and create `.env` from `.env.example`; never commit local secrets.
+2. Install the groups needed by the change. For the full local test path: `python -m pip install -e ".[api,train,ingestion,dev]"`.
+3. Run `python -m pip check`. Install both hook stages with `pre-commit install --hook-type pre-commit --hook-type commit-msg` when the dev tool is available.
+4. Keep raw data, credentials, checkpoints, caches, and generated experiment artifacts out of Git. Version only approved/licensed datasets.
 
 ## Workflow
 
-- Create a short-lived branch from `main` using a descriptive name such as
-  `feat/ibtracs-ingestion` or `fix/timestamp-validation`.
-- Keep a pull request focused on one concern and include tests for behavioural
-  changes.
-- Run `make test` and `pre-commit run --all-files` before requesting review.
-- Record a dataset version and MLflow run ID for any model-result claim.
+- Local integration branches are `main` and `develop`. Start concrete feature work from `develop`.
+- Name a branch `feature/<task-id>-<short-slug>`, for example `feature/t18-001-typhoons-schema`. Do not create speculative empty branches. See [branch workflow](docs/branching.md).
+- Keep one task or documented task slice per branch and include tests/evidence for behavioral changes.
+- Run `python -m pytest -q --basetemp=.pytest-local` before review. Run `pre-commit run --all-files` when hooks are installed.
+- Record dataset/model/bundle versions and clearly label synthetic data, baselines, and uncertainty limitations.
+- Never checkout/reset a dirty user worktree, add files in bulk, rename a remote, or push without explicit authorization.
 
 ## Commit convention
 
@@ -25,27 +24,25 @@ Use Conventional Commits:
 <type>(optional-scope): imperative summary
 ```
 
-Allowed types are `feat`, `fix`, `docs`, `test`, `refactor`, `build`, `ci`,
-`chore`, and `perf`. Examples:
+Allowed types: `feat`, `fix`, `docs`, `test`, `refactor`, `build`, `ci`, `chore`, and `perf`. Use `!` or a `BREAKING CHANGE:` footer for incompatible changes.
+
+Examples:
 
 ```text
 feat(ingestion): parse IBTrACS timestamps as UTC
 fix(features): fit scaler only on training storms
-docs(architecture): clarify model-registry promotion
+docs(architecture): clarify model-bundle promotion
 ```
-
-Use `!` or a `BREAKING CHANGE:` footer for incompatible changes.
 
 ## Review checklist
 
-- No secret, raw dataset, checkpoint, or generated experiment output is added.
-- Timestamp and geographic-coordinate assumptions are explicit.
-- Train/validation/test leakage has been considered.
-- API-facing changes preserve the forecast disclaimer and provenance fields.
+- No secret, unapproved dataset, checkpoint, or generated experiment output is added.
+- Timezone, units, CRS, and geographic-coordinate assumptions are explicit.
+- Train/validation/test leakage and train-only preprocessing are considered.
+- API changes preserve source, issue/valid/generated times, model/dataset versions, uncertainty wording, warnings, and official-warning disclaimer.
+- New artifact loading validates schemas/checksums and fails closed.
+- Evidence records command, input, expected, actual, and exit code; file existence alone is not completion.
 
 ## Repository hosting
 
-The local repository has no upstream remote yet. A maintainer with access to
-the chosen host should add the remote, import/fork the approved baseline, and
-then make the first shared push. Do not guess an organisation or publish the
-repository without that approval.
+The configured remote is `origin` at `https://github.com/VietManh05/typhoon-track-vietnam.git`. Do not rename, replace, publish, or push it without maintainer authorization. Remote branch/protection settings require hosting access and must not be inferred from local refs.

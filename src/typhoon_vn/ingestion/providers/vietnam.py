@@ -3,11 +3,79 @@
 from __future__ import annotations
 
 import csv
-from datetime import datetime, timezone
+from dataclasses import dataclass, replace
+from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import Iterable
 
 from typhoon_vn.ingestion.identifiers import canonical_storm_id
 from typhoon_vn.ingestion.models import ImpactLabel, Observation
+
+
+@dataclass(frozen=True, slots=True)
+class ProvinceAlias:
+    """One source label mapped to an authority-reviewed effective interval."""
+
+    alias: str
+    canonical_code: str
+    canonical_name: str
+    valid_from: date
+    valid_to: date | None = None
+
+
+def map_province(
+    label: str,
+    event_time: datetime | None,
+    aliases: Iterable[ProvinceAlias],
+) -> tuple[str, str]:
+    """Map a province label only when its effective-date record is unambiguous."""
+
+    event_date = event_time.date() if event_time else None
+    matches = [
+        item
+        for item in aliases
+        if item.alias.casefold().strip() == label.casefold().strip()
+        and event_date is not None
+        and item.valid_from <= event_date
+        and (item.valid_to is None or event_date <= item.valid_to)
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"province mapping must resolve exactly once for {label!r} at {event_date}"
+        )
+    return matches[0].canonical_code, matches[0].canonical_name
+
+
+def deduplicate_impact_labels(labels: Iterable[ImpactLabel]) -> list[ImpactLabel]:
+    """Collapse exact event keys and retain conflicting source claims."""
+
+    grouped: dict[tuple[object, ...], list[ImpactLabel]] = {}
+    for label in labels:
+        key = (
+            label.storm_id,
+            label.province.casefold().strip(),
+            label.impact_type.casefold().strip(),
+            label.event_time,
+        )
+        grouped.setdefault(key, []).append(label)
+    result: list[ImpactLabel] = []
+    for group in grouped.values():
+        selected = group[0]
+        conflicts = [
+            {
+                "source_url": item.source_url,
+                "severity": item.severity,
+                "checksum": item.source_file_checksum,
+            }
+            for item in group[1:]
+            if item.severity != selected.severity
+            or item.source_file_checksum != selected.source_file_checksum
+        ]
+        metadata = {**selected.metadata, "duplicate_count": len(group)}
+        if conflicts:
+            metadata["conflicts"] = conflicts
+        result.append(replace(selected, metadata=metadata))
+    return result
 
 
 def parse_nchmf_csv(
@@ -58,6 +126,7 @@ def parse_impact_csv(
     *,
     source_url: str,
     checksum: str,
+    aliases: Iterable[ProvinceAlias] | None = None,
 ) -> list[ImpactLabel]:
     """Parse approved provincial impact labels without mixing them into tracks."""
 
@@ -66,24 +135,27 @@ def parse_impact_csv(
         for row in csv.DictReader(handle):
             source_id = (row.get("storm_id") or "UNKNOWN").strip()
             event_time = _parse_utc(row.get("event_time", ""))
+            province = (row.get("province") or "").strip()
+            metadata = {"reference": (row.get("reference") or "").strip() or None}
+            if aliases is not None:
+                province_code, province = map_province(province, event_time, aliases)
+                metadata["province_code"] = province_code
             labels.append(
                 ImpactLabel(
                     storm_id=canonical_storm_id(
                         source_id,
                         season=event_time.year if event_time else None,
                     ),
-                    province=(row.get("province") or "").strip(),
+                    province=province,
                     impact_type=(row.get("impact_type") or "unspecified").strip(),
                     severity=(row.get("severity") or "").strip() or None,
                     event_time=event_time,
                     source_url=source_url,
                     source_file_checksum=checksum,
-                    metadata={
-                        "reference": (row.get("reference") or "").strip() or None
-                    },
+                    metadata=metadata,
                 )
             )
-    return labels
+    return deduplicate_impact_labels(labels)
 
 
 def _parse_utc(value: str) -> datetime | None:

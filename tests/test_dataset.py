@@ -1,8 +1,5 @@
 """Tests for the multi-horizon dataset and split helpers."""
 
-import numpy as np
-import pytest
-
 from typhoon_vn.datasets.synthetic import generate_synthetic_catalogue
 from typhoon_vn.datasets.typhoon_dataset import (
     DatasetConfig,
@@ -14,7 +11,9 @@ from typhoon_vn.datasets.typhoon_dataset import (
 
 def test_split_by_storm_avoids_leakage() -> None:
     df = generate_synthetic_catalogue(n_storms=20, seed=1)
-    train, val, test = split_by_storm_or_year(df, val_ratio=0.2, test_ratio=0.2, by_year=False, random_seed=7)
+    train, val, test = split_by_storm_or_year(
+        df, val_ratio=0.2, test_ratio=0.2, by_year=False, random_seed=7
+    )
     train_ids = set(train["storm_id"].unique())
     val_ids = set(val["storm_id"].unique())
     test_ids = set(test["storm_id"].unique())
@@ -25,7 +24,9 @@ def test_split_by_storm_avoids_leakage() -> None:
 
 def test_split_by_year_orders_test_most_recent() -> None:
     df = generate_synthetic_catalogue(n_storms=30, start_year=2015, seed=2)
-    train, val, test = split_by_storm_or_year(df, val_ratio=0.15, test_ratio=0.15, by_year=True)
+    train, val, test = split_by_storm_or_year(
+        df, val_ratio=0.15, test_ratio=0.15, by_year=True
+    )
     assert test["timestamp"].dt.year.max() >= val["timestamp"].dt.year.max()
     assert val["timestamp"].dt.year.max() >= train["timestamp"].dt.year.max()
 

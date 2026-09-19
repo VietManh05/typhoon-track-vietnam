@@ -22,7 +22,6 @@ SRC = Path(__file__).resolve().parent.parent / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
@@ -51,25 +50,37 @@ def run() -> None:
 
     # 1. Synthetic catalogue
     df = generate_synthetic_catalogue(n_storms=40, n_fixes=45, seed=42)
-    print(f"Generated synthetic catalogue: {len(df)} fixes across {df['storm_id'].nunique()} storms")
+    print(
+        f"Generated synthetic catalogue: {len(df)} fixes across {df['storm_id'].nunique()} storms"
+    )
 
     # 2. Split by storm ID
     train_df, val_df, test_df = split_by_storm_or_year(
         df, val_ratio=0.15, test_ratio=0.15, by_year=False, random_seed=7
     )
-    print(f"Train storms: {train_df['storm_id'].nunique()}, val: {val_df['storm_id'].nunique()}, test: {test_df['storm_id'].nunique()}")
+    print(
+        f"Train storms: {train_df['storm_id'].nunique()}, val: {val_df['storm_id'].nunique()}, test: {test_df['storm_id'].nunique()}"
+    )
 
     # 3. Multi-horizon dataset
-    config = DatasetConfig(input_len=6, horizon=(1, 2, 4, 8, 12))  # 6h, 12h, 24h, 48h, 72h
+    config = DatasetConfig(
+        input_len=6, horizon=(1, 2, 4, 8, 12)
+    )  # 6h, 12h, 24h, 48h, 72h
     train_ds = TyphoonDataset(train_df, config=config)
     val_ds = TyphoonDataset(val_df, config=config)
     test_ds = TyphoonDataset(test_df, config=config)
     print(f"Train samples: {len(train_ds)}, val: {len(val_ds)}, test: {len(test_ds)}")
-    print(f"Features: {train_ds.n_features}, horizons: {train_ds.n_horizons}, classes: {train_ds.n_classes}")
+    print(
+        f"Features: {train_ds.n_features}, horizons: {train_ds.n_horizons}, classes: {train_ds.n_classes}"
+    )
 
-    train_loader = DataLoader(train_ds, batch_size=16, shuffle=True, collate_fn=collate_fn)
+    train_loader = DataLoader(
+        train_ds, batch_size=16, shuffle=True, collate_fn=collate_fn
+    )
     val_loader = DataLoader(val_ds, batch_size=16, shuffle=False, collate_fn=collate_fn)
-    test_loader = DataLoader(test_ds, batch_size=16, shuffle=False, collate_fn=collate_fn)
+    test_loader = DataLoader(
+        test_ds, batch_size=16, shuffle=False, collate_fn=collate_fn
+    )
 
     loss_fn = MultiHorizonLoss(
         n_horizons=train_ds.n_horizons,
@@ -123,7 +134,9 @@ def run() -> None:
         )
         trainer = Trainer(model, trainer_config, loss_fn)
         fit_result = trainer.fit(train_loader, val_loader)
-        print(f"Best val loss: {fit_result['best_val_loss']:.4f} at epoch {fit_result['best_epoch']}")
+        print(
+            f"Best val loss: {fit_result['best_val_loss']:.4f} at epoch {fit_result['best_epoch']}"
+        )
 
         # Evaluate on test set
         model.eval()
@@ -133,7 +146,9 @@ def run() -> None:
         all_actual_cls: list[torch.Tensor] = []
         with torch.no_grad():
             for batch in test_loader:
-                out = model(batch["x"].to(trainer.device), batch["mask"].to(trainer.device))
+                out = model(
+                    batch["x"].to(trainer.device), batch["mask"].to(trainer.device)
+                )
                 all_pred_reg.append(out["reg"].cpu())
                 all_actual_reg.append(batch["y_reg"])
                 all_pred_cls.append(out["cls"].cpu())
@@ -149,8 +164,12 @@ def run() -> None:
         acc = intensity_accuracy(pred_cls, actual_cls)
 
         horizon_hours = [6 * h for h in config.horizon]
-        print(f"Mean track error (km) by horizon: {dict(zip(horizon_hours, [round(float(e), 1) for e in mean_errors]))}")
-        print(f"Intensity accuracy by horizon: {dict(zip(horizon_hours, [round(float(a), 3) for a in acc]))}")
+        print(
+            f"Mean track error (km) by horizon: {dict(zip(horizon_hours, [round(float(e), 1) for e in mean_errors]))}"
+        )
+        print(
+            f"Intensity accuracy by horizon: {dict(zip(horizon_hours, [round(float(a), 3) for a in acc]))}"
+        )
 
         results[name] = {
             "best_val_loss": float(fit_result["best_val_loss"]),
@@ -176,7 +195,8 @@ def run() -> None:
         cone = build_cone(lat, lon, radius, n_points=16)
         print(
             f"  {hours}h: center=({lat:.2f}, {lon:.2f}), "
-            f"std=({stds[i, 0]:.3f}, {stds[i, 1]:.3f}), cone_radius={radius:.1f} km"
+            f"std=({stds[i, 0]:.3f}, {stds[i, 1]:.3f}), "
+            f"cone_radius={radius:.1f} km, cone_points={len(cone)}"
         )
 
     # Save results

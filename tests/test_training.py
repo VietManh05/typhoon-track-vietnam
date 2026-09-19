@@ -1,6 +1,5 @@
 """Tests for the training loop and evaluation metrics."""
 
-import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
@@ -11,11 +10,7 @@ from typhoon_vn.datasets.typhoon_dataset import (
     collate_fn,
     split_by_storm_or_year,
 )
-from typhoon_vn.evaluation.metrics import (
-    along_cross_track_errors,
-    intensity_accuracy,
-    track_error_km,
-)
+from typhoon_vn.evaluation.metrics import intensity_accuracy, track_error_km
 from typhoon_vn.models.lstm import LSTMTrackForecaster
 from typhoon_vn.training.losses import MultiHorizonLoss
 from typhoon_vn.training.trainer import Trainer, TrainingConfig
@@ -54,11 +49,15 @@ def test_multi_horizon_loss_runs() -> None:
 
 def test_trainer_runs_one_epoch(tmp_path) -> None:
     df = generate_synthetic_catalogue(n_storms=6, seed=21)
-    train_df, val_df, _ = split_by_storm_or_year(df, val_ratio=0.3, test_ratio=0.0, random_seed=8)
+    train_df, val_df, _ = split_by_storm_or_year(
+        df, val_ratio=0.3, test_ratio=0.0, random_seed=8
+    )
     config = DatasetConfig(input_len=4, horizon=(1, 2, 4))
     train_ds = TyphoonDataset(train_df, config=config)
     val_ds = TyphoonDataset(val_df, config=config)
-    train_loader = DataLoader(train_ds, batch_size=4, collate_fn=collate_fn, shuffle=True)
+    train_loader = DataLoader(
+        train_ds, batch_size=4, collate_fn=collate_fn, shuffle=True
+    )
     val_loader = DataLoader(val_ds, batch_size=4, collate_fn=collate_fn)
 
     model = LSTMTrackForecaster(
@@ -68,7 +67,9 @@ def test_trainer_runs_one_epoch(tmp_path) -> None:
         hidden_size=32,
         num_layers=1,
     )
-    loss_fn = MultiHorizonLoss(n_horizons=train_ds.n_horizons, n_classes=train_ds.n_classes)
+    loss_fn = MultiHorizonLoss(
+        n_horizons=train_ds.n_horizons, n_classes=train_ds.n_classes
+    )
     trainer_config = TrainingConfig(
         epochs=2,
         batch_size=4,

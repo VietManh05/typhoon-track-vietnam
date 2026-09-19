@@ -1,0 +1,14 @@
+stages:
+  phase2-fixture:
+    cmd: >-
+      .\.venv\Scripts\python.exe scripts/build_phase2_fixture.py
+      tests/fixtures/phase2_track.csv
+      data/processed/phase2-fixture.parquet
+    deps:
+      - scripts/build_phase2_fixture.py
+      - tests/fixtures/phase2_track.csv
+      - src/typhoon_vn/features
+    outs:
+      - data/processed/phase2-fixture.parquet
+      - data/processed/phase2-fixture.quality.json
+      - data/processed/phase2-fixture.manifest.json

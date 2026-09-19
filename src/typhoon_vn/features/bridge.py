@@ -57,9 +57,7 @@ def _wind_to_ms(values: pd.Series, units: pd.Series) -> pd.Series:
     if unknown.any():
         labels = sorted(normalised.loc[unknown].fillna("<missing>").unique().tolist())
         raise ValueError(f"unsupported wind units: {labels}")
-    factor = (
-        normalised.map(WIND_UNIT_TO_MS).astype(float)
-    )
+    factor = normalised.map(WIND_UNIT_TO_MS).astype(float)
     return numeric * factor
 
 
@@ -133,6 +131,19 @@ def to_canonical_frame(
     """Map raw Phase 1 rows onto the canonical cleaned-track schema."""
 
     schema = schema or SCHEMA
+    raw_required = {
+        "storm_id",
+        "timestamp",
+        "latitude",
+        "longitude",
+        "wind",
+        "wind_unit",
+        "pressure_hpa",
+        "source",
+    }
+    missing = sorted(raw_required - set(raw.columns))
+    if missing:
+        raise ValueError(f"raw observation schema missing required columns: {missing}")
     frame = raw.copy()
     frame["wind_ms"] = _wind_to_ms(frame["wind"], frame["wind_unit"])
     frame["pressure_hpa"] = pd.to_numeric(frame["pressure_hpa"], errors="coerce")

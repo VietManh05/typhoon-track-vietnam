@@ -12,6 +12,8 @@ class TrackForecaster(nn.Module):
     All concrete models must return a dict with at least:
       - ``reg``: tensor ``(B, H, 2)`` for lat/lon regression
       - ``cls``: tensor ``(B, H, C)`` for intensity classification logits
+      - ``wind`` (optional): tensor ``(B, H, 1)`` in m/s
+      - ``pressure`` (optional): tensor ``(B, H, 1)`` in hPa
       - ``attn`` (optional): attention weights for interpretability
 
     Concrete subclasses should set ``_n_horizons`` and ``_n_classes`` in
@@ -25,7 +27,9 @@ class TrackForecaster(nn.Module):
     _n_horizons: int = 1
     _n_classes: int = 7
 
-    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+    def forward(
+        self, x: torch.Tensor, mask: torch.Tensor | None = None
+    ) -> dict[str, torch.Tensor]:
         raise NotImplementedError
 
     def encode(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:

@@ -1,0 +1,262 @@
+BAO CAO CHI TIET DU AN
+HE THONG HO TRO DU BAO DUONG DI BAO VIET NAM
+
+1. THONG TIN CHUNG
+
+Ten du an: Typhoon VN Forecast System
+Phien ban khai bao: 0.1.0
+Ngon ngu va nen tang: Python 3.11, PyTorch, FastAPI, Pydantic, Pandas, NumPy.
+Giay phep: MIT.
+Thoi diem danh gia: 19/09/2026.
+
+Muc tieu cua du an la xay dung he thong ho tro ra quyet dinh cho viec du bao
+duong di xoay thuan nhiet doi co kha nang anh huong Viet Nam va Bien Dong.
+He thong xu ly du lieu best-track va du lieu moi truong, tao dac trung, huan
+luyen mo hinh du bao nhieu moc thoi gian, cung cap API va co so de hien thi
+ban do/canh bao.
+
+Gioi han an toan: San pham chi mang tinh chat tham khao va ho tro nghiep vu.
+No khong phai ban tin du bao khi tuong chinh thuc. Moi ket qua tra ra phai
+kem nguon du lieu, thoi diem phat hanh, phien ban mo hinh, thong tin bat dinh
+va canh bao nguoi dung tuan theo huong dan cua NCHMF.
+
+2. BAI TOAN VA PHAM VI
+
+Du an giai quyet bai toan du bao vi tri tam bao trong cac moc 6, 12, 24, 48
+va 72 gio. Dau vao la chuoi quan sat gan nhat cua mot con bao: thoi gian UTC,
+vi do, kinh do, gio, ap suat, cap cuong do va nguon du lieu. Dau ra gom cac
+diem du bao, thoi diem hieu luc, nhan cuong do, ban kinh bat dinh, vung cone
+dang GeoJSON, phien ban mo hinh, phien ban du lieu va canh bao han che.
+
+Pham vi da duoc thiet ke:
+- Thu nhan, phan tich va bao toan nguon goc du lieu bao.
+- Lam sach, hop nhat da nguon, tao dac trung khong gian - thoi gian.
+- Xay dung dataset chuoi, chia du lieu khong lam ro ri thong tin giua bao.
+- Huan luyen baseline va mo hinh hoc sau; danh gia bang sai so khoang cach.
+- Dong goi mo hinh co checksum, phuc vu du bao qua HTTP API.
+- Luu tru quan sat, cache ket qua, canh bao nhap va ha tang phat trien Docker.
+
+Ngoai pham vi hien tai:
+- Phat hanh canh bao khi tuong chinh thuc.
+- Gui SMS, email, Zalo, Telegram hoac push notification thuc te. Ma nguon chi
+  tao ban nhap canh bao, khong tu dong gui ra ben ngoai.
+- Danh gia tac dong day du ve gio, mua, lu, song, do bo hoac cap tinh. Endpoint
+  impact chi tinh khoang cach diem den duong du bao minh hoa.
+- Chung nhan van hanh, calibration thong ke day du va tich hop dashboard web
+  hoan chinh trong phien danh gia nay.
+
+3. KIEN TRUC TONG THE
+
+Luong xu ly logic:
+
+CMA / JTWC / JMA / IBTrACS / NCHMF / ERA5 / NOAA OISST
+  -> ingestion va kiem tra
+  -> chuan hoa, khop trung va luu tru co phien ban
+  -> feature builder va feature store
+  -> train, danh gia, model bundle/registry
+  -> FastAPI inference
+  -> dashboard, danh gia diem gan va canh bao nhap.
+
+Cac thanh phan duoc tach thanh module doc lap, vi vay co the kiem thu, thay
+the va trien khai rieng:
+- ingestion: tai, parse, chuan hoa va luu nguon du lieu.
+- features: lam sach, chuyen doi du lieu quan sat va tao bien dau vao.
+- datasets: tao cua so chuoi thoi gian va tach tap train/validation/test.
+- models va training: baseline, LSTM, Transformer, loss, checkpoint, bundle.
+- evaluation: sai so track, sai so doc/ngang track va do chinh xac cuong do.
+- inference va api: nap artifact, kiem tra dau vao, du bao va public HTTP API.
+- operations: luu tru van hanh, xu ly cap nhat va tao alert draft.
+- infra: Dockerfile, Docker Compose va cron scheduler.
+
+4. DU LIEU VA QUAN TRI NGUON GOC
+
+Nguon du lieu duoc tich hop/thiet ke adapter gom CMA, JTWC, JMA, IBTrACS va
+NCHMF; nhan tac dong PCTT duoc luu tach khoi track. Roadmap con du kien dung
+ERA5, NOAA OISST va du lieu du bao moi truong. Du lieu thuan theo WGS84 va
+thoi gian UTC.
+
+Moi Observation bat buoc co source, source_storm_id, storm_id, timestamp,
+latitude, longitude, source_url va SHA-256 cua tep nguon. He thong tu choi:
+- toa do nam ngoai gioi han WGS84;
+- timestamp khong co timezone;
+- gia tri wind/pressure khong huu han;
+- don vi gio khong nam trong tap da ho tro (kt, knot, knots, m/s, ms).
+
+Raw observation duoc ghi thanh Parquet, phan vung theo nguon va nam UTC. Qua
+trinh ghi dung tep tam roi doi ten, giup tranh sinh part file do dang khi ghi
+loi. File nguon duoc bam SHA-256 de co the truy vet chinh xac object da parse.
+
+Khi hop nhat da nguon, hai quan sat chi duoc xem la trung neu cung storm_id da
+duoc resolve, chenh thoi gian khong qua 3 gio va cach nhau khong qua 75 km.
+Thu tu uu tien la IBTrACS, JTWC, JMA, CMA, NCHMF. Gia tri mau thuan khong bi
+trung binh hoa; ban ghi duoc chon giu thong tin cac nguon khac trong metadata
+source_conflicts. Cach lam nay uu tien kha nang kiem toan hon la che giau sai
+khac giua cac co quan.
+
+5. LAM SACH VA TAO DAC TRUNG
+
+FeatureBuilder cung cap mot duong tao dac trung dung chung cho huan luyen va
+suy luan, giam nguy co training-serving skew. Danh sach feature co thu tu co
+dinh va gom:
+- Vi tri hien tai, chenh lech vi do/kinh do va do tre 1-3 buoc.
+- Dong hoc: quang duong buoc, bearing, toc do km/h, gia toc, goc re va toc do
+  re. Timestamp trung/lui khong bi gan khoang cach 6 gio gia tao.
+- Thoi gian: sin/cos cua gio, ngay, thang, ngay trong nam; co in_season.
+- Dia ly: khoang cach, bearing toi bo bien Viet Nam va cac diem tham chieu.
+- Cuong do: wind m/s, pressure hPa, bien doi gio/ap suat va one-hot cap bao.
+
+FeatureScaler chi fit tren tap train, luu thu tu cot, gia tri bu, mean va scale
+de dung lai o validation, test va inference. Scaler tu choi schema thieu, thua
+hoac doi thu tu cot; xu ly cot toan NaN/Inf de khong lam nhiem ket qua.
+
+6. DATASET, MO HINH VA HUAN LUYEN
+
+Dataset tao cua so dau vao co cau hinh duoc. Cau hinh LSTM mau dung 4 quan sat
+cach nhau 6 gio va du bao cac horizon 1, 2, 4, 8, 12 buoc, tuong ung 6-72 gio.
+Du lieu duoc tach theo toan bo storm_id hoac theo nam, tranh dua cac diem cua
+cung mot con bao vao ca train va test.
+
+Mo hinh va baseline hien co:
+- Persistence/motion baseline dung huong va toc do cua hai quan sat gan nhat.
+- LSTMTrackForecaster: du bao dong thoi toa do va lop cuong do nhieu horizon.
+- Seq2Seq LSTM va Attention LSTM trong khung mo hinh.
+- TransformerTrackForecaster cho thu nghiem chuoi thoi gian.
+- CLIPERForecaster lam baseline khi so sanh mo hinh.
+
+Loss ket hop hoi quy vi tri va phan loai cuong do; ho tro Smooth L1 hoac
+Haversine cho phan hoi quy. Cau hinh mau su dung LSTM 2 layer, hidden size
+128, dropout 0.2, Adam learning rate 0.001, weight decay 1e-5, gradient clip
+1.0, scheduler cosine, toi da 100 epoch va early stopping patience 10.
+
+Metric danh gia gom track error bang khoang cach Haversine (km), thanh phan
+sai so doc track/ngang track va accuracy cuong do theo tung horizon.
+
+7. MODEL BUNDLE VA TINH TAI LAP
+
+Model sau huan luyen duoc dong goi thanh thu muc gom weights.pt, scaler.json,
+split-manifest.json va manifest.json. Manifest luu phien ban, dataset version,
+SHA-256 dataset, cau hinh model, input length, horizon, feature schema hash,
+nhan cuong do, ban kinh validation va checksum tung file.
+
+Khi nap model, he thong allowlist loai LSTM, kiem tra day du schema manifest,
+checksum, kich thuoc feature, horizon, so lop dau ra va scaler state. PyTorch
+duoc nap voi weights_only=True. Do do artifact bi thay the hoac sai contract
+se bi tu choi truoc khi phuc vu du bao.
+
+Ban kinh uncertainty cua trained model hien duoc mo ta la percentile sai so
+radial tren validation, chua phai do bao phu da calibration. Baseline dung ban
+kinh minh hoa max(30 km, 5 km x so gio). Ca hai deu gan canh bao ro rang.
+
+8. API VA VAN HANH
+
+FastAPI cung cap cac endpoint:
+- GET /health: trang thai tien trinh va moi truong.
+- GET /ready: kiem tra ket noi database va version forecaster.
+- GET /version: version ung dung, model, loai model va dataset.
+- POST /forecast: du bao theo quan sat gui len hoac track da luu.
+- GET /typhoons/active va /typhoons/{storm_id}/track.
+- GET /typhoons/{storm_id}/impact: khoang cach diem den cac forecast point.
+- POST /observations: ghi batch quan sat va cap nhat du bao.
+- POST /subscriptions, GET /alerts: quan ly subscription va alert draft.
+- GET /metrics: metric dem request/error/cache, co bao ve xac thuc.
+
+API validate nghiem ngat timestamp UTC, vi do/kinh do, gio, ap suat, cuong do,
+storm ID, thu tu quan sat va horizon hop le. Mot request du bao phai co it nhat
+2 quan sat; interval gan nhat phai trong 0-24 gio; toc do suy ra phai <=150
+km/h; timestamp qua tuong lai bi tu choi. Ket qua cu khong qua 24 gio duoc gan
+canh bao freshness.
+
+Bao ve van hanh hien co API key X-API-Key, compare_digest, rate limit theo IP,
+gioi han cardinality, security headers nosniff/same-origin/DENY va cache database.
+Redis la tuy chon; khi Redis loi, database cache van duoc dung. Production bat
+buoc co API_KEY va khong duoc cho phep baseline.
+
+Worker validate toan bo snapshot truoc khi ghi, upsert quan sat, tao forecast,
+so sanh cone voi ban kinh subscription va luu alert draft idempotent. Worker
+khong gui thong bao ra he thong ben ngoai.
+
+9. HA TANG VA PHAT TRIEN
+
+Du an dung pyproject.toml lam khai bao dependency chinh. Nhom api bao gom
+FastAPI/Uvicorn/SQLAlchemy/PostgreSQL/Redis; train gom PyTorch, Pandas,
+scikit-learn; ingestion gom cdsapi, netCDF4, pyarrow, xarray; experiment dung
+DVC va MLflow; dev co pytest, black, isort, flake8 va pre-commit.
+
+Docker Compose dinh nghia API, PostGIS 16, Redis 7.4 va MinIO. Day la ha tang
+phat trien, voi credential mac dinh local-only; khong duoc dua credential nay
+vao moi truong chia se/production. Scheduler cron co file cau hinh rieng.
+
+10. KIEM THU VA KET QUA KIEM CHUNG
+
+Bao cao tien do ghi nhan mot lan full suite dat 49 passed, 2 canh bao trong
+10.45 giay sau khi hoan thanh R01-R09. Pham vi test bao gom ingestion parser,
+canonical identifier, merge da nguon, luu Parquet atomic, feature/scaler,
+dataset split, model, training, resume checkpoint, model bundle va health API.
+
+Lan kiem chay tai thoi diem lap bao cao dung lenh:
+  .venv\Scripts\python.exe -m pytest -q
+
+Ket qua: dung o giai doan collection voi 1 loi trong tests/test_health.py.
+Nguyen nhan truc tiep la bien moi truong DEBUG co gia tri "release", trong khi
+Settings.debug khai bao bool va Pydantic khong the parse gia tri nay. Thu muc
+du an khong co tep .env, nen gia tri nay den tu moi truong cua phien chay.
+Hai warning con lai lien quan deprecation cua FastAPI/Starlette TestClient.
+
+Y nghia: khong the khang dinh full suite dang xanh o moi truong hien tai. Tuy
+nhien loi nay la cau hinh runtime, xay ra truoc khi test nghiep vu chay, khong
+phai metric danh gia do chinh xac du bao. Can dat DEBUG=false hoac bo bien nay
+roi chay lai full suite trong moi truong sach.
+
+11. DANH GIA HIEN TRANG
+
+Da co nen tang ky thuat tot cho proof-of-concept va nghien cuu: contract du
+lieu ro rang, truy vet SHA-256, xu ly ro ri train/test, feature dung chung,
+bundle co kiem tra toan ven, API validation va guardrail an toan. Ma nguon API
+va inference hien da ton tai, do do mo ta cu trong README rang API chi co
+health/version da khong con phan anh day du codebase hien tai.
+
+Chua du dieu kien de coi la he thong canh bao van hanh: chua co chung nhan
+accuracy tren du lieu thuc te cong bo, uncertainty chua calibration, dashboard
+chua duoc kiem chung hoan chinh, delivery canh bao chua duoc phep/gui thuc,
+Docker Desktop chua duoc chay tai workspace theo README, va full suite dang
+bi chan boi cau hinh DEBUG.
+
+12. RUI RO VA KHUYEN NGHI
+
+- Khac biet nguon bao: Giua CMA/JTWC/JMA/IBTrACS co the lech thoi diem/vi tri.
+  Can luu conflict, review mau va lap bao cao chat luong theo nguon.
+- Ro ri thoi gian: Phai duy tri split theo storm hoac nam va fit scaler train-only.
+- Generalization: Synthetic test khong thay the validation bang bao lich su thuc.
+  Can cong bo error km theo 6/12/24/48/72h va theo khu vuc/mua.
+- Uncertainty: Cone hien chua la xac suat bao phu da hieu chinh. Can calibration,
+  coverage check, reliability report va nguong chan release.
+- Operational safety: Khong duoc goi endpoint impact la du bao tac dong. Can
+  giu disclaimer, provenance, model version va thong tin freshness tren UI.
+- Cau hinh: Tach app_env (vi du development/release) va debug (true/false),
+  bo bien DEBUG=release hoac sua script moi truong truoc CI/CD.
+- Bao mat: Xoay API key, thay credential Docker mac dinh, dat secret trong kho
+  secret cua moi truong trien khai va bo sung rate-limit phan tan neu scale ngang.
+
+13. KE HOACH UU TIEN TIEP THEO
+
+1. Sua cau hinh DEBUG, chay lai pytest, lint va smoke test API trong moi truong
+   sach; luu evidence co timestamp.
+2. Nap va kiem dinh dataset that tu cac nguon da ho tro; lap data-quality report
+   ve ty le thieu, conflict, duplicate, coverage theo nam va khu vuc.
+3. Huan luyen baseline va LSTM tren du lieu that; bao cao metric theo horizon,
+   so sanh voi persistence/CLIPER va phan tich error theo bao.
+4. Calibration uncertainty va dat acceptance criteria truoc khi promote bundle.
+5. Hoan thien dashboard hien thi track, cone, metadata, warning va freshness.
+6. Tich hop quan sat theo lich, model registry, monitoring, CI/CD, backup va
+   quy trinh rollback. Chi xem xet kenh canh bao sau khi duoc phe duyet nghiep vu.
+
+14. KET LUAN
+
+Typhoon VN Forecast System da co mot nen tang phan mem va machine learning co
+cau truc ro rang, chu trong truy vet du lieu, tranh ro ri va bao ve nguoi dung.
+He thong phu hop cho giai doan phat trien/thu nghiem nghien cuu ve du bao duong
+di bao Viet Nam. De dat muc production-ready, du an can uu tien kiem chung tren
+du lieu thuc, sua cau hinh test, chuan hoa danh gia uncertainty, hoan thien UI
+va thiet lap quy trinh van hanh co giam sat. Trong moi truong su dung thuc te,
+ket qua cua he thong phai luon duoc xem la goi y bo sung, khong thay the ban tin
+cua co quan khi tuong co tham quyen.

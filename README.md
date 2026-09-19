@@ -1,97 +1,90 @@
 # Typhoon VN Forecast System
 
-An operational-support system for tropical-cyclone track forecasting focused on
-Vietnam and the East Sea. It is designed to turn best-track observations and
-environmental data into reproducible training, multi-horizon forecasts, an API,
-and a map-based dashboard. Forecasts are decision support only, not official
-weather warnings.
+Vietnam-focused tropical-cyclone track forecasting research and decision-support software. It ingests source observations, builds leakage-aware features and multi-horizon datasets, trains PyTorch models, exports validated bundles, and serves forecasts through FastAPI.
+
+> **Safety:** forecasts are decision support only, not official weather warnings. Follow NCHMF and competent authorities for operational decisions.
+
+## Verified status
+
+The local test path currently covers ingestion, feature contracts, storm-safe splitting, train-only scaling, deterministic checkpoint/resume, model-bundle integrity, synthetic training smoke, trained/baseline inference, and API validation/auth/rate limiting.
+
+This repository is **not production-ready**. PostGIS/Alembic migrations, Redis read/invalidation, a live-provider worker, subscription ownership, and alert delivery remain backlog items. Synthetic smoke results and the constant-motion baseline are not evidence of real-storm forecast skill.
 
 ## Architecture
 
 ```text
-CMA / JTWC / JMA / IBTrACS / NCHMF / ERA5 / SST
-                    |
-                    v
-     ingestion -> validation -> features -> versioned storage
-                    |
-                    v
-  train / evaluate / registry (LSTM, later attention and ensemble)
-                    |
-                    v
-       FastAPI inference -> dashboard -> alert channels
+source providers -> canonical UTC observations -> cleaning/features
+                 -> storm-safe datasets -> train/evaluate
+                 -> checksum-validated model bundle
+                 -> reusable inference service -> FastAPI
 ```
 
-The module boundaries follow this flow so ingestion, modelling, serving, and
-visualisation can be tested and deployed independently. The detailed design is
-in [docs/architecture.md](docs/architecture.md).
+See [architecture](docs/architecture.md), [observation contract](docs/contracts/observations.md), [feature contract](docs/contracts/features.md), and [model-bundle contract](docs/contracts/model-bundle.md).
 
-## Current status
+## Requirements
 
-Phases 0-1 establish repository conventions, a development environment, and a
-source-aware data-ingestion pipeline. The API currently exposes only health and
-version endpoints; model inference and forecast endpoints intentionally belong
-to later roadmap phases.
+- Python 3.11
+- PowerShell commands below assume Windows; equivalent shell commands work elsewhere.
+- Docker is optional for local API/unit tests and has not been used to prove the PostGIS/Redis production path.
 
-## Data ingestion
-
-The Phase 1 pipeline preserves source files, records SHA-256 provenance, parses
-supported best-track formats, and partitions canonical raw observations by source
-and UTC year. Consult [docs/data-ingestion.md](docs/data-ingestion.md) before
-downloading or processing a source.
-
-## Quick start
-
-The project is pinned to Python 3.11 (see `.python-version`). Use a Python 3.11
-environment rather than the system interpreter if it is another version.
+## Setup
 
 ```powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-Copy-Item .env.example .env
 python -m pip install --upgrade pip
-python -m pip install -e ".[api,dev,experiment]"
-pre-commit install
+python -m pip install -e ".[api,train,ingestion,dev]"
+python -m pip check
+python -m pytest -q --basetemp=.pytest-local
+```
+
+The project is installed editable as `typhoon-vn-forecast-system`; `pyproject.toml` is the authoritative dependency declaration.
+
+## CLI
+
+Inspect the available commands:
+
+```powershell
+python -m typhoon_vn.cli --help
+python -m typhoon_vn.cli train --help
+```
+
+Run the configured LSTM experiment and export a reloadable bundle:
+
+```powershell
+python -m typhoon_vn.cli train --config configs/phase3_lstm.yaml --output-dir runs/phase3-lstm
+```
+
+The checked-in configuration uses 100 epochs and is not a quick command. The integration test uses a one-epoch synthetic fixture in a temporary directory. CLI output labels such runs `synthetic-demo`; do not report them as real-storm metrics.
+
+## API
+
+Start the development API:
+
+```powershell
 python -m uvicorn typhoon_vn.api.app:app --reload
 ```
 
-Open `http://127.0.0.1:8000/docs` to inspect the starter API. On systems with
-GNU Make, `make setup`, `make serve`, and `make test` provide the same common
-workflow.
+Then open <http://127.0.0.1:8000/docs>. Implemented routes include health/readiness/version, forecast, active storms, track/impact, observation ingestion, subscriptions, and draft alerts. Production mode requires an API key and disables baseline fallback; the current operational store is still a draft and must not be treated as a migrated PostGIS deployment.
 
 ## Local services
 
-Docker Compose defines development-only PostGIS, Redis, MinIO, and API services.
-After copying `.env.example` to `.env`, run:
+`docker-compose.yml` declares development PostGIS, Redis, MinIO, and API services:
 
 ```powershell
 docker compose up --build
 ```
 
-The default credentials are for local development only and must be replaced in
-any shared environment. Docker Desktop is not installed in the current
-workspace, so this command has not been executed here.
+This compose path is not currently accepted as production evidence: migration, environment naming, cache read/invalidation, and worker-service gaps are documented in [R14 operational gaps](docs/planning/evidence/R14-operational-gaps.md).
 
-## Dependency groups
+## Data and provenance
 
-- `api`: FastAPI and Uvicorn for serving.
-- `train`: data-science and PyTorch packages for training images/environments.
-- `experiment`: DVC and MLflow for data and experiment provenance.
-- `dev`: testing, formatting, linting, and pre-commit tooling.
+See [data ingestion](docs/data-ingestion.md) before downloading or processing any source. Raw data, checkpoints, local secrets, caches, and experiment artifacts are ignored by Git. User-facing forecasts retain source, issue time, model/dataset version, uncertainty wording, warnings, and disclaimer.
 
-`pyproject.toml` is the authoritative dependency declaration. The two
-`requirements-*.txt` files are small deployment selectors for the API and
-training images; they do not independently pin packages.
+## Repository workflow
 
-## Source baseline and Git hosting
+The existing remote is `origin` at `VietManh05/typhoon-track-vietnam`. Local `main` and `develop` branches exist. Follow [branch workflow](docs/branching.md) and [contribution guidance](CONTRIBUTING.md); do not push or rename the remote without explicit authorization.
 
-This local repository has been initialized with the `main` branch. The roadmap
-names `VietManh05/typhoon-track-vietnam` as the code baseline, but no remote
-repository, clone URL, or hosting credentials were supplied. Add an approved
-remote and import that baseline before making a first shared push; see
-[CONTRIBUTING.md](CONTRIBUTING.md).
+## License
 
-## Safety note
-
-This software must not be presented as an official warning product. Any
-user-facing forecast should include its data source, issue time, model version,
-uncertainty, and a clear official-warning disclaimer.
+Released under the [MIT License](LICENSE).

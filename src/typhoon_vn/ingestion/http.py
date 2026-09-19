@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import os
 import time
 from dataclasses import dataclass
@@ -11,8 +12,10 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from typhoon_vn.ingestion.errors import DownloadError
+from typhoon_vn.ingestion.errors import DownloadError, DownloadTimeoutError
 from typhoon_vn.ingestion.models import DownloadResult
+
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,6 +61,9 @@ class HttpDownloader:
                             handle.write(chunk)
                             digest.update(chunk)
                             bytes_written += len(chunk)
+                    if bytes_written == 0:
+                        temporary.unlink(missing_ok=True)
+                        raise DownloadError(f"empty response body for {url}")
                     checksum = digest.hexdigest()
                     if expected_sha256 and checksum.lower() != expected_sha256.lower():
                         temporary.unlink(missing_ok=True)
@@ -77,9 +83,26 @@ class HttpDownloader:
                         last_modified=response.headers.get("Last-Modified"),
                     )
             except (HTTPError, URLError, TimeoutError, DownloadError) as error:
+                if isinstance(error, TimeoutError):
+                    error = DownloadTimeoutError(
+                        f"download timed out after {self.policy.timeout_seconds}s: "
+                        f"{url}: {error}"
+                    )
                 last_error = error
                 temporary.unlink(missing_ok=True)
-                retryable = not isinstance(error, HTTPError) or error.code >= 500
+                retryable = (
+                    not isinstance(error, HTTPError)
+                    or error.code == 429
+                    or error.code >= 500
+                )
+                LOGGER.warning(
+                    "download failed source=%s attempt=%s/%s url=%s error=%s",
+                    source,
+                    attempt,
+                    self.policy.attempts,
+                    url,
+                    error,
+                )
                 if attempt == self.policy.attempts or not retryable:
                     break
                 time.sleep(self.policy.backoff_seconds * (2 ** (attempt - 1)))

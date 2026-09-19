@@ -1,0 +1,32 @@
+schema: '2.0'
+stages:
+  phase2-fixture:
+    cmd: .\.venv\Scripts\python.exe scripts/build_phase2_fixture.py 
+      tests/fixtures/phase2_track.csv data/processed/phase2-fixture.parquet
+    deps:
+    - path: scripts/build_phase2_fixture.py
+      hash: md5
+      md5: 0533da9932664ca121acb7fba394c353
+      size: 1295
+    - path: src/typhoon_vn/features
+      hash: md5
+      md5: dd5732d6210ea356230e0d6c5c558093.dir
+      size: 63763
+      nfiles: 15
+    - path: tests/fixtures/phase2_track.csv
+      hash: md5
+      md5: 3ca8ea7aeb939af1501bfc99f3b16695
+      size: 1090
+    outs:
+    - path: data/processed/phase2-fixture.manifest.json
+      hash: md5
+      md5: 16d8e473ee14c8a5ccd121ea580caeb1
+      size: 325
+    - path: data/processed/phase2-fixture.parquet
+      hash: md5
+      md5: 7c7c4bfd69689bf7ee879b8fa14d2c7a
+      size: 37370
+    - path: data/processed/phase2-fixture.quality.json
+      hash: md5
+      md5: 530137634a5db1ddd4ec43cc18a06f31
+      size: 672

@@ -5,13 +5,13 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s01"></a>
 ## S01 — Version hóa dữ liệu bằng DVC
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G00, G03.
 - **Nguồn:** [REQ-012](traceability.md).
 - **File/đầu ra:** pyproject.toml; .dvc/; dvc.yaml; docs/data-versioning.md.
 - **Thực hiện:** Chọn dataset clean nhỏ; track checksum và pipeline dependency; cấu hình remote qua env; không đẩy dữ liệu thật trong task cài đặt.
 - **Kiểm thử/DoD:** Thay input đổi hash/output; dvc repro với fixture tái tạo output; remote cần quyền và storage riêng.
-- **Bằng chứng:** evidence/S01.md — chưa thực hiện.
+- **Bằng chứng:** [S01.md](evidence/S01.md).
 
 <a id="s02"></a>
 ## S02 — Lưu sổ thí nghiệm và MLflow run ID
@@ -27,13 +27,13 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s03"></a>
 ## S03 — Feature store có version và schema drift
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G04, G05.
 - **Nguồn:** [REQ-050](traceability.md).
 - **File/đầu ra:** features/store.py; tests/test_feature_store.py.
 - **Thực hiện:** Ghi manifest tên/order/dtype/units/version; fingerprint schema; test cột thêm/thiếu/đổi kiểu/thứ tự.
 - **Kiểm thử/DoD:** Store round-trip giữ schema; incompatible schema bị từ chối trước train/serve.
-- **Bằng chứng:** evidence/S03.md — chưa thực hiện.
+- **Bằng chứng:** [S03.md](evidence/S03.md).
 
 <a id="s04"></a>
 ## S04 — Quantile regression 10/50/90%
@@ -82,13 +82,13 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s08"></a>
 ## S08 — Import và chuẩn hóa nhãn thiệt hại/đổ bộ
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G01, G02.
 - **Nguồn:** [REQ-023](traceability.md).
 - **File/đầu ra:** ingestion/providers/vietnam.py; tests/test_impact_labels.py.
 - **Thực hiện:** Parse nhãn PCTT tách khỏi target track; mapping tên/mã tỉnh theo ngày hiệu lực; giữ source/checksum.
 - **Kiểm thử/DoD:** Không đưa nhãn hậu sự kiện thành input forecast; duplicate/conflict có evidence.
-- **Bằng chứng:** evidence/S08.md — chưa thực hiện.
+- **Bằng chứng:** [S08.md](evidence/S08.md).
 
 <a id="s09"></a>
 ## S09 — Cắt/giao cone với tỉnh và bờ biển

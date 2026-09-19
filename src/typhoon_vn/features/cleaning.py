@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-import numpy as np
 import pandas as pd
 
 from typhoon_vn.features import constants as C
@@ -22,9 +21,7 @@ from typhoon_vn.features.schema import CleaningReport, TrackSchema
 MAX_PLAUSIBLE_STEP_KM = 1200.0
 
 
-def coerce_frame(
-    df: pd.DataFrame, schema: TrackSchema | None = None
-) -> pd.DataFrame:
+def coerce_frame(df: pd.DataFrame, schema: TrackSchema | None = None) -> pd.DataFrame:
     """Normalise dtypes and fill structural defaults without touching values."""
 
     schema = schema or TrackSchema()
@@ -106,9 +103,7 @@ def deduplicate(
             out[schema.source].astype(str).str.upper().map(rank).fillna(len(rank))
         )
         out = out.sort_values("_src_rank").drop(columns="_src_rank")
-    out = out.drop_duplicates(
-        subset=[schema.storm_id, schema.timestamp], keep="first"
-    )
+    out = out.drop_duplicates(subset=[schema.storm_id, schema.timestamp], keep="first")
     if report is not None:
         report.n_duplicates_removed += int(before - len(out))
     return out
@@ -248,9 +243,7 @@ def normalise_intensity_labels(
     if schema.intensity not in out.columns:
         out[schema.intensity] = "UNK"
     labels = out[schema.intensity].astype(str).str.upper()
-    out[schema.intensity] = labels.where(
-        labels.isin(C.INTENSITY_CATEGORIES), "UNK"
-    )
+    out[schema.intensity] = labels.where(labels.isin(C.INTENSITY_CATEGORIES), "UNK")
     return out
 
 

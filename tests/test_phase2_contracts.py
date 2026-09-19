@@ -9,7 +9,11 @@ from pydantic import ValidationError
 
 from typhoon_vn.api.schemas import Fix, ForecastPoint, ForecastResponse
 from typhoon_vn.datasets.synthetic import generate_storm_track
-from typhoon_vn.datasets.typhoon_dataset import DatasetConfig, TyphoonDataset, split_by_storm_or_year
+from typhoon_vn.datasets.typhoon_dataset import (
+    DatasetConfig,
+    TyphoonDataset,
+    split_by_storm_or_year,
+)
 from typhoon_vn.features.bridge import to_canonical_frame
 from typhoon_vn.features.build import FEATURE_COLUMNS, FeatureBuilder
 from typhoon_vn.features.scaling import FeatureScaler
@@ -55,9 +59,14 @@ def test_observation_to_feature_to_api_preserves_contract() -> None:
     frame = to_canonical_frame(pd.DataFrame([obs.to_row()]))
     row = frame.iloc[0]
     fix = Fix(
-        timestamp=row["timestamp"], lat=row["lat"], lon=row["lon"],
-        wind_ms=row["wind_ms"], pressure_hpa=row["pressure_hpa"],
-        intensity=row["intensity"], source=row["source"], source_url=row["source_url"],
+        timestamp=row["timestamp"],
+        lat=row["lat"],
+        lon=row["lon"],
+        wind_ms=row["wind_ms"],
+        pressure_hpa=row["pressure_hpa"],
+        intensity=row["intensity"],
+        source=row["source"],
+        source_url=row["source_url"],
     )
     assert fix.timestamp == datetime(2024, 7, 1, tzinfo=timezone.utc)
     assert fix.wind_ms == pytest.approx(20.0 * 0.514444)
@@ -67,16 +76,34 @@ def test_observation_to_feature_to_api_preserves_contract() -> None:
 
 
 @pytest.mark.parametrize("latitude,longitude", [(np.nan, 120.0), (10.0, np.inf)])
-def test_observation_rejects_nonfinite_coordinates(latitude: float, longitude: float) -> None:
+def test_observation_rejects_nonfinite_coordinates(
+    latitude: float, longitude: float
+) -> None:
     with pytest.raises(ValueError):
-        Observation("jma", "1", "WP012024", datetime.now(timezone.utc), latitude, longitude,
-                    "https://example.test", "a" * 64)
+        Observation(
+            "jma",
+            "1",
+            "WP012024",
+            datetime.now(timezone.utc),
+            latitude,
+            longitude,
+            "https://example.test",
+            "a" * 64,
+        )
 
 
 def test_contract_rejects_naive_time_and_unknown_wind_unit() -> None:
     with pytest.raises(ValueError, match="timezone-aware"):
-        Observation("jma", "1", "WP012024", datetime(2024, 1, 1), 10.0, 120.0,
-                    "https://example.test", "a" * 64)
+        Observation(
+            "jma",
+            "1",
+            "WP012024",
+            datetime(2024, 1, 1),
+            10.0,
+            120.0,
+            "https://example.test",
+            "a" * 64,
+        )
     with pytest.raises(ValueError, match="unsupported wind unit"):
         to_canonical_frame(_raw("mph"))
     with pytest.raises(ValidationError):
@@ -86,21 +113,40 @@ def test_contract_rejects_naive_time_and_unknown_wind_unit() -> None:
 def test_forecast_times_are_utc_and_match_horizons() -> None:
     issue = datetime(2024, 7, 1, tzinfo=timezone.utc)
     point = ForecastPoint(
-        horizon_hours=6, valid_time=issue + timedelta(hours=6), lat=10, lon=120,
-        intensity="TS", radius_km=50, cone={},
+        horizon_hours=6,
+        valid_time=issue + timedelta(hours=6),
+        lat=10,
+        lon=120,
+        intensity="TS",
+        radius_km=50,
+        cone={},
     )
     ForecastResponse(
-        forecast_id="f1", storm_id="WP012024", issue_time=issue,
-        generated_at=issue, model_version="v1", model_kind="baseline",
-        dataset_version="d1", sources=["jma"], uncertainty_method="none",
-        warnings=[], points=[point],
+        forecast_id="f1",
+        storm_id="WP012024",
+        issue_time=issue,
+        generated_at=issue,
+        model_version="v1",
+        model_kind="baseline",
+        dataset_version="d1",
+        sources=["jma"],
+        uncertainty_method="none",
+        warnings=[],
+        points=[point],
     )
     with pytest.raises(ValidationError, match="valid_time"):
         ForecastResponse(
-            forecast_id="f1", storm_id="WP012024", issue_time=issue,
-            generated_at=issue, model_version="v1", model_kind="baseline",
-            dataset_version="d1", sources=["jma"], uncertainty_method="none",
-            warnings=[], points=[point.model_copy(update={"valid_time": issue})],
+            forecast_id="f1",
+            storm_id="WP012024",
+            issue_time=issue,
+            generated_at=issue,
+            model_version="v1",
+            model_kind="baseline",
+            dataset_version="d1",
+            sources=["jma"],
+            uncertainty_method="none",
+            warnings=[],
+            points=[point.model_copy(update={"valid_time": issue})],
         )
 
 
@@ -113,7 +159,10 @@ def test_dataset_targets_exact_times_and_skips_gap() -> None:
 
     gap = frame.drop(index=3).reset_index(drop=True)  # +12 target absent, +18 exists
     gap_dataset = TyphoonDataset(gap, config=config)
-    assert all(sample["meta"]["issue_time"] != frame.loc[1, "timestamp"] for sample in gap_dataset.samples)
+    assert all(
+        sample["meta"]["issue_time"] != frame.loc[1, "timestamp"]
+        for sample in gap_dataset.samples
+    )
 
 
 def test_dataset_rejects_duplicate_timestamp() -> None:
@@ -127,7 +176,9 @@ def test_split_zero_ratios_and_cross_year_storm() -> None:
     frame = generate_storm_track(
         "WP012024", n_fixes=8, start_time=datetime(2024, 12, 31, tzinfo=timezone.utc)
     )
-    train, val, test = split_by_storm_or_year(frame, val_ratio=0, test_ratio=0, by_year=True)
+    train, val, test = split_by_storm_or_year(
+        frame, val_ratio=0, test_ratio=0, by_year=True
+    )
     assert len(train) == len(frame)
     assert val.empty and test.empty
     with pytest.raises(ValueError, match="less than 1"):

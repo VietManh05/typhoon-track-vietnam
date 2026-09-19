@@ -25,9 +25,8 @@ from typhoon_vn.datasets.typhoon_dataset import (
     DatasetConfig,
     TyphoonDataset,
     collate_fn,
-    split_by_storm_or_year,
 )
-from typhoon_vn.evaluation.metrics import track_error_km
+from typhoon_vn.evaluation.metrics import along_cross_track_errors, track_error_km
 from typhoon_vn.features.schema import DEFAULT_SCHEMA, TrackSchema
 from typhoon_vn.models.base import TrackForecaster
 
@@ -74,29 +73,51 @@ def backtest_storm(
     records: list[dict[str, Any]] = []
     h_steps = list(config.horizon)
     h_hours = [h * config.time_step_hours for h in h_steps]
+    source = storm_df.copy()
+    source[schema.timestamp] = pd.to_datetime(source[schema.timestamp], utc=True)
+    issue_positions = {
+        pd.Timestamp(row[schema.timestamp]): (
+            float(row[schema.lat]),
+            float(row[schema.lon]),
+        )
+        for _, row in source.iterrows()
+    }
 
     with torch.no_grad():
         for batch in loader:
             x = batch["x"].to(device)
             mask = batch["mask"].to(device)
             y_reg = batch["y_reg"].cpu().numpy()  # (B, H, 2)
+            y_cls = batch["y_cls"].cpu().numpy()
             out = model(x, mask)
-            pred_reg = out["reg"].cpu().numpy()   # (B, H, 2)
+            pred_reg = out["reg"].cpu().numpy()  # (B, H, 2)
+            pred_cls = out["cls"].argmax(dim=-1).cpu().numpy()
             errors = track_error_km(pred_reg, y_reg)  # (B, H)
 
             metas = batch["meta"]
             for i, meta in enumerate(metas):
+                issue_time = pd.Timestamp(meta["issue_time"])
+                origin = np.asarray(issue_positions[issue_time], dtype=float)
                 for j, (hours, step) in enumerate(zip(h_hours, h_steps)):
+                    along, cross = along_cross_track_errors(
+                        pred_reg[i, j][None, :],
+                        y_reg[i, j][None, :],
+                        origin[None, :],
+                    )
                     records.append(
                         {
                             "storm_id": meta["storm_id"],
-                            "issue_time": meta["issue_time"],
+                            "issue_time": issue_time,
                             "horizon_h": int(hours),
                             "pred_lat": float(pred_reg[i, j, 0]),
                             "pred_lon": float(pred_reg[i, j, 1]),
                             "actual_lat": float(y_reg[i, j, 0]),
                             "actual_lon": float(y_reg[i, j, 1]),
                             "track_error_km": float(errors[i, j]),
+                            "along_track_error_km": float(along[0]),
+                            "cross_track_error_km": float(cross[0]),
+                            "pred_intensity_class": int(pred_cls[i, j]),
+                            "actual_intensity_class": int(y_cls[i, j]),
                         }
                     )
 
@@ -139,7 +160,12 @@ def backtest_catalogue(
     for sid in storm_ids:
         storm_df = df[df[schema.storm_id] == sid].reset_index(drop=True)
         result = backtest_storm(
-            model, storm_df, config=config, schema=schema, device=device, batch_size=batch_size
+            model,
+            storm_df,
+            config=config,
+            schema=schema,
+            device=device,
+            batch_size=batch_size,
         )
         if not result.empty:
             all_frames.append(result)
@@ -160,9 +186,23 @@ def backtest_catalogue(
                 "median_error_km": float(np.median(errs)),
                 "rmse_km": float(np.sqrt(np.mean(errs**2))),
                 "p90_km": float(np.percentile(errs, 90)),
+                "mean_along_track_error_km": float(
+                    np.mean(group["along_track_error_km"])
+                ),
+                "mean_cross_track_error_km": float(
+                    np.mean(group["cross_track_error_km"])
+                ),
+                "intensity_accuracy": float(
+                    np.mean(
+                        group["pred_intensity_class"]
+                        == group["actual_intensity_class"]
+                    )
+                ),
                 "n_forecasts": len(errs),
             }
         )
-    summary_df = pd.DataFrame(summary_records).sort_values("horizon_h").reset_index(drop=True)
+    summary_df = (
+        pd.DataFrame(summary_records).sort_values("horizon_h").reset_index(drop=True)
+    )
 
     return detail_df, summary_df

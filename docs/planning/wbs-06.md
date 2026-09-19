@@ -1,6 +1,6 @@
 # G06 — Dataset và phân chia tập
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: complete; nghiệm thu tại [G06-dataset.md](evidence/G06-dataset.md).
 - Hiện trạng: Có dataset; chọn feature trước khi tạo feature và split storm qua năm cần sửa.
 - Đầu vào: Dữ liệu chưa scale, storm ID đã hợp nhất, policy thời gian.
 - Gate phụ thuộc: G03, G04.
@@ -17,7 +17,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 <a id="t06-001"></a>
 ## T06-001 — Chọn sequence length.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.1 Window; dòng [706](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:706).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.1 Window.
@@ -31,12 +31,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-001.md](evidence/T06-001.md).
 
 <a id="t06-002"></a>
 ## T06-002 — Hỗ trợ cấu hình sequence length.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.1 Window; dòng [707](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:707).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.1 Window.
@@ -50,12 +50,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-002.md](evidence/T06-002.md).
 
 <a id="t06-003"></a>
 ## T06-003 — Tạo sliding window.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.1 Window; dòng [708](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:708).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.1 Window.
@@ -69,12 +69,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Cửa sổ chỉ chứa một storm, input_len đúng; fixture ngắn hơn window không tạo sample; timestamps không đảo hoặc trùng.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-003.md](evidence/T06-003.md).
 
 <a id="t06-004"></a>
 ## T06-004 — Tạo input tensor.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.1 Window; dòng [709](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:709).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.1 Window.
@@ -88,12 +88,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-004.md](evidence/T06-004.md).
 
 <a id="t06-005"></a>
 ## T06-005 — Tạo target tensor.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.1 Window; dòng [710](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:710).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.1 Window.
@@ -107,12 +107,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-005.md](evidence/T06-005.md).
 
 <a id="t06-006"></a>
 ## T06-006 — Kiểm tra boundary từng storm.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.1 Window; dòng [711](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:711).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.1 Window.
@@ -126,12 +126,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-006.md](evidence/T06-006.md).
 
 <a id="t06-007"></a>
 ## T06-007 — 6h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.2 Horizons; dòng [714](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:714).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.2 Horizons.
@@ -145,12 +145,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-007.md](evidence/T06-007.md).
 
 <a id="t06-008"></a>
 ## T06-008 — 12h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.2 Horizons; dòng [715](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:715).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.2 Horizons.
@@ -164,12 +164,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-008.md](evidence/T06-008.md).
 
 <a id="t06-009"></a>
 ## T06-009 — 24h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.2 Horizons; dòng [716](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:716).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.2 Horizons.
@@ -183,12 +183,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-009.md](evidence/T06-009.md).
 
 <a id="t06-010"></a>
 ## T06-010 — 48h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.2 Horizons; dòng [717](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:717).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.2 Horizons.
@@ -202,12 +202,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-010.md](evidence/T06-010.md).
 
 <a id="t06-011"></a>
 ## T06-011 — 72h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.2 Horizons; dòng [718](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:718).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.2 Horizons.
@@ -221,12 +221,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-011.md](evidence/T06-011.md).
 
 <a id="t06-012"></a>
 ## T06-012 — Kiểm tra target tồn tại.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.2 Horizons; dòng [719](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:719).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.2 Horizons.
@@ -240,12 +240,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-012.md](evidence/T06-012.md).
 
 <a id="t06-013"></a>
 ## T06-013 — Bỏ sample không đủ target.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.2 Horizons; dòng [720](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:720).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.2 Horizons.
@@ -259,12 +259,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-013.md](evidence/T06-013.md).
 
 <a id="t06-014"></a>
 ## T06-014 — Split theo storm ID.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.3 Split; dòng [723](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:723).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.3 Split.
@@ -278,12 +278,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-014.md](evidence/T06-014.md).
 
 <a id="t06-015"></a>
 ## T06-015 — Kiểm tra không overlap storm.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.3 Split; dòng [724](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:724).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.3 Split.
@@ -297,12 +297,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-015.md](evidence/T06-015.md).
 
 <a id="t06-016"></a>
 ## T06-016 — Có tùy chọn split theo năm.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.3 Split; dòng [725](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:725).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.3 Split.
@@ -316,12 +316,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-016.md](evidence/T06-016.md).
 
 <a id="t06-017"></a>
 ## T06-017 — Lưu danh sách train IDs.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.3 Split; dòng [726](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:726).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.3 Split.
@@ -335,12 +335,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-017.md](evidence/T06-017.md).
 
 <a id="t06-018"></a>
 ## T06-018 — Lưu validation IDs.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.3 Split; dòng [727](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:727).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.3 Split.
@@ -354,12 +354,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-018.md](evidence/T06-018.md).
 
 <a id="t06-019"></a>
 ## T06-019 — Lưu test IDs.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.3 Split; dòng [728](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:728).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.3 Split.
@@ -373,12 +373,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-019.md](evidence/T06-019.md).
 
 <a id="t06-020"></a>
 ## T06-020 — Test leakage.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.3 Split; dòng [729](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:729).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.3 Split.
@@ -392,12 +392,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-020.md](evidence/T06-020.md).
 
 <a id="t06-021"></a>
 ## T06-021 — Test shape.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.4 Dataset Tests; dòng [732](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:732).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.4 Dataset Tests.
@@ -411,12 +411,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-021.md](evidence/T06-021.md).
 
 <a id="t06-022"></a>
 ## T06-022 — Test dtype.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.4 Dataset Tests; dòng [733](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:733).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.4 Dataset Tests.
@@ -430,12 +430,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-022.md](evidence/T06-022.md).
 
 <a id="t06-023"></a>
 ## T06-023 — Test window.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.4 Dataset Tests; dòng [734](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:734).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.4 Dataset Tests.
@@ -449,12 +449,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Cửa sổ chỉ chứa một storm, input_len đúng; fixture ngắn hơn window không tạo sample; timestamps không đảo hoặc trùng.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-023.md](evidence/T06-023.md).
 
 <a id="t06-024"></a>
 ## T06-024 — Test horizon.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.4 Dataset Tests; dòng [735](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:735).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.4 Dataset Tests.
@@ -468,12 +468,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-024.md](evidence/T06-024.md).
 
 <a id="t06-025"></a>
 ## T06-025 — Test mask.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.4 Dataset Tests; dòng [736](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:736).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.4 Dataset Tests.
@@ -487,12 +487,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-025.md](evidence/T06-025.md).
 
 <a id="t06-026"></a>
 ## T06-026 — Test storm boundary.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 6.4 Dataset Tests; dòng [737](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:737).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G03, G04; contract/fixture của tiểu mục 6.4 Dataset Tests.
@@ -506,4 +506,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T06-026.md](evidence/T06-026.md).

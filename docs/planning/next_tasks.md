@@ -104,18 +104,18 @@ Nếu task vượt một phiên làm việc, tách ID .1/.2 với output riêng.
 
 ## R10 — Sửa checkpoint/resume
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** R09.
 - **Đầu vào/lệnh dự kiến:** Trainer; tiny deterministic CPU model/loader.
 - **Đầu ra:** tests/test_training_resume.py; trainer.py.
 - **Thao tác:** So 2 epochs liên tục với 1+resume; save sau history/scheduler; lưu best_epoch, patience, optimizer, scheduler và RNG; reject empty/nonfinite validation.
 - **Nghiệm thu:** LR/history/epoch/early stop nhất quán; weights khớp trong dung sai công bố; không tạo best giả.
 - **Giới hạn:** log vấn đề khác vào backlog; không sửa lan phạm vi.
-- **Bằng chứng:** chưa có; điền sau khi chạy.
+- **Bằng chứng:** [R10-checkpoint-resume.md](evidence/R10-checkpoint-resume.md); JUnit độc lập [R10-pytest.xml](evidence/R10-pytest.xml), 61 passed.
 
 ## R11 — Hoàn thiện bundle contract
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** R10.
 - **Đầu vào/lệnh dự kiến:** Model constructor; scaler/schema/dataset hash.
 - **Đầu ra:** docs/contracts/model-bundle.md; training/pipeline.py hoặc inference/artifacts.py.
@@ -126,7 +126,7 @@ Nếu task vượt một phiên làm việc, tách ID .1/.2 với output riêng.
 
 ## R12 — Nối CLI train và integration smoke
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** R11.
 - **Đầu vào/lệnh dự kiến:** configs/phase3_lstm.yaml; CLI placeholder; synthetic fixture.
 - **Đầu ra:** cli.py; tests/integration/test_training_bundle.py.
@@ -137,7 +137,7 @@ Nếu task vượt một phiên làm việc, tách ID .1/.2 với output riêng.
 
 ## R13 — Nghiệm thu inference/API nháp
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** R12.
 - **Đầu vào/lệnh dự kiến:** inference/service.py; api/app.py; schemas.py; test DB.
 - **Đầu ra:** tests/test_inference.py; tests/test_api.py.
@@ -148,7 +148,7 @@ Nếu task vượt một phiên làm việc, tách ID .1/.2 với output riêng.
 
 ## R14 — Đối chiếu gap vận hành
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** R13.
 - **Đầu vào/lệnh dự kiến:** Store create_all; Redis setex; worker JSON snapshot.
 - **Đầu ra:** docs/planning/evidence/R14-operational-gaps.md.

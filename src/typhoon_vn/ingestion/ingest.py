@@ -1,22 +1,20 @@
-"""Convert a verified raw object into partitioned canonical raw observations."""
+"""Convert verified raw objects into partitioned canonical records."""
 
 from __future__ import annotations
 
 import hashlib
 from pathlib import Path
 
-from typhoon_vn.ingestion.errors import IngestionError
-from typhoon_vn.ingestion.providers.cma import parse_cma_text
-from typhoon_vn.ingestion.providers.ibtracs import parse_ibtracs_csv
-from typhoon_vn.ingestion.providers.jma import parse_jma_archive
-from typhoon_vn.ingestion.providers.jtwc import parse_jtwc_atcf
-from typhoon_vn.ingestion.providers.vietnam import parse_impact_csv, parse_nchmf_csv
+from typhoon_vn.ingestion.errors import IngestionError, ProviderSchemaError
+from typhoon_vn.ingestion.providers.strategies import (
+    DEFAULT_PROVIDER_FACTORY,
+    ProviderFactory,
+)
 from typhoon_vn.ingestion.storage import write_impact_labels, write_observations
 
 
 def sha256_file(path: Path) -> str:
     """Calculate the digest of the exact object given to a parser."""
-
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         while chunk := handle.read(1024 * 1024):
@@ -30,45 +28,24 @@ def parse_and_store(
     input_path: Path,
     source_url: str,
     data_root: Path,
+    factory: ProviderFactory = DEFAULT_PROVIDER_FACTORY,
 ) -> list[Path]:
-    """Parse one raw object and append it to source/year raw Parquet parts."""
-
+    """Parse one raw object through an isolated strategy and persist it."""
     checksum = sha256_file(input_path)
-    source = source.lower()
-    if source == "cma":
-        observations = parse_cma_text(
-            input_path.read_text(encoding="utf-8", errors="replace"),
-            source_url=source_url,
-            checksum=checksum,
-        )
-    elif source == "ibtracs":
-        observations = parse_ibtracs_csv(
-            input_path.read_text(encoding="utf-8-sig", errors="replace"),
-            source_url=source_url,
-            checksum=checksum,
-        )
-    elif source == "jma":
-        observations = parse_jma_archive(
-            input_path,
-            source_url=source_url,
-            checksum=checksum,
-        )
-    elif source == "jtwc":
-        observations = parse_jtwc_atcf(
-            input_path.read_text(encoding="utf-8", errors="replace"),
-            source_url=source_url,
-            checksum=checksum,
-        )
-    elif source == "nchmf":
-        observations = parse_nchmf_csv(
-            input_path,
-            source_url=source_url,
-            checksum=checksum,
-        )
-    elif source == "pctt":
-        labels = parse_impact_csv(input_path, source_url=source_url, checksum=checksum)
-        label_path = write_impact_labels(labels, data_root=data_root)
+    strategy = factory.create(source)
+    try:
+        payload = strategy.parse(input_path, source_url=source_url, checksum=checksum)
+    except IngestionError:
+        raise
+    except (KeyError, TypeError, ValueError, UnicodeError) as exc:
+        raise ProviderSchemaError(
+            f"{strategy.source} payload does not match its parser contract: {exc}"
+        ) from exc
+    if payload.kind == "impact_labels":
+        label_path = write_impact_labels(payload.records, data_root=data_root)
         return [label_path] if label_path else []
-    else:
-        raise IngestionError(f"unsupported parser source: {source}")
-    return write_observations(observations, data_root=data_root)
+    if payload.kind != "observations":
+        raise ProviderSchemaError(
+            f"{strategy.source} returned unsupported payload kind {payload.kind!r}"
+        )
+    return write_observations(payload.records, data_root=data_root)

@@ -1,6 +1,5 @@
 """Tests for Phase-3 model architectures and uncertainty helpers."""
 
-import numpy as np
 import pytest
 import torch
 
@@ -53,7 +52,9 @@ def test_seq2seq_lstm_forward_shape(sample_batch: dict[str, torch.Tensor]) -> No
     assert out["cls"].shape == (1, 5, 7)
 
 
-def test_attention_lstm_returns_attention(sample_batch: dict[str, torch.Tensor]) -> None:
+def test_attention_lstm_returns_attention(
+    sample_batch: dict[str, torch.Tensor]
+) -> None:
     x, mask = sample_batch["x"], sample_batch["mask"]
     n_features = x.size(-1)
     model = AttentionLSTMTrackForecaster(
@@ -68,7 +69,12 @@ def test_mc_dropout_produces_uncertainty(sample_batch: dict[str, torch.Tensor]) 
     x, mask = sample_batch["x"], sample_batch["mask"]
     n_features = x.size(-1)
     model = LSTMTrackForecaster(
-        n_features=n_features, n_horizons=5, n_classes=7, hidden_size=32, num_layers=1, dropout=0.3
+        n_features=n_features,
+        n_horizons=5,
+        n_classes=7,
+        hidden_size=32,
+        num_layers=1,
+        dropout=0.3,
     )
     result = mc_dropout_predict(model, x, mask, n_samples=10)
     assert result["reg_mean"].shape == (1, 5, 2)
@@ -97,12 +103,18 @@ def test_quantile_loss_decreases_with_better_prediction() -> None:
     assert loss_good < loss
 
 
-def test_deep_ensemble_aggregates_predictions(sample_batch: dict[str, torch.Tensor]) -> None:
+def test_deep_ensemble_aggregates_predictions(
+    sample_batch: dict[str, torch.Tensor]
+) -> None:
     x, mask = sample_batch["x"], sample_batch["mask"]
     n_features = x.size(-1)
     models = [
         LSTMTrackForecaster(
-            n_features=n_features, n_horizons=5, n_classes=7, hidden_size=32, num_layers=1
+            n_features=n_features,
+            n_horizons=5,
+            n_classes=7,
+            hidden_size=32,
+            num_layers=1,
         )
         for _ in range(3)
     ]

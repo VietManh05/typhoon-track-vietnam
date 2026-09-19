@@ -1,6 +1,6 @@
 # G02 — Dữ liệu không gian
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: complete; nghiệm thu tại [G02-geospatial.md](evidence/G02-geospatial.md).
 - Hiện trạng: Có adapter; chưa xác minh dữ liệu ranh giới/đường bờ thật.
 - Đầu vào: Coastline/ranh giới có phiên bản, ngày hiệu lực, giấy phép và CRS.
 - Gate phụ thuộc: G00.
@@ -17,7 +17,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 <a id="t02-001"></a>
 ## T02-001 — Chọn nguồn coastline.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.1 Coastline; dòng [557](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:557).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.1 Coastline.
@@ -31,12 +31,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Đường bờ dạng segment, không chỉ nearest vertex; test điểm nằm trên bờ và ngoài biển; CRS/SRID được ghi vào metadata.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-001.md](evidence/T02-001.md).
 
 <a id="t02-002"></a>
 ## T02-002 — Tải dữ liệu.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.1 Coastline; dòng [558](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:558).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.1 Coastline.
@@ -50,12 +50,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Mock bytes xác định và HTTP failure; checksum/raw giữ nguyên; lần tải thật phải có nguồn hợp lệ và evidence riêng.
 - **Kịch bản tiểu mục:** Đường bờ dạng segment, không chỉ nearest vertex; test điểm nằm trên bờ và ngoài biển; CRS/SRID được ghi vào metadata.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-002.md](evidence/T02-002.md).
 
 <a id="t02-003"></a>
 ## T02-003 — Kiểm tra CRS.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.1 Coastline; dòng [559](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:559).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.1 Coastline.
@@ -69,12 +69,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Đường bờ dạng segment, không chỉ nearest vertex; test điểm nằm trên bờ và ngoài biển; CRS/SRID được ghi vào metadata.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-003.md](evidence/T02-003.md).
 
 <a id="t02-004"></a>
 ## T02-004 — Chuẩn hóa CRS.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.1 Coastline; dòng [560](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:560).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.1 Coastline.
@@ -88,12 +88,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Đường bờ dạng segment, không chỉ nearest vertex; test điểm nằm trên bờ và ngoài biển; CRS/SRID được ghi vào metadata.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-004.md](evidence/T02-004.md).
 
 <a id="t02-005"></a>
 ## T02-005 — Simplify cho frontend nếu cần.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.1 Coastline; dòng [561](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:561).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.1 Coastline.
@@ -107,12 +107,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Đường bờ dạng segment, không chỉ nearest vertex; test điểm nằm trên bờ và ngoài biển; CRS/SRID được ghi vào metadata.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-005.md](evidence/T02-005.md).
 
 <a id="t02-006"></a>
 ## T02-006 — Tạo spatial index.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.1 Coastline; dòng [562](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:562).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.1 Coastline.
@@ -126,12 +126,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** DB trống và DB có dữ liệu upgrade được; invalid records bị constraints reject; GiST test trên PostGIS thật.
 - **Kịch bản tiểu mục:** Đường bờ dạng segment, không chỉ nearest vertex; test điểm nằm trên bờ và ngoài biển; CRS/SRID được ghi vào metadata.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-006.md](evidence/T02-006.md).
 
 <a id="t02-007"></a>
 ## T02-007 — Test khoảng cách tới bờ.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.1 Coastline; dòng [563](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:563).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.1 Coastline.
@@ -145,12 +145,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Điểm trùng cho 0 km; cặp điểm chuẩn khớp dung sai; wrap longitude không tạo khoảng cách vòng trái đất.
 - **Kịch bản tiểu mục:** Đường bờ dạng segment, không chỉ nearest vertex; test điểm nằm trên bờ và ngoài biển; CRS/SRID được ghi vào metadata.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-007.md](evidence/T02-007.md).
 
 <a id="t02-008"></a>
 ## T02-008 — Tải ranh giới tỉnh/thành.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.2 Administrative Boundary; dòng [566](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:566).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.2 Administrative Boundary.
@@ -164,12 +164,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Mock bytes xác định và HTTP failure; checksum/raw giữ nguyên; lần tải thật phải có nguồn hợp lệ và evidence riêng.
 - **Kịch bản tiểu mục:** Ranh giới có ngày hiệu lực và mã tỉnh; test điểm trong/ngoài/trên biên và MultiPolygon; dữ liệu rút gọn phải giữ topology.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-008.md](evidence/T02-008.md).
 
 <a id="t02-009"></a>
 ## T02-009 — Kiểm tra CRS.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.2 Administrative Boundary; dòng [567](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:567).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.2 Administrative Boundary.
@@ -183,12 +183,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Ranh giới có ngày hiệu lực và mã tỉnh; test điểm trong/ngoài/trên biên và MultiPolygon; dữ liệu rút gọn phải giữ topology.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-009.md](evidence/T02-009.md).
 
 <a id="t02-010"></a>
 ## T02-010 — Chuẩn hóa tên tỉnh.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.2 Administrative Boundary; dòng [568](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:568).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.2 Administrative Boundary.
@@ -202,12 +202,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Ranh giới có ngày hiệu lực và mã tỉnh; test điểm trong/ngoài/trên biên và MultiPolygon; dữ liệu rút gọn phải giữ topology.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-010.md](evidence/T02-010.md).
 
 <a id="t02-011"></a>
 ## T02-011 — Tạo GeoJSON.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.2 Administrative Boundary; dòng [569](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:569).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.2 Administrative Boundary.
@@ -221,12 +221,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** GeoJSON [lon,lat], ring đóng/topology hợp lệ; dateline có xử lý; coverage thực nghiệm khác radius minh họa.
 - **Kịch bản tiểu mục:** Ranh giới có ngày hiệu lực và mã tỉnh; test điểm trong/ngoài/trên biên và MultiPolygon; dữ liệu rút gọn phải giữ topology.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-011.md](evidence/T02-011.md).
 
 <a id="t02-012"></a>
 ## T02-012 — Tạo spatial index.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.2 Administrative Boundary; dòng [570](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:570).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.2 Administrative Boundary.
@@ -240,12 +240,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** DB trống và DB có dữ liệu upgrade được; invalid records bị constraints reject; GiST test trên PostGIS thật.
 - **Kịch bản tiểu mục:** Ranh giới có ngày hiệu lực và mã tỉnh; test điểm trong/ngoài/trên biên và MultiPolygon; dữ liệu rút gọn phải giữ topology.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-012.md](evidence/T02-012.md).
 
 <a id="t02-013"></a>
 ## T02-013 — Test point-in-polygon.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.2 Administrative Boundary; dòng [571](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:571).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.2 Administrative Boundary.
@@ -259,12 +259,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** GeoJSON [lon,lat], ring đóng/topology hợp lệ; dateline có xử lý; coverage thực nghiệm khác radius minh họa.
 - **Kịch bản tiểu mục:** Ranh giới có ngày hiệu lực và mã tỉnh; test điểm trong/ngoài/trên biên và MultiPolygon; dữ liệu rút gọn phải giữ topology.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-013.md](evidence/T02-013.md).
 
 <a id="t02-014"></a>
 ## T02-014 — Test nearest province.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.2 Administrative Boundary; dòng [572](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:572).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.2 Administrative Boundary.
@@ -278,12 +278,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Ranh giới có ngày hiệu lực và mã tỉnh; test điểm trong/ngoài/trên biên và MultiPolygon; dữ liệu rút gọn phải giữ topology.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-014.md](evidence/T02-014.md).
 
 <a id="t02-015"></a>
 ## T02-015 — Tạo danh sách các mốc cần theo dõi.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.3 Special Locations; dòng [575](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:575).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.3 Special Locations.
@@ -297,12 +297,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Mỗi địa điểm có ID ổn định và nguồn tọa độ; test duplicate ID, tọa độ sai, distance 0 và khoảng cách tham chiếu.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-015.md](evidence/T02-015.md).
 
 <a id="t02-016"></a>
 ## T02-016 — Lưu latitude/longitude.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.3 Special Locations; dòng [576](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:576).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.3 Special Locations.
@@ -316,12 +316,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Mỗi địa điểm có ID ổn định và nguồn tọa độ; test duplicate ID, tọa độ sai, distance 0 và khoảng cách tham chiếu.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-016.md](evidence/T02-016.md).
 
 <a id="t02-017"></a>
 ## T02-017 — Tạo ID duy nhất.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.3 Special Locations; dòng [577](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:577).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.3 Special Locations.
@@ -335,12 +335,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Mỗi địa điểm có ID ổn định và nguồn tọa độ; test duplicate ID, tọa độ sai, distance 0 và khoảng cách tham chiếu.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-017.md](evidence/T02-017.md).
 
 <a id="t02-018"></a>
 ## T02-018 — Tạo hàm khoảng cách.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.3 Special Locations; dòng [578](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:578).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.3 Special Locations.
@@ -354,12 +354,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Điểm trùng cho 0 km; cặp điểm chuẩn khớp dung sai; wrap longitude không tạo khoảng cách vòng trái đất.
 - **Kịch bản tiểu mục:** Mỗi địa điểm có ID ổn định và nguồn tọa độ; test duplicate ID, tọa độ sai, distance 0 và khoảng cách tham chiếu.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-018.md](evidence/T02-018.md).
 
 <a id="t02-019"></a>
 ## T02-019 — Test kết quả.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 2.3 Special Locations; dòng [579](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:579).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 2.3 Special Locations.
@@ -373,4 +373,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Mỗi địa điểm có ID ổn định và nguồn tọa độ; test duplicate ID, tọa độ sai, distance 0 và khoảng cách tham chiếu.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T02-019.md](evidence/T02-019.md).

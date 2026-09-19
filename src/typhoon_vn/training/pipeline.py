@@ -47,7 +47,14 @@ def _scaler_state(scaler: FeatureScaler) -> dict[str, Any]:
 
 
 def _scaler_from_state(state: dict[str, Any]) -> FeatureScaler:
-    required = {"feature_columns", "fill_values", "mean", "scale", "var", "n_samples_seen"}
+    required = {
+        "feature_columns",
+        "fill_values",
+        "mean",
+        "scale",
+        "var",
+        "n_samples_seen",
+    }
     if set(state) != required:
         raise ValueError("invalid scaler schema")
     scaler = FeatureScaler(list(state["feature_columns"]))
@@ -56,7 +63,9 @@ def _scaler_from_state(state: dict[str, Any]) -> FeatureScaler:
         name: np.asarray(state[name], dtype=float)
         for name in ("fill_values", "mean", "scale", "var")
     }
-    if any(value.shape != (n,) or not np.isfinite(value).all() for value in arrays.values()):
+    if any(
+        value.shape != (n,) or not np.isfinite(value).all() for value in arrays.values()
+    ):
         raise ValueError("invalid scaler values")
     scaler._fill_values = arrays["fill_values"]
     scaler._scaler.mean_ = arrays["mean"]
@@ -96,7 +105,9 @@ def export_bundle(
     scaler_path = directory / "scaler.json"
     split_path = directory / "split-manifest.json"
     torch.save(model.state_dict(), weights)
-    scaler_path.write_text(json.dumps(_scaler_state(scaler), sort_keys=True), encoding="utf-8")
+    scaler_path.write_text(
+        json.dumps(_scaler_state(scaler), sort_keys=True), encoding="utf-8"
+    )
     split_path.write_text(json.dumps(split_manifest, sort_keys=True), encoding="utf-8")
     manifest = {
         "bundle_schema_version": BUNDLE_SCHEMA_VERSION,
@@ -121,7 +132,9 @@ def export_bundle(
         },
     }
     manifest_path = directory / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8"
+    )
     return manifest_path
 
 
@@ -136,10 +149,22 @@ def load_bundle(path: str | Path) -> dict[str, Any]:
     manifest_path = root / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     required = {
-        "bundle_schema_version", "version", "dataset_version", "dataset_sha256",
-        "synthetic", "model", "input_len", "time_step_hours", "feature_columns",
-        "feature_schema_sha256", "horizons_hours", "intensity_labels",
-        "validation_radius_km", "uncertainty_method", "split_manifest_sha256", "files",
+        "bundle_schema_version",
+        "version",
+        "dataset_version",
+        "dataset_sha256",
+        "synthetic",
+        "model",
+        "input_len",
+        "time_step_hours",
+        "feature_columns",
+        "feature_schema_sha256",
+        "horizons_hours",
+        "intensity_labels",
+        "validation_radius_km",
+        "uncertainty_method",
+        "split_manifest_sha256",
+        "files",
     }
     if set(manifest) != required:
         raise ValueError("invalid bundle manifest schema")
@@ -160,7 +185,14 @@ def load_bundle(path: str | Path) -> dict[str, Any]:
     if manifest["model"].get("type") != "LSTMTrackForecaster":
         raise ValueError("model type is not allowlisted")
     constructor = manifest["model"].get("constructor")
-    allowed = {"n_features", "n_horizons", "n_classes", "hidden_size", "num_layers", "dropout"}
+    allowed = {
+        "n_features",
+        "n_horizons",
+        "n_classes",
+        "hidden_size",
+        "num_layers",
+        "dropout",
+    }
     if not isinstance(constructor, dict) or set(constructor) != allowed:
         raise ValueError("invalid model constructor schema")
     if constructor["n_features"] != len(FEATURE_COLUMNS):
@@ -169,7 +201,9 @@ def load_bundle(path: str | Path) -> dict[str, Any]:
         raise ValueError("model horizon dimension mismatch")
     if constructor["n_classes"] != len(manifest["intensity_labels"]):
         raise ValueError("model class dimension mismatch")
-    if sorted(map(int, manifest["validation_radius_km"])) != sorted(manifest["horizons_hours"]):
+    if sorted(map(int, manifest["validation_radius_km"])) != sorted(
+        manifest["horizons_hours"]
+    ):
         raise ValueError("calibration horizon mismatch")
 
     scaler_state = json.loads((root / "scaler.json").read_text(encoding="utf-8"))
@@ -200,7 +234,8 @@ def predict_bundle(
         {
             "storm_id": ["inference"] * len(fixes),
             "timestamp": [fix.timestamp.astimezone(timezone.utc) for fix in fixes],
-            "lat": [fix.lat for fix in fixes], "lon": [fix.lon for fix in fixes],
+            "lat": [fix.lat for fix in fixes],
+            "lon": [fix.lon for fix in fixes],
             "wind_ms": [fix.wind_ms for fix in fixes],
             "pressure_hpa": [fix.pressure_hpa for fix in fixes],
             "intensity": [fix.intensity for fix in fixes],
@@ -215,7 +250,9 @@ def predict_bundle(
         raise ValueError("input window must have regular bundle time steps")
     matrix = FeatureBuilder().feature_matrix(frame)
     scaled = bundle["scaler"].transform(matrix)
-    x = torch.tensor(scaled.iloc[-input_len:].to_numpy(), dtype=torch.float32).unsqueeze(0)
+    x = torch.tensor(
+        scaled.iloc[-input_len:].to_numpy(), dtype=torch.float32
+    ).unsqueeze(0)
     mask = torch.ones((1, input_len), dtype=torch.float32)
     with torch.no_grad():
         output = bundle["model"](x, mask)

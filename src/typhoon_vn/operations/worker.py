@@ -1,4 +1,5 @@
 """Idempotent local/production update worker. Never sends external messages."""
+
 import json
 import logging
 import time
@@ -10,18 +11,25 @@ from typhoon_vn.features.geo import haversine_km
 
 logger = logging.getLogger(__name__)
 
+
 def evaluate_alerts(store, forecast):
     count = 0
     for identifier, subscription in store.list_subscriptions():
-        points = [p for p in forecast["points"]
-                  if p["horizon_hours"] <= subscription["lead_hours"]]
+        points = [
+            p
+            for p in forecast["points"]
+            if p["horizon_hours"] <= subscription["lead_hours"]
+        ]
         if not points:
             continue
-        closest = min(haversine_km(subscription["lat"], subscription["lon"],
-                                  p["lat"], p["lon"]) for p in points)
+        closest = min(
+            haversine_km(subscription["lat"], subscription["lon"], p["lat"], p["lon"])
+            for p in points
+        )
         if closest <= subscription["radius_km"]:
             count += store.record_alert(identifier, forecast, subscription, closest)
     return count
+
 
 def update(store, forecaster, batches):
     # Validate the entire incoming snapshot before any writes.
@@ -43,15 +51,28 @@ def update(store, forecaster, batches):
         results.append(result.forecast_id)
     return results
 
+
 def demo_batches():
     now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
-    return [ObservationBatch(
-        storm_id="DEMO-01", name="Demo / Bao mo phong",
-        observations=[Fix(timestamp=now-timedelta(hours=(7-i)*6),
-                          lat=13.5+i*.28, lon=119-i*.45,
-                          wind_ms=30+i, pressure_hpa=980-i,
-                          intensity="TY", source="synthetic-demo") for i in range(8)]
-    )]
+    return [
+        ObservationBatch(
+            storm_id="DEMO-01",
+            name="Demo / Bao mo phong",
+            observations=[
+                Fix(
+                    timestamp=now - timedelta(hours=(7 - i) * 6),
+                    lat=13.5 + i * 0.28,
+                    lon=119 - i * 0.45,
+                    wind_ms=30 + i,
+                    pressure_hpa=980 - i,
+                    intensity="TY",
+                    source="synthetic-demo",
+                )
+                for i in range(8)
+            ],
+        )
+    ]
+
 
 def run_worker(store, forecaster, snapshot: Path, interval=1800, once=False):
     if interval < 1:

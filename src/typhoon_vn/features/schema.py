@@ -1,11 +1,8 @@
-"""Canonical schema for the cleaned best-track table (Phase 2, WBS 3.x).
-
-Every cleaning step consumes and produces this schema so that ingestion
-sources (CMA / IBTrACS / JMA / JTWC / NCHMF) converge on one contract.
-"""
+"""Canonical schema shared by ingestion, features, datasets, and training."""
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 
 
@@ -31,16 +28,20 @@ class TrackSchema:
 
     @property
     def required(self) -> tuple[str, ...]:
-        return (
-            self.storm_id,
-            self.timestamp,
-            self.lat,
-            self.lon,
-        )
+        return (self.storm_id, self.timestamp, self.lat, self.lon)
 
     @property
     def numeric(self) -> tuple[str, ...]:
         return (self.lat, self.lon, self.wind_ms, self.pressure_hpa)
+
+    def validate_columns(self, columns: Iterable[str]) -> None:
+        """Fail fast when a stage omits the canonical core contract."""
+        available = set(columns)
+        missing = [name for name in self.required if name not in available]
+        if missing:
+            raise ValueError(
+                f"canonical track schema missing required columns: {missing}"
+            )
 
     def columns(self) -> list[str]:
         return [

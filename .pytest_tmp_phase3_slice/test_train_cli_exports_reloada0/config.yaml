@@ -1,0 +1,9 @@
+
+experiment: {name: smoke-v1, seed: 3, device: cpu}
+dataset: {input_len: 4, horizon: [1, 2, 4, 8, 12], split_by_year: false, val_ratio: 0.25, test_ratio: 0.0, random_seed: 3}
+model: {type: LSTMTrackForecaster, hidden_size: 8, num_layers: 1, dropout: 0.0}
+training: {epochs: 1, batch_size: 32, learning_rate: 0.001, weight_decay: 0.0, patience: 2, gradient_clip: 1.0, scheduler: none, log_every: 99}
+loss: {reg_loss: smooth_l1, reg_weight: 1.0, cls_weight: 0.3}
+checkpoint: {dir: ignored, save_last: true, save_best: true}
+mlflow: {enabled: false, tracking_uri: mlruns, experiment_name: smoke}
+

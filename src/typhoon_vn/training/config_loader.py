@@ -1,10 +1,10 @@
-"""Strict configuration loader for the supported LSTM training pipeline."""
+"""Strict Pydantic configuration for the supported training pipeline."""
 
 from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class StrictModel(BaseModel):
@@ -14,7 +14,7 @@ class StrictModel(BaseModel):
 class ExperimentConfig(StrictModel):
     name: str = Field(min_length=1)
     seed: int = 42
-    device: str = "cpu"
+    device: Literal["auto", "cpu", "cuda", "mps"] = "cpu"
 
 
 class DataConfig(StrictModel):
@@ -24,6 +24,16 @@ class DataConfig(StrictModel):
     val_ratio: float = Field(default=0.1, ge=0, lt=1)
     test_ratio: float = Field(default=0.1, ge=0, lt=1)
     random_seed: int = 42
+
+    @model_validator(mode="after")
+    def validate_split_and_horizons(self) -> "DataConfig":
+        if self.val_ratio + self.test_ratio >= 1:
+            raise ValueError("validation and test ratios must sum to less than 1")
+        if self.horizon != sorted(set(self.horizon)) or any(
+            horizon <= 0 for horizon in self.horizon
+        ):
+            raise ValueError("dataset horizons must be unique, increasing and positive")
+        return self
 
 
 class ModelConfig(StrictModel):
@@ -79,14 +89,8 @@ class PipelineConfig(StrictModel):
 
 
 def load_config(path: str | Path) -> PipelineConfig:
+    """Load YAML with the same validation used by direct model callers."""
     payload = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
-    config = PipelineConfig.model_validate(payload)
-    if config.dataset.val_ratio + config.dataset.test_ratio >= 1:
-        raise ValueError("validation and test ratios must sum to less than 1")
-    if sorted(set(config.dataset.horizon)) != config.dataset.horizon or any(
-        horizon <= 0 for horizon in config.dataset.horizon
-    ):
-        raise ValueError("dataset horizons must be unique, increasing and positive")
-    if config.mlflow.enabled:
-        raise ValueError("MLflow export is not implemented by the local pipeline")
-    return config
+    if not isinstance(payload, dict):
+        raise ValueError("training configuration must be a YAML mapping")
+    return PipelineConfig.model_validate(payload)

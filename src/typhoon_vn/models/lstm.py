@@ -13,6 +13,38 @@ from torch import nn
 from typhoon_vn.models.base import TrackForecaster
 
 
+def _validate_sequence(
+    x: torch.Tensor, mask: torch.Tensor | None
+) -> tuple[torch.Tensor | None, torch.Tensor]:
+    if x.ndim != 3 or x.shape[1] < 1 or x.shape[2] < 1:
+        raise ValueError("x must have shape (B, T, F) with non-empty dimensions")
+    if not torch.isfinite(x).all():
+        raise ValueError("model input must contain only finite values")
+    if mask is None:
+        lengths = torch.full(
+            (x.shape[0],), x.shape[1], dtype=torch.long, device=x.device
+        )
+        return None, lengths
+    if mask.shape != x.shape[:2]:
+        raise ValueError("mask must have shape (B, T)")
+    valid = mask.to(dtype=torch.bool)
+    lengths = valid.sum(dim=1)
+    if (lengths < 1).any():
+        raise ValueError("each sequence must contain at least one valid timestep")
+    expected = (
+        torch.arange(x.shape[1], device=x.device).unsqueeze(0)
+        < lengths.unsqueeze(1)
+    )
+    if not torch.equal(valid, expected):
+        raise ValueError("mask must describe right-padded contiguous sequences")
+    return valid, lengths
+
+
+def _last_valid(sequence: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
+    batch = torch.arange(sequence.shape[0], device=sequence.device)
+    return sequence[batch, lengths - 1]
+
+
 class LSTMTrackForecaster(TrackForecaster):
     """Baseline LSTM adapted from the sample repo, extended to multi-horizon.
 
@@ -43,18 +75,25 @@ class LSTMTrackForecaster(TrackForecaster):
         )
         self.reg_head = nn.Linear(hidden_size, n_horizons * 2)
         self.cls_head = nn.Linear(hidden_size, n_horizons * n_classes)
+        self.wind_head = nn.Linear(hidden_size, n_horizons)
+        self.pressure_head = nn.Linear(hidden_size, n_horizons)
 
-    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+    def forward(
+        self, x: torch.Tensor, mask: torch.Tensor | None = None
+    ) -> dict[str, torch.Tensor]:
         # x: (B, T, F)
         context = self.encode(x, mask)  # (B, hidden_size)
         reg = self.reg_head(context).view(-1, self.n_horizons, 2)
         cls = self.cls_head(context).view(-1, self.n_horizons, self.n_classes)
-        return {"reg": reg, "cls": cls}
+        wind = self.wind_head(context).view(-1, self.n_horizons, 1)
+        pressure = self.pressure_head(context).view(-1, self.n_horizons, 1)
+        return {"reg": reg, "cls": cls, "wind": wind, "pressure": pressure}
 
     def encode(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
         """Run LSTM and return the last hidden state. ``mask`` is unused."""
+        _, lengths = _validate_sequence(x, mask)
         lstm_out, _ = self.lstm(x)  # (B, T, hidden_size)
-        return lstm_out[:, -1, :]  # (B, hidden_size)
+        return _last_valid(lstm_out, lengths)  # (B, hidden_size)
 
     @property
     def context_size(self) -> int:
@@ -123,11 +162,23 @@ class Seq2SeqLSTMTrackForecaster(TrackForecaster):
     ) -> dict[str, torch.Tensor]:
         # x: (B, T, F); y_reg/y_cls optional for teacher forcing
         batch_size = x.size(0)
-        _, (h, c) = self.encoder(x)
+        _, lengths = _validate_sequence(x, mask)
+        packed = nn.utils.rnn.pack_padded_sequence(
+            x, lengths.cpu(), batch_first=True, enforce_sorted=False
+        )
+        _, (h, c) = self.encoder(packed)
 
         # Seed decoder with last observed lat/lon position.
         # lat_lon_slice must match the ordering of feature_cols (default: first two = lat/lon).
-        last_pos = x[:, -1, self.lat_lon_slice]  # (B, 2)
+        last_pos = _last_valid(x, lengths)[:, self.lat_lon_slice]  # (B, 2)
+        if last_pos.shape[-1] != 2:
+            raise ValueError("lat_lon_slice must select exactly two features")
+        if self.training and ((y_reg is None) != (y_cls is None)):
+            raise ValueError("teacher forcing requires both y_reg and y_cls")
+        if y_reg is not None and y_reg.shape != (batch_size, self.n_horizons, 2):
+            raise ValueError("y_reg has an invalid teacher-forcing shape")
+        if y_cls is not None and y_cls.shape != (batch_size, self.n_horizons):
+            raise ValueError("y_cls has an invalid teacher-forcing shape")
         # Use a dummy one-hot class vector as initial decoder input
         prev_cls = torch.zeros(batch_size, self.n_classes, device=x.device)
         decoder_input = torch.cat([last_pos, prev_cls], dim=-1).unsqueeze(1)
@@ -142,7 +193,12 @@ class Seq2SeqLSTMTrackForecaster(TrackForecaster):
             cls_outputs.append(step_cls)
 
             # Next decoder input
-            if self.training and y_reg is not None and y_cls is not None and torch.rand(1).item() < self.teacher_forcing_ratio:
+            if (
+                self.training
+                and y_reg is not None
+                and y_cls is not None
+                and torch.rand(1).item() < self.teacher_forcing_ratio
+            ):
                 next_pos = y_reg[:, t, :]
                 next_cls = torch.nn.functional.one_hot(
                     y_cls[:, t].clamp(0, self.n_classes - 1), num_classes=self.n_classes
@@ -203,7 +259,9 @@ class AttentionLSTMTrackForecaster(TrackForecaster):
         self.reg_head = nn.Linear(hidden_size, n_horizons * 2)
         self.cls_head = nn.Linear(hidden_size, n_horizons * n_classes)
 
-    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+    def forward(
+        self, x: torch.Tensor, mask: torch.Tensor | None = None
+    ) -> dict[str, torch.Tensor]:
         context = self.encode(x, mask)  # (B, hidden_size)
         reg = self.reg_head(context).view(-1, self.n_horizons, 2)
         cls = self.cls_head(context).view(-1, self.n_horizons, self.n_classes)
@@ -211,15 +269,16 @@ class AttentionLSTMTrackForecaster(TrackForecaster):
 
     def encode(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
         """Run attention-weighted pooling and return the context vector."""
+        valid, lengths = _validate_sequence(x, mask)
         enc_out, _ = self.encoder(x)  # (B, T, hidden_size)
-        last = enc_out[:, -1, :]  # (B, hidden_size)
+        last = _last_valid(enc_out, lengths)  # (B, hidden_size)
 
         # Additive attention: query = last hidden, keys = all encoder outputs
         q = self.attn_query(last).unsqueeze(1)  # (B, 1, H)
         k = self.attn_key(enc_out)  # (B, T, H)
         scores = torch.tanh(q + k).sum(dim=-1)  # (B, T)
-        if mask is not None:
-            scores = scores.masked_fill(mask == 0, float("-inf"))
+        if valid is not None:
+            scores = scores.masked_fill(~valid, float("-inf"))
         attn = torch.softmax(scores, dim=-1)  # (B, T)
         v = self.attn_value(enc_out)  # (B, T, H)
         context = torch.bmm(attn.unsqueeze(1), v).squeeze(1)  # (B, H)

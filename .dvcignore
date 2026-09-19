@@ -1,2 +1,4 @@
-# DVC cache is local implementation detail; raw data is governed by .gitignore.
-/.dvc/cache/
+**/__pycache__/**
+**/*.py[cod]
+**/.pytest-*/**
+viz/frontend/node_modules/**

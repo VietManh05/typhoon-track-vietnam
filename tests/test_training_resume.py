@@ -54,7 +54,10 @@ class TinyForecaster(TrackForecaster):
 
     def forward(self, x, mask=None):
         context = self.encode(x, mask)
-        return {"reg": self.reg(context).unsqueeze(1), "cls": self.cls(context).unsqueeze(1)}
+        return {
+            "reg": self.reg(context).unsqueeze(1),
+            "cls": self.cls(context).unsqueeze(1),
+        }
 
 
 def seed_all(seed: int = 11) -> None:
@@ -67,8 +70,13 @@ def make_trainer(path, model=None) -> Trainer:
     return Trainer(
         model or TinyForecaster(),
         TrainingConfig(
-            epochs=2, learning_rate=1e-2, patience=3, scheduler="cosine",
-            device="cpu", checkpoint_dir=path, log_every=99,
+            epochs=2,
+            learning_rate=1e-2,
+            patience=3,
+            scheduler="cosine",
+            device="cpu",
+            checkpoint_dir=path,
+            log_every=99,
         ),
         MultiHorizonLoss(n_horizons=1, n_classes=2),
     )
@@ -90,7 +98,9 @@ def test_continuous_matches_one_plus_resume(tmp_path) -> None:
     assert saved["scheduler_state_dict"]["last_epoch"] == 1
 
     # Deliberately perturb every RNG; load_checkpoint must restore all of them.
-    random.random(); np.random.random(); torch.rand(3)
+    random.random()
+    np.random.random()
+    torch.rand(3)
     resumed = make_trainer(tmp_path / "resumed", TinyForecaster())
     resumed.load_checkpoint(checkpoint)
     resumed.fit(loader, loader)
@@ -102,7 +112,9 @@ def test_continuous_matches_one_plus_resume(tmp_path) -> None:
         continuous.optimizer.param_groups[0]["lr"]
     )
     for name, value in continuous.model.state_dict().items():
-        torch.testing.assert_close(resumed.model.state_dict()[name], value, rtol=0, atol=1e-7)
+        torch.testing.assert_close(
+            resumed.model.state_dict()[name], value, rtol=0, atol=1e-7
+        )
 
 
 def test_empty_and_nonfinite_validation_are_rejected(tmp_path) -> None:
@@ -124,7 +136,9 @@ def test_checkpoint_contract_rejects_scheduler_mismatch(tmp_path) -> None:
     source.fit(loader, loader, max_epochs=1)
     target = Trainer(
         TinyForecaster(),
-        TrainingConfig(epochs=2, scheduler="none", device="cpu", checkpoint_dir=tmp_path / "target"),
+        TrainingConfig(
+            epochs=2, scheduler="none", device="cpu", checkpoint_dir=tmp_path / "target"
+        ),
         MultiHorizonLoss(1, 2),
     )
     with pytest.raises(ValueError, match="scheduler"):

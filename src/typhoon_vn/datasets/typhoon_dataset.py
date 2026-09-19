@@ -7,8 +7,10 @@ splits by storm ID or year to avoid leakage.
 
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -53,18 +55,23 @@ class TyphoonDataset(torch.utils.data.Dataset):
     ) -> None:
         self.config = config or DatasetConfig()
         self.schema = schema or DEFAULT_SCHEMA
-        self.intensity_order = list(intensity_order or ("TD", "TS", "STS", "TY", "STY", "SUPERTY", "UNK"))
+        self.intensity_order = list(
+            intensity_order or ("TD", "TS", "STS", "TY", "STY", "SUPERTY", "UNK")
+        )
         self.scaler = scaler
         self.intensity_to_idx = {name: i for i, name in enumerate(self.intensity_order)}
 
         self.samples: list[dict[str, Any]] = []
         self.feature_cols: list[str] = []
+        self.schema.validate_columns(df.columns)
         self._build(df)
 
     def _build(self, df: pd.DataFrame) -> None:
         df = df.copy()
         df[self.schema.timestamp] = pd.to_datetime(df[self.schema.timestamp], utc=True)
-        df = df.sort_values([self.schema.storm_id, self.schema.timestamp]).reset_index(drop=True)
+        df = df.sort_values([self.schema.storm_id, self.schema.timestamp]).reset_index(
+            drop=True
+        )
 
         # Build derived features before resolving their fixed vocabulary.  This
         # is the same FeatureBuilder path used by serving.
@@ -80,8 +87,6 @@ class TyphoonDataset(torch.utils.data.Dataset):
             raise ValueError("feature_cols must not contain duplicates")
 
         # Explicit custom lists are selected from this same transformed frame.
-
-
 
         if self.scaler is not None:
             if not self.scaler.is_fitted:
@@ -126,7 +131,8 @@ class TyphoonDataset(torch.utils.data.Dataset):
                     continue
                 issue_time = input_times[-1]
                 target_positions = [
-                    positions.get(issue_time + time_step * h) for h in self.config.horizon
+                    positions.get(issue_time + time_step * h)
+                    for h in self.config.horizon
                 ]
                 if any(position is None for position in target_positions):
                     continue
@@ -138,8 +144,14 @@ class TyphoonDataset(torch.utils.data.Dataset):
                     y_reg_list.append(
                         [float(target_row[col]) for col in self.config.target_cols]
                     )
-                    intensity = str(target_row.get(self.schema.intensity, "UNK")).upper()
-                    y_cls_list.append(self.intensity_to_idx.get(intensity, self.intensity_to_idx["UNK"]))
+                    intensity = str(
+                        target_row.get(self.schema.intensity, "UNK")
+                    ).upper()
+                    y_cls_list.append(
+                        self.intensity_to_idx.get(
+                            intensity, self.intensity_to_idx["UNK"]
+                        )
+                    )
                 self.samples.append(
                     {
                         "x": input_rows[self.feature_cols].to_numpy(dtype=np.float32),
@@ -153,78 +165,6 @@ class TyphoonDataset(torch.utils.data.Dataset):
                         },
                     }
                 )
-
-    def _default_feature_cols(self, df: pd.DataFrame) -> list[str]:
-        cols: list[str] = []
-        base = [self.schema.lat, self.schema.lon, self.schema.wind_ms, self.schema.pressure_hpa]
-        for c in base:
-            if c in df.columns:
-                cols.append(c)
-        motion = ["step_distance_km", "bearing_deg", "speed_kmh"]
-        cols.extend([c for c in motion if c in df.columns])
-        time = ["sin_hour", "cos_hour", "sin_doy", "cos_doy", "sin_month", "cos_month"]
-        cols.extend([c for c in time if c in df.columns])
-        # One-hot intensity columns are added by _add_intensity_onehot
-        for c in df.columns:
-            if c.startswith("intensity_"):
-                cols.append(c)
-        return cols
-
-    def _add_motion_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Compute step distance, bearing and speed using pandas shift().
-
-        Using ``shift()`` inside a ``groupby`` is O(n) and avoids the slow
-        ``DataFrame.at[]`` scalar writes of the original loop-based approach,
-        giving a ~10-50x speedup on large catalogues.
-        """
-        df = df.copy().sort_values([self.schema.storm_id, self.schema.timestamp])
-
-        # Shift lat/lon/timestamp within each storm to get the previous step.
-        prev = df.groupby(self.schema.storm_id, sort=False)[
-            [self.schema.lat, self.schema.lon, self.schema.timestamp]
-        ].shift(1)
-
-        lat1 = prev[self.schema.lat].to_numpy(dtype=float)
-        lon1 = prev[self.schema.lon].to_numpy(dtype=float)
-        lat2 = df[self.schema.lat].to_numpy(dtype=float)
-        lon2 = df[self.schema.lon].to_numpy(dtype=float)
-        t1 = pd.to_datetime(prev[self.schema.timestamp])
-        t2 = pd.to_datetime(df[self.schema.timestamp])
-        hours = ((t2 - t1).dt.total_seconds() / 3600.0).clip(lower=1e-6).to_numpy()
-
-        n = len(df)
-        distances = np.zeros(n, dtype=float)
-        bearings = np.zeros(n, dtype=float)
-        # Only compute for rows that have a valid previous observation (not NaN).
-        valid = ~np.isnan(lat1)
-        for i in np.where(valid)[0]:
-            distances[i] = haversine_km(lat1[i], lon1[i], lat2[i], lon2[i])
-            bearings[i] = bearing_deg(lat1[i], lon1[i], lat2[i], lon2[i])
-
-        df["step_distance_km"] = distances
-        df["bearing_deg"] = bearings
-        df["speed_kmh"] = np.where(valid, distances / hours, 0.0)
-        return df
-
-    def _add_time_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.copy()
-        ts = df[self.schema.timestamp]
-        hour = ts.dt.hour
-        doy = ts.dt.dayofyear
-        month = ts.dt.month
-        df["sin_hour"] = np.sin(2 * np.pi * hour / 24.0)
-        df["cos_hour"] = np.cos(2 * np.pi * hour / 24.0)
-        df["sin_doy"] = np.sin(2 * np.pi * doy / 365.0)
-        df["cos_doy"] = np.cos(2 * np.pi * doy / 365.0)
-        df["sin_month"] = np.sin(2 * np.pi * month / 12.0)
-        df["cos_month"] = np.cos(2 * np.pi * month / 12.0)
-        # One-hot intensity
-        for cat in self.intensity_order:
-            df[f"intensity_{cat}"] = (
-                df[self.schema.intensity].fillna("UNK").astype(str).str.upper()
-                == cat
-            ).astype(np.float32)
-        return df
 
     def __len__(self) -> int:
         return len(self.samples)
@@ -282,7 +222,11 @@ def split_by_storm_or_year(
         train = df[~df["_year"].isin(test_years | val_years)].drop(columns="_year")
         val = df[df["_year"].isin(val_years)].drop(columns="_year")
         test = df[df["_year"].isin(test_years)].drop(columns="_year")
-        return train.reset_index(drop=True), val.reset_index(drop=True), test.reset_index(drop=True)
+        return (
+            train.reset_index(drop=True),
+            val.reset_index(drop=True),
+            test.reset_index(drop=True),
+        )
 
     rng = np.random.default_rng(random_seed)
     storm_ids = list(df[schema.storm_id].unique())
@@ -295,7 +239,56 @@ def split_by_storm_or_year(
     train = df[df[schema.storm_id].isin(train_ids)]
     val = df[df[schema.storm_id].isin(val_ids)]
     test = df[df[schema.storm_id].isin(test_ids)]
-    return train.reset_index(drop=True), val.reset_index(drop=True), test.reset_index(drop=True)
+    return (
+        train.reset_index(drop=True),
+        val.reset_index(drop=True),
+        test.reset_index(drop=True),
+    )
+
+
+def split_manifest(
+    train: pd.DataFrame,
+    validation: pd.DataFrame,
+    test: pd.DataFrame,
+    *,
+    schema: TrackSchema | None = None,
+    policy: str,
+    seed: int | None = None,
+) -> dict[str, Any]:
+    """Return an auditable, leakage-checked split manifest."""
+
+    schema = schema or DEFAULT_SCHEMA
+    ids = {
+        "train": sorted(map(str, train[schema.storm_id].unique())),
+        "validation": sorted(map(str, validation[schema.storm_id].unique())),
+        "test": sorted(map(str, test[schema.storm_id].unique())),
+    }
+    sets = {name: set(values) for name, values in ids.items()}
+    if (
+        sets["train"] & sets["validation"]
+        or sets["train"] & sets["test"]
+        or sets["validation"] & sets["test"]
+    ):
+        raise ValueError("storm IDs overlap across train/validation/test")
+    return {
+        "policy": policy,
+        "seed": seed,
+        "train_ids": ids["train"],
+        "validation_ids": ids["validation"],
+        "test_ids": ids["test"],
+        "row_counts": {
+            "train": len(train),
+            "validation": len(validation),
+            "test": len(test),
+        },
+    }
+
+
+def save_split_manifest(manifest: dict[str, Any], path: str | Path) -> Path:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    return path
 
 
 def collate_fn(batch: Sequence[dict[str, Any]]) -> dict[str, torch.Tensor]:

@@ -3,18 +3,27 @@
 ## DVC policy
 
 Use DVC to track approved copies of source datasets, processed datasets, and
-large model artefacts without placing them in Git. Once the Python 3.11
-environment is installed, initialise it from the repository root:
+large model artefacts without placing them in Git. The repository is already
+initialised for DVC and includes a licence-safe synthetic fixture stage:
 
 ```powershell
-python -m dvc init
-python -m dvc add data/processed/<dataset>.parquet
-git add .dvc .gitignore data/processed/<dataset>.parquet.dvc
+python -m dvc repro phase2-fixture
+python -m dvc status
 ```
 
-Choose and configure an approved remote before pushing any data. Do not add raw
-third-party data unless its licence permits redistribution. The first tracked
-artefacts are expected to be the cleaned dataset and training checkpoints.
+The stage consumes `tests/fixtures/phase2_track.csv`, records dependency/output
+hashes in `dvc.lock`, and produces ignored files under `data/processed/`.
+Changing the fixture, feature code, or build script invalidates the stage.
+
+Choose and configure an approved remote before pushing any data. The remote URL
+is never committed; an operator sets `DVC_REMOTE_URL` and runs:
+
+```powershell
+python scripts/configure_dvc_remote.py
+```
+
+This writes DVC's local config only. Do not add or push raw third-party data
+unless its licence permits redistribution.
 
 ## MLflow policy
 

@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-import math
 from typing import Any
-
 
 SUPPORTED_WIND_UNITS = frozenset({"kt", "knot", "knots", "m/s", "ms"})
 
@@ -50,7 +49,9 @@ class Observation:
             raise ValueError(f"latitude outside WGS84 bounds: {self.latitude}")
         if not math.isfinite(self.longitude) or not -180 <= self.longitude <= 360:
             raise ValueError(f"longitude outside supported bounds: {self.longitude}")
-        object.__setattr__(self, "timestamp", _utc_datetime(self.timestamp, "timestamp"))
+        object.__setattr__(
+            self, "timestamp", _utc_datetime(self.timestamp, "timestamp")
+        )
         if self.downloaded_at is not None:
             object.__setattr__(
                 self,
@@ -58,7 +59,11 @@ class Observation:
                 _utc_datetime(self.downloaded_at, "downloaded_at"),
             )
         source = self.source.strip().lower()
-        if not source or not self.source_url.strip() or not self.source_file_checksum.strip():
+        if (
+            not source
+            or not self.source_url.strip()
+            or not self.source_file_checksum.strip()
+        ):
             raise ValueError("source, source_url and source_file_checksum are required")
         object.__setattr__(self, "source", source)
         if self.wind_unit is not None:

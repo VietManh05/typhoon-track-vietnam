@@ -16,13 +16,13 @@ into Git.
 
 | Source | Role | Acquisition method | Constraint |
 | --- | --- | --- | --- |
-| CMA-BST | Annual WP best track, 1949 onward | `fetch cma` builds `CHYYYYBST.txt` URLs | Retain CMA citation |
+| CMA-BST | Annual WP best track, 1949 onward (official page verified through 2025) | `fetch cma` builds `CHYYYYBST.txt` URLs | Retain CMA citation |
 | IBTrACS v4r01 | Primary normalised track source | `fetch ibtracs` | Updated frequently; retain checksum |
-| JMA RSMC | WP cross-check | `fetch jma` | Public all-years ZIP archive |
+| JMA RSMC | WP cross-check (official archive currently spans 1951–2026) | `fetch jma` | Public all-years ZIP archive |
 | JTWC | WP cross-check | `fetch jtwc --manifest` | Approved URLs only |
 | NCHMF | Vietnam-local bulletin observations | Approved CSV export | Authorised archive required |
 | PCTT | Provincial impact labels | Approved CSV export | Licence review required |
-| GADM | Vietnam admin boundaries | `fetch gadm` | Raw archive; CRS work is later |
+| GADM 4.1 | Vietnam admin boundaries | `fetch gadm` | Academic/non-commercial terms; no redistribution without permission |
 | GSHHG | Coastline for landfall analysis | `fetch gshhg --url ...` | Explicit release URL required |
 | NOAA OISST v2.1 | Daily SST field | `fetch oisst --date YYYY-MM-DD` | NetCDF retained raw |
 | ERA5 | MSLP, pressure-level winds, humidity | Bounded CDS API request | Account and terms required |
@@ -86,6 +86,10 @@ IDs are deliberately unresolved. A merge requires the same resolved ID, time
 separation no greater than three hours, and location separation no greater than
 75 km. IBTrACS wins priority over JTWC, JMA, CMA, then NCHMF; conflicts are kept
 as metadata and never averaged.
+
+HTTP acceptance tests use deterministic fake responses for 200, 404, 429,
+timeout, empty payload and checksum behaviour. Full history is only fetched by
+an explicit operator command; tests never scrape or mirror upstream archives.
 
 ## Environment fields and scheduling
 

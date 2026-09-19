@@ -6,8 +6,6 @@ run and tested without waiting for real ingestion data.
 
 from __future__ import annotations
 
-import math
-import random
 from datetime import datetime, timedelta, timezone
 
 import numpy as np

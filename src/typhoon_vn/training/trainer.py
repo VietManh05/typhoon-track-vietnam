@@ -100,9 +100,7 @@ class Trainer:
                 if training:
                     self.optimizer.zero_grad()
                 out = self.model(x, mask)
-                loss, metrics = self.loss_fn(
-                    out["reg"], out["cls"], y_reg, y_cls
-                )
+                loss, metrics = self.loss_fn(out["reg"], out["cls"], y_reg, y_cls)
                 metric_values = {
                     name: float(metrics[name].detach().item()) for name in totals
                 }
@@ -129,10 +127,9 @@ class Trainer:
         self,
         train_loader: DataLoader,
         val_loader: DataLoader | None = None,
-        epoch_callback: Callable[
-            [int, dict[str, float], dict[str, float] | None], None
-        ]
-        | None = None,
+        epoch_callback: (
+            Callable[[int, dict[str, float], dict[str, float] | None], None] | None
+        ) = None,
         max_epochs: int | None = None,
     ) -> dict[str, Any]:
         """Train through the configured epoch, or pause at ``max_epochs``.
@@ -165,7 +162,9 @@ class Trainer:
             if self.scheduler is not None:
                 if self.config.scheduler == "plateau":
                     if val_metrics is None:
-                        raise ValueError("plateau scheduler requires a validation loader")
+                        raise ValueError(
+                            "plateau scheduler requires a validation loader"
+                        )
                     self.scheduler.step(val_metrics["loss"])
                 else:
                     self.scheduler.step()

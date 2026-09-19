@@ -102,7 +102,9 @@ class TransformerTrackForecaster(TrackForecaster):
             nn.Linear(d_model, n_horizons * n_classes),
         )
 
-    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
+    def forward(
+        self, x: torch.Tensor, mask: torch.Tensor | None = None
+    ) -> dict[str, torch.Tensor]:
         """Forward pass.
 
         Args:
@@ -136,10 +138,15 @@ class TransformerTrackForecaster(TrackForecaster):
         if mask is not None:
             src_key_padding_mask = mask == 0  # (B, T), bool
 
-        enc_out = self.encoder(h, src_key_padding_mask=src_key_padding_mask)  # (B, T, d_model)
+        enc_out = self.encoder(
+            h, src_key_padding_mask=src_key_padding_mask
+        )  # (B, T, d_model)
 
-        # Use the last token (most recent observation) as the context vector
-        return enc_out[:, -1, :]  # (B, d_model)
+        if mask is None:
+            return enc_out.mean(dim=1)
+        valid = mask.to(enc_out).unsqueeze(-1)
+        counts = valid.sum(dim=1).clamp_min(1.0)
+        return (enc_out * valid).sum(dim=1) / counts
 
     @property
     def context_size(self) -> int:

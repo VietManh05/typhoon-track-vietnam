@@ -18,7 +18,15 @@ WIND_MIN_MS, WIND_MAX_MS = 0.0, 110.0  # ~215 kt upper sanity bound
 
 # --- Intensity categories (fixed class list, tropical Northwest Pacific) -----
 # Ordered from weakest to strongest; ``UNK`` covers missing/unknown grades.
-INTENSITY_CATEGORIES: tuple[str, ...] = ("TD", "TS", "STS", "TY", "STY", "SUPERTY", "UNK")
+INTENSITY_CATEGORIES: tuple[str, ...] = (
+    "TD",
+    "TS",
+    "STS",
+    "TY",
+    "STY",
+    "SUPERTY",
+    "UNK",
+)
 
 # --- Record lifecycle flags --------------------------------------------------
 # ``END`` in the CMA best-track format marks the last message of a storm.

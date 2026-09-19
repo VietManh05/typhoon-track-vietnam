@@ -4,8 +4,8 @@ PYTHON ?= python
 
 setup:
 	$(PYTHON) -m pip install --upgrade pip
-	$(PYTHON) -m pip install -e ".[api,dev,experiment]"
-	$(PYTHON) -m pre_commit install
+	$(PYTHON) -m pip install -e ".[api,train,ingestion,dev,experiment]"
+	$(PYTHON) -m pre_commit install --hook-type pre-commit --hook-type commit-msg
 
 clean-data:
 	$(PYTHON) -m typhoon_vn.cli clean-data

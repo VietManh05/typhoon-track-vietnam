@@ -1,6 +1,6 @@
 # G01 — Ingestion và nguồn gốc dữ liệu
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: complete; nghiệm thu tại [G01-data-ingestion.md](evidence/G01-data-ingestion.md).
 - Hiện trạng: Có downloader/parser/merge; chưa xác nhận hoạt động với tất cả nguồn thật.
 - Đầu vào: Mẫu nguồn có giấy phép/điều kiện sử dụng và dữ liệu raw bất biến.
 - Gate phụ thuộc: G00.
@@ -17,7 +17,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 <a id="t01-001"></a>
 ## T01-001 — Xác định URL/source.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [448](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:448).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -31,12 +31,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-001.md](evidence/T01-001.md).
 
 <a id="t01-002"></a>
 ## T01-002 — Viết downloader.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [449](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:449).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -50,12 +50,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-002.md](evidence/T01-002.md).
 
 <a id="t01-003"></a>
 ## T01-003 — Tạo thư mục raw CMA.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [450](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:450).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -69,12 +69,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-003.md](evidence/T01-003.md).
 
 <a id="t01-004"></a>
 ## T01-004 — Download một file mẫu.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [451](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:451).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -88,12 +88,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Mock bytes xác định và HTTP failure; checksum/raw giữ nguyên; lần tải thật phải có nguồn hợp lệ và evidence riêng.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-004.md](evidence/T01-004.md).
 
 <a id="t01-005"></a>
 ## T01-005 — Kiểm tra HTTP status.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [452](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:452).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -107,12 +107,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-005.md](evidence/T01-005.md).
 
 <a id="t01-006"></a>
 ## T01-006 — Retry request.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [453](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:453).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -126,12 +126,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fake transport lỗi rồi thành công; số lần thử/timeout theo cấu hình; hết retry có trạng thái thất bại và log.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-006.md](evidence/T01-006.md).
 
 <a id="t01-007"></a>
 ## T01-007 — Timeout request.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [454](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:454).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -145,12 +145,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fake transport lỗi rồi thành công; số lần thử/timeout theo cấu hình; hết retry có trạng thái thất bại và log.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-007.md](evidence/T01-007.md).
 
 <a id="t01-008"></a>
 ## T01-008 — Kiểm tra file rỗng.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [455](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:455).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -164,12 +164,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-008.md](evidence/T01-008.md).
 
 <a id="t01-009"></a>
 ## T01-009 — Tính checksum.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [456](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:456).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -183,12 +183,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Cùng bytes cho cùng SHA-256; đổi một byte làm đổi digest; digest gắn với input version.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-009.md](evidence/T01-009.md).
 
 <a id="t01-010"></a>
 ## T01-010 — Ghi metadata download.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [457](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:457).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -202,12 +202,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-010.md](evidence/T01-010.md).
 
 <a id="t01-011"></a>
 ## T01-011 — Download toàn bộ lịch sử.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [458](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:458).
 - **Loại:** chuẩn bị/test cục bộ trước; chạy thật cần nguồn, credentials và phạm vi vận hành phù hợp.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -221,12 +221,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Mock bytes xác định và HTTP failure; checksum/raw giữ nguyên; lần tải thật phải có nguồn hợp lệ và evidence riêng.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-011.md](evidence/T01-011.md).
 
 <a id="t01-012"></a>
 ## T01-012 — Log lỗi từng file.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.1 CMA; dòng [459](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:459).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.1 CMA.
@@ -240,12 +240,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Output có giá trị/đơn vị/sample count/run ID/dataset/model version; expected được tính độc lập; không dùng test để tune.
 - **Kịch bản tiểu mục:** Mock HTTP 200/404/429/timeout và file rỗng; SHA-256 đúng bytes; retry có giới hạn; chạy lại không nhân bản raw object.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-012.md](evidence/T01-012.md).
 
 <a id="t01-013"></a>
 ## T01-013 — Đọc file raw.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [464](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:464).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -259,12 +259,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-013.md](evidence/T01-013.md).
 
 <a id="t01-014"></a>
 ## T01-014 — Nhận diện storm ID.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [465](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:465).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -278,12 +278,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-014.md](evidence/T01-014.md).
 
 <a id="t01-015"></a>
 ## T01-015 — Parse timestamp.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [466](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:466).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -297,12 +297,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** UTC+7 và UTC cùng instant cho cùng kết quả; naive/invalid time bị reject; issue_time và valid_time tách biệt.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-015.md](evidence/T01-015.md).
 
 <a id="t01-016"></a>
 ## T01-016 — Parse latitude.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [467](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:467).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -316,12 +316,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-016.md](evidence/T01-016.md).
 
 <a id="t01-017"></a>
 ## T01-017 — Parse longitude.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [468](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:468).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -335,12 +335,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-017.md](evidence/T01-017.md).
 
 <a id="t01-018"></a>
 ## T01-018 — Parse wind.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [469](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:469).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -354,12 +354,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-018.md](evidence/T01-018.md).
 
 <a id="t01-019"></a>
 ## T01-019 — Parse pressure nếu có.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [470](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:470).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -373,12 +373,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-019.md](evidence/T01-019.md).
 
 <a id="t01-020"></a>
 ## T01-020 — Chuẩn hóa đơn vị.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [471](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:471).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -392,12 +392,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-020.md](evidence/T01-020.md).
 
 <a id="t01-021"></a>
 ## T01-021 — Xử lý missing.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [472](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:472).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -411,12 +411,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fixture thiếu đầu/cuối chuỗi, gap dài và hai storm; không dùng future observations; missing không tự đổi thành 0.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-021.md](evidence/T01-021.md).
 
 <a id="t01-022"></a>
 ## T01-022 — Xuất DataFrame chuẩn.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [473](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:473).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -430,12 +430,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-022.md](evidence/T01-022.md).
 
 <a id="t01-023"></a>
 ## T01-023 — Xuất Parquet.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [474](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:474).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -449,12 +449,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-023.md](evidence/T01-023.md).
 
 <a id="t01-024"></a>
 ## T01-024 — Viết test parser.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.2 CMA Parser; dòng [475](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:475).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.2 CMA Parser.
@@ -468,12 +468,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Fixture CMA gồm header, nhiều cơn bão, tọa độ theo đơn vị nguồn, missing sentinel và dòng lỗi; expected rows/units được viết độc lập.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-024.md](evidence/T01-024.md).
 
 <a id="t01-025"></a>
 ## T01-025 — Tạo downloader.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [480](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:480).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -487,12 +487,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-025.md](evidence/T01-025.md).
 
 <a id="t01-026"></a>
 ## T01-026 — Cache file.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [481](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:481).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -506,12 +506,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hit/miss/expiry, observation sửa/model đổi và outage; cache key bao gồm input+model revision.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-026.md](evidence/T01-026.md).
 
 <a id="t01-027"></a>
 ## T01-027 — Tạo parser.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [482](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:482).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -525,12 +525,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-027.md](evidence/T01-027.md).
 
 <a id="t01-028"></a>
 ## T01-028 — Chọn agency fields.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [483](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:483).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -544,12 +544,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-028.md](evidence/T01-028.md).
 
 <a id="t01-029"></a>
 ## T01-029 — Chuẩn hóa storm ID.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [484](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:484).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -563,12 +563,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-029.md](evidence/T01-029.md).
 
 <a id="t01-030"></a>
 ## T01-030 — Chuẩn hóa timestamp.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [485](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:485).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -582,12 +582,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** UTC+7 và UTC cùng instant cho cùng kết quả; naive/invalid time bị reject; issue_time và valid_time tách biệt.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-030.md](evidence/T01-030.md).
 
 <a id="t01-031"></a>
 ## T01-031 — Chuẩn hóa lat/lon.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [486](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:486).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -601,12 +601,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-031.md](evidence/T01-031.md).
 
 <a id="t01-032"></a>
 ## T01-032 — Chuẩn hóa wind/pressure.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [487](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:487).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -620,12 +620,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-032.md](evidence/T01-032.md).
 
 <a id="t01-033"></a>
 ## T01-033 — Lưu source agency.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [488](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:488).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -639,12 +639,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-033.md](evidence/T01-033.md).
 
 <a id="t01-034"></a>
 ## T01-034 — Validate dữ liệu.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [489](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:489).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -658,12 +658,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-034.md](evidence/T01-034.md).
 
 <a id="t01-035"></a>
 ## T01-035 — Export Parquet.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.3 IBTrACS; dòng [490](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:490).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.3 IBTrACS.
@@ -677,12 +677,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture IBTrACS nhiều agency, SID, ATCF ID, missing và dòng units; không gộp sai bão khi thiếu khóa quốc tế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-035.md](evidence/T01-035.md).
 
 <a id="t01-036"></a>
 ## T01-036 — Tạo provider.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.4 JMA; dòng [493](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:493).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.4 JMA.
@@ -696,12 +696,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JMA fixed-width/grade/time và missing; mapping intensity phải căn cứ định dạng nguồn, không suy từ tên lớp.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-036.md](evidence/T01-036.md).
 
 <a id="t01-037"></a>
 ## T01-037 — Downloader.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.4 JMA; dòng [494](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:494).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.4 JMA.
@@ -715,12 +715,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JMA fixed-width/grade/time và missing; mapping intensity phải căn cứ định dạng nguồn, không suy từ tên lớp.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-037.md](evidence/T01-037.md).
 
 <a id="t01-038"></a>
 ## T01-038 — Parser.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.4 JMA; dòng [495](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:495).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.4 JMA.
@@ -734,12 +734,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JMA fixed-width/grade/time và missing; mapping intensity phải căn cứ định dạng nguồn, không suy từ tên lớp.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-038.md](evidence/T01-038.md).
 
 <a id="t01-039"></a>
 ## T01-039 — Mapping schema.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.4 JMA; dòng [496](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:496).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.4 JMA.
@@ -753,12 +753,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JMA fixed-width/grade/time và missing; mapping intensity phải căn cứ định dạng nguồn, không suy từ tên lớp.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-039.md](evidence/T01-039.md).
 
 <a id="t01-040"></a>
 ## T01-040 — Unit conversion.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.4 JMA; dòng [497](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:497).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.4 JMA.
@@ -772,12 +772,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture JMA fixed-width/grade/time và missing; mapping intensity phải căn cứ định dạng nguồn, không suy từ tên lớp.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-040.md](evidence/T01-040.md).
 
 <a id="t01-041"></a>
 ## T01-041 — Validation.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.4 JMA; dòng [498](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:498).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.4 JMA.
@@ -791,12 +791,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Fixture JMA fixed-width/grade/time và missing; mapping intensity phải căn cứ định dạng nguồn, không suy từ tên lớp.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-041.md](evidence/T01-041.md).
 
 <a id="t01-042"></a>
 ## T01-042 — Export.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.4 JMA; dòng [499](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:499).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.4 JMA.
@@ -810,12 +810,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JMA fixed-width/grade/time và missing; mapping intensity phải căn cứ định dạng nguồn, không suy từ tên lớp.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-042.md](evidence/T01-042.md).
 
 <a id="t01-043"></a>
 ## T01-043 — Tạo provider.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.5 JTWC; dòng [502](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:502).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.5 JTWC.
@@ -829,12 +829,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JTWC ATCF có N/S/E/W, advisory trùng, basin và năm; chọn đúng bản ghi quan trắc, không trộn forecast thành observed.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-043.md](evidence/T01-043.md).
 
 <a id="t01-044"></a>
 ## T01-044 — Downloader.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.5 JTWC; dòng [503](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:503).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.5 JTWC.
@@ -848,12 +848,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JTWC ATCF có N/S/E/W, advisory trùng, basin và năm; chọn đúng bản ghi quan trắc, không trộn forecast thành observed.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-044.md](evidence/T01-044.md).
 
 <a id="t01-045"></a>
 ## T01-045 — Parser.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.5 JTWC; dòng [504](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:504).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.5 JTWC.
@@ -867,12 +867,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JTWC ATCF có N/S/E/W, advisory trùng, basin và năm; chọn đúng bản ghi quan trắc, không trộn forecast thành observed.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-045.md](evidence/T01-045.md).
 
 <a id="t01-046"></a>
 ## T01-046 — Mapping schema.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.5 JTWC; dòng [505](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:505).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.5 JTWC.
@@ -886,12 +886,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JTWC ATCF có N/S/E/W, advisory trùng, basin và năm; chọn đúng bản ghi quan trắc, không trộn forecast thành observed.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-046.md](evidence/T01-046.md).
 
 <a id="t01-047"></a>
 ## T01-047 — Unit conversion.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.5 JTWC; dòng [506](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:506).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.5 JTWC.
@@ -905,12 +905,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture JTWC ATCF có N/S/E/W, advisory trùng, basin và năm; chọn đúng bản ghi quan trắc, không trộn forecast thành observed.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-047.md](evidence/T01-047.md).
 
 <a id="t01-048"></a>
 ## T01-048 — Validation.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.5 JTWC; dòng [507](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:507).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.5 JTWC.
@@ -924,12 +924,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Fixture JTWC ATCF có N/S/E/W, advisory trùng, basin và năm; chọn đúng bản ghi quan trắc, không trộn forecast thành observed.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-048.md](evidence/T01-048.md).
 
 <a id="t01-049"></a>
 ## T01-049 — Export.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.5 JTWC; dòng [508](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:508).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.5 JTWC.
@@ -943,12 +943,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture JTWC ATCF có N/S/E/W, advisory trùng, basin và năm; chọn đúng bản ghi quan trắc, không trộn forecast thành observed.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-049.md](evidence/T01-049.md).
 
 <a id="t01-050"></a>
 ## T01-050 — Xác định nguồn được phép sử dụng.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [511](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:511).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -962,12 +962,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-050.md](evidence/T01-050.md).
 
 <a id="t01-051"></a>
 ## T01-051 — Xác định format.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [512](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:512).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -981,12 +981,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-051.md](evidence/T01-051.md).
 
 <a id="t01-052"></a>
 ## T01-052 — Tạo provider interface.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [513](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:513).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1000,12 +1000,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-052.md](evidence/T01-052.md).
 
 <a id="t01-053"></a>
 ## T01-053 — Viết parser tương ứng với nguồn thực tế.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [514](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:514).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1019,12 +1019,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-053.md](evidence/T01-053.md).
 
 <a id="t01-054"></a>
 ## T01-054 — Parse thời điểm phát hành.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [515](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:515).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1038,12 +1038,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** UTC+7 và UTC cùng instant cho cùng kết quả; naive/invalid time bị reject; issue_time và valid_time tách biệt.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-054.md](evidence/T01-054.md).
 
 <a id="t01-055"></a>
 ## T01-055 — Parse vị trí tâm bão.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [516](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:516).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1057,12 +1057,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-055.md](evidence/T01-055.md).
 
 <a id="t01-056"></a>
 ## T01-056 — Parse cường độ.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [517](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:517).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1076,12 +1076,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-056.md](evidence/T01-056.md).
 
 <a id="t01-057"></a>
 ## T01-057 — Parse dự báo nếu nguồn cung cấp.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [518](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:518).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1095,12 +1095,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-057.md](evidence/T01-057.md).
 
 <a id="t01-058"></a>
 ## T01-058 — Lưu bản gốc.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [519](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:519).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1114,12 +1114,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-058.md](evidence/T01-058.md).
 
 <a id="t01-059"></a>
 ## T01-059 — Lưu metadata.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [520](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:520).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1133,12 +1133,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-059.md](evidence/T01-059.md).
 
 <a id="t01-060"></a>
 ## T01-060 — Test với dữ liệu mẫu.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.6 NCHMF; dòng [521](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:521).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.6 NCHMF.
@@ -1152,12 +1152,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Tách thời điểm phát hành, valid time và thời điểm tải; chuyển VN UTC+7 đúng; lưu văn bản gốc; fixture phải đại diện nguồn được phép dùng.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-060.md](evidence/T01-060.md).
 
 <a id="t01-061"></a>
 ## T01-061 — Chuẩn hóa tên cột.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [526](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:526).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1171,12 +1171,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-061.md](evidence/T01-061.md).
 
 <a id="t01-062"></a>
 ## T01-062 — Chuẩn hóa timezone.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [527](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:527).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1190,12 +1190,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** UTC+7 và UTC cùng instant cho cùng kết quả; naive/invalid time bị reject; issue_time và valid_time tách biệt.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-062.md](evidence/T01-062.md).
 
 <a id="t01-063"></a>
 ## T01-063 — Chuẩn hóa đơn vị.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [528](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:528).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1209,12 +1209,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-063.md](evidence/T01-063.md).
 
 <a id="t01-064"></a>
 ## T01-064 — Chuẩn hóa storm ID.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [529](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:529).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1228,12 +1228,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-064.md](evidence/T01-064.md).
 
 <a id="t01-065"></a>
 ## T01-065 — Match storm giữa các nguồn.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [530](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:530).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1247,12 +1247,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-065.md](evidence/T01-065.md).
 
 <a id="t01-066"></a>
 ## T01-066 — Match timestamp.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [531](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:531).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1266,12 +1266,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** UTC+7 và UTC cùng instant cho cùng kết quả; naive/invalid time bị reject; issue_time và valid_time tách biệt.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-066.md](evidence/T01-066.md).
 
 <a id="t01-067"></a>
 ## T01-067 — Tính khoảng cách giữa các vị trí.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [532](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:532).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1285,12 +1285,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Điểm trùng cho 0 km; cặp điểm chuẩn khớp dung sai; wrap longitude không tạo khoảng cách vòng trái đất.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-067.md](evidence/T01-067.md).
 
 <a id="t01-068"></a>
 ## T01-068 — Phát hiện duplicate.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [533](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:533).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1304,12 +1304,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-068.md](evidence/T01-068.md).
 
 <a id="t01-069"></a>
 ## T01-069 — Đánh dấu conflict.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [534](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:534).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1323,12 +1323,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-069.md](evidence/T01-069.md).
 
 <a id="t01-070"></a>
 ## T01-070 — Xác định priority source.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [535](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:535).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1342,12 +1342,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-070.md](evidence/T01-070.md).
 
 <a id="t01-071"></a>
 ## T01-071 — Tạo master dataset.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [536](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:536).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1361,12 +1361,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-071.md](evidence/T01-071.md).
 
 <a id="t01-072"></a>
 ## T01-072 — Lưu provenance.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.7 Source Merge; dòng [537](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:537).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.7 Source Merge.
@@ -1380,12 +1380,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Hai agency cùng bão/cùng giờ, xung đột vị trí và hai bão gần nhau được test riêng; giữ contributing_sources và lý do chọn nguồn.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-072.md](evidence/T01-072.md).
 
 <a id="t01-073"></a>
 ## T01-073 — Validate latitude.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [540](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:540).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1399,12 +1399,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-073.md](evidence/T01-073.md).
 
 <a id="t01-074"></a>
 ## T01-074 — Validate longitude.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [541](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:541).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1418,12 +1418,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-074.md](evidence/T01-074.md).
 
 <a id="t01-075"></a>
 ## T01-075 — Validate timestamp.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [542](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:542).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1437,12 +1437,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** UTC+7 và UTC cùng instant cho cùng kết quả; naive/invalid time bị reject; issue_time và valid_time tách biệt.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-075.md](evidence/T01-075.md).
 
 <a id="t01-076"></a>
 ## T01-076 — Validate wind.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [543](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:543).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1456,12 +1456,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-076.md](evidence/T01-076.md).
 
 <a id="t01-077"></a>
 ## T01-077 — Validate pressure.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [544](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:544).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1475,12 +1475,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-077.md](evidence/T01-077.md).
 
 <a id="t01-078"></a>
 ## T01-078 — Kiểm tra duplicate.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [545](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:545).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1494,12 +1494,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-078.md](evidence/T01-078.md).
 
 <a id="t01-079"></a>
 ## T01-079 — Kiểm tra missing.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [546](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:546).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1513,12 +1513,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fixture thiếu đầu/cuối chuỗi, gap dài và hai storm; không dùng future observations; missing không tự đổi thành 0.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-079.md](evidence/T01-079.md).
 
 <a id="t01-080"></a>
 ## T01-080 — Kiểm tra timestamp tăng dần.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [547](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:547).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1532,12 +1532,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** UTC+7 và UTC cùng instant cho cùng kết quả; naive/invalid time bị reject; issue_time và valid_time tách biệt.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-080.md](evidence/T01-080.md).
 
 <a id="t01-081"></a>
 ## T01-081 — Kiểm tra vị trí nhảy bất thường.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [548](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:548).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1551,12 +1551,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-081.md](evidence/T01-081.md).
 
 <a id="t01-082"></a>
 ## T01-082 — Gắn cờ suspicious thay vì âm thầm xóa.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [549](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:549).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1570,12 +1570,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-082.md](evidence/T01-082.md).
 
 <a id="t01-083"></a>
 ## T01-083 — Sinh báo cáo quality.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 1.8 Data Validation; dòng [550](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:550).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G00; contract/fixture của tiểu mục 1.8 Data Validation.
@@ -1589,4 +1589,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test đúng biên và ngoài biên, NaN/Inf, timestamp thiếu múi giờ, duplicate và bước nhảy lớn; báo cáo reject/flag có reason code.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T01-083.md](evidence/T01-083.md).

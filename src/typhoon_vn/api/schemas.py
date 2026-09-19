@@ -1,6 +1,8 @@
 """Validated public contract. All times are UTC and positions are WGS84."""
+
 from datetime import datetime, timedelta, timezone
 from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 DISCLAIMER = (
@@ -8,8 +10,10 @@ DISCLAIMER = (
     "Follow official NCHMF guidance. / Chi tham khao; khong thay the ban tin NCHMF."
 )
 
+
 class Contract(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+
 
 class Fix(Contract):
     timestamp: datetime
@@ -28,6 +32,7 @@ class Fix(Contract):
             raise ValueError("timestamp must include a timezone")
         return value.astimezone(timezone.utc)
 
+
 class ForecastRequest(Contract):
     storm_id: str = Field(min_length=1, max_length=80, pattern=r"^[\w.-]+$")
     observations: list[Fix] | None = Field(default=None, min_length=2, max_length=512)
@@ -45,6 +50,7 @@ class ForecastRequest(Contract):
                 raise ValueError("observations must be strictly chronological")
         return self
 
+
 class ForecastPoint(Contract):
     horizon_hours: int
     valid_time: datetime
@@ -55,11 +61,13 @@ class ForecastPoint(Contract):
         if value.tzinfo is None or value.utcoffset() is None:
             raise ValueError("valid_time must include a timezone")
         return value.astimezone(timezone.utc)
+
     lat: float = Field(ge=-90, le=90)
     lon: float = Field(ge=-180, le=180)
     intensity: str
     radius_km: float = Field(ge=0)
     cone: dict
+
 
 class ForecastResponse(Contract):
     forecast_id: str
@@ -90,10 +98,12 @@ class ForecastResponse(Contract):
                 raise ValueError("valid_time must equal issue_time + horizon_hours")
         return self
 
+
 class ObservationBatch(Contract):
     storm_id: str = Field(min_length=1, max_length=80, pattern=r"^[\w.-]+$")
     name: str = Field(min_length=1, max_length=120)
     observations: list[Fix] = Field(min_length=1, max_length=512)
+
 
 class Subscription(Contract):
     label: str = Field(min_length=1, max_length=100)

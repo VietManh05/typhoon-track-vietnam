@@ -10,6 +10,7 @@ import {
 } from "../../types";
 import { Language, translations } from "../../i18n";
 import { VIETNAM_WEATHER_LOCATIONS } from "../../data/vietnamLocations";
+import { sweptCone } from "../../lib/cone";
 
 // Label-free basemaps: OSM/OpenTopoMap print neighbours in Thai/Chinese and name
 // Hoàng Sa in Chinese, so the map carries only our own Vietnamese labels.
@@ -586,23 +587,33 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
           </div>
         `);
                 pMarker.addTo(trackGroup);
-
-                // C. Cone of uncertainty polygons
-                if (showCone && p.cone && p.cone.coordinates) {
-                    const coneLatLngs = p.cone.coordinates[0].map(
-                        (coord) => [coord[1], coord[0]] as L.LatLngExpression,
-                    );
-                    const conePolygon = leaflet.polygon(coneLatLngs, {
-                        color: "#06b6d4",
-                        weight: 1.2,
-                        opacity: 0.7,
-                        fillColor: "#06b6d4",
-                        fillOpacity: 0.12,
-                        dashArray: "3, 3",
-                    });
-                    conePolygon.addTo(coneGroup);
-                }
             });
+
+            // C. One swept cone along the track (NHC/Windy style), starting
+            // narrow at the current centre and widening with lead time.
+            if (showCone) {
+                const firstRadius = forecast.points[0].radius_km;
+                const { rings, outline } = sweptCone([
+                    { lat: lastObs.lat, lon: lastObs.lon, radiusKm: Math.max(10, firstRadius / 3) },
+                    ...forecast.points.map((p) => ({ lat: p.lat, lon: p.lon, radiusKm: p.radius_km })),
+                ]);
+                if (rings.length) {
+                    leaflet.polygon(rings, {
+                        stroke: false,
+                        fillColor: "#fb923c",
+                        fillOpacity: 0.16,
+                        fillRule: "nonzero",
+                        interactive: false,
+                    }).addTo(coneGroup);
+                    leaflet.polyline(outline, {
+                        color: "#ea580c",
+                        weight: 2,
+                        opacity: 0.9,
+                        dashArray: "6, 6",
+                        interactive: false,
+                    }).addTo(coneGroup);
+                }
+            }
         }
 
         // C. Demo/backtest verification track. It is kept separate from the
@@ -864,9 +875,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                         aria-label={t.layer_cone}
                     >
                         <Eye className="w-3 h-3" aria-hidden="true" />
-                        <span className="hidden sm:inline">
-                            {lang === "vi" ? "Nón sai số" : "Cone"}
-                        </span>
+                        <span>{lang === "vi" ? "Vùng bão" : "Storm area"}</span>
                     </button>
                 )}
                 </div>

@@ -234,3 +234,30 @@ def test_public_read_routes_are_still_rate_limited() -> None:
     with TestClient(app) as client:
         assert client.get("/typhoons/active").status_code == 200
         assert client.get("/typhoons/active").status_code == 429
+
+
+def test_public_reads_do_not_consume_authenticated_rate_limit() -> None:
+    settings = Settings(
+        _env_file=None,
+        api_key="secret",
+        public_read=True,
+        requests_per_minute=1,
+        cache_enabled=False,
+        operational_database_url="sqlite:///:memory:",
+    )
+    app = create_app(
+        settings=settings,
+        store=Store("sqlite:///:memory:"),
+        forecaster=TyphoonForecaster(),
+    )
+    headers = {"X-API-Key": "secret"}
+    with TestClient(app) as client:
+        assert client.get("/typhoons/active").status_code == 200
+        assert client.get("/typhoons/active").status_code == 429
+        # Same client address, but the operator bucket is untouched.
+        assert client.get("/alerts", headers=headers).status_code == 200
+        # A wrong key on a read route is rejected, not treated as public.
+        assert (
+            client.get("/typhoons/active", headers={"X-API-Key": "x"}).status_code
+            == 401
+        )

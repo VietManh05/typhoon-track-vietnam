@@ -119,3 +119,10 @@ html.light .island-label-marker .ordinary-island-label { color: rgb(var(--c-warn
   }
   html.light .immersive-map .map-connection-row [role="status"] > div span { color: rgb(var(--c-fg)); }
 }
+
+/* Night theme: the soft-sky accent is light, so selected controls use dark text. */
+html:not(.light) .detail-tabs button[aria-pressed="true"],
+html:not(.light) .btn-primary,
+html:not(.light) .timeline-player .btn-primary {
+  color: rgb(var(--c-bg));
+}

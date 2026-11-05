@@ -436,7 +436,7 @@ html:not(.light) .immersive-map .storm-strip .chip-active {
   height:auto;
   max-height:none;
   padding:6px;
-  background:rgb(4 24 36 / .32);
+  background:rgb(var(--c-surface-1) / .5);
   box-shadow:0 10px 30px #0005;
  }
 }
@@ -587,30 +587,30 @@ html:not(.light) .immersive-map .map-top-chrome.map-top-chrome {
 .immersive-map .weather-hourly-section { padding-bottom:14px; }
 .immersive-map .weather-hourly-section + .weather-metrics { padding-top:14px; border-top:1px solid rgb(var(--c-line) / .2); }
 html:not(.light) .immersive-map .map-top-chrome.map-top-chrome {
- background:rgb(7 16 27 / .93);
+ background:rgb(var(--c-surface-1) / .93);
  backdrop-filter:blur(12px);
  -webkit-backdrop-filter:blur(12px);
 }
 html:not(.light) .immersive-map :is(.workspace-heading, .detail-tabs, .map-layer-toolbar, .map-location-field, .map-zoom-group, .map-navigation .btn-icon) {
- background:rgb(7 18 30 / .9);
+ background:rgb(var(--c-surface-1) / .9);
  backdrop-filter:blur(12px);
  -webkit-backdrop-filter:blur(12px);
 }
 html:not(.light) .immersive-map :is(.weather-card, .details-panel .panel, .ai-assistant) {
- background:rgb(7 20 34 / .94);
+ background:rgb(var(--c-surface-1) / .94);
  backdrop-filter:blur(12px);
  -webkit-backdrop-filter:blur(12px);
 }
 html:not(.light) .immersive-map .weather-metrics > div {
- background:rgb(13 31 48 / .92);
+ background:rgb(var(--c-surface-2) / .95);
 }
 html:not(.light) .immersive-map .storm-strip {
- background:rgb(7 16 27 / .86);
+ background:rgb(var(--c-surface-1) / .86);
  backdrop-filter:blur(12px);
  -webkit-backdrop-filter:blur(12px);
 }
 html:not(.light) .immersive-map .map-column > .timeline-player {
- background:rgb(7 16 27 / .9);
+ background:rgb(var(--c-surface-1) / .9);
  backdrop-filter:blur(12px);
  -webkit-backdrop-filter:blur(12px);
 }

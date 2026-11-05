@@ -166,11 +166,15 @@ gần bờ biển Việt Nam nhất (trường hợp khó: bão sắp đổ bộ
   danh sách 5 cơn bão lịch sử giống nhất (tên, năm), hiển thị trên bản đồ (đường
   tím) và trong khung "Gợi ý theo bão tương tự". Thư viện analog gồm bão
   1980–2020 (train + validation), không chứa bão kiểm thử 2021–2024.
-- Kiểm thử qua hệ thống (phát lại YAGI 2024 tới 06Z 04/09, bão chưa từng thấy):
-  LSTM sai 12 / 28 / 82 / 313 / 580 km tại 6–72 h, vị trí thực luôn nằm trong
-  nón; k-NN sai 12 / 62 / 119 / 357 / 656 km với bão tương tự PEIPAH 2007,
-  DAN 1999, BETH 1996, … (một trường hợp đơn lẻ; trên toàn tập test hai phương
-  pháp không khác biệt có ý nghĩa).
+- Bản demo công khai: <https://baoviet2026.pages.dev> (nút "Dự báo lại"): 20 bão
+  thật 2021–2024 ảnh hưởng Việt Nam, dự báo bởi LSTM + k-NN tại thời điểm vị trí
+  +72 h gần bờ biển Việt Nam nhất, kèm quỹ đạo thực tế và sai số; trung bình
+  sai số 72 h của LSTM trên 20 bão: 408 km. Ví dụ YAGI 2024 (06Z 04/09): LSTM
+  13 / 58 / 114 / 339 / 544 km, k-NN 414 km tại 72 h với bão tương tự WUKONG
+  2000, DAMREY 2005, …
+- Lưu ý phương pháp: phát lại một cơn bão với thời gian dời về hiện tại làm đổi
+  đặc trưng mùa của k-NN (ví dụ YAGI tháng 9 thành tháng 11) và cho bão tương
+  tự khác hẳn; vì vậy bản demo dùng đúng ngày lịch sử.
 - Gói mô hình (bundle) có checksum, kiểm tra schema đặc trưng và scaler khi nạp.
 - Chạy: xem [README](../../README.md) và [frontend](../frontend.md).
 

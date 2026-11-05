@@ -126,3 +126,14 @@ html:not(.light) .btn-primary,
 html:not(.light) .timeline-player .btn-primary {
   color: rgb(var(--c-bg));
 }
+
+/* Our own Vietnamese map labels (basemap tiles carry none). */
+.place-label { pointer-events: none; text-align: center; white-space: nowrap; }
+.place-label span {
+  font-weight: 700;
+  color: rgb(var(--c-fg-2));
+  text-shadow: 0 0 3px rgb(var(--c-surface-1)), 0 0 6px rgb(var(--c-surface-1));
+}
+.place-label-country span { font-size: 15px; letter-spacing: .04em; }
+.place-label-sea span { font-size: 17px; font-style: italic; color: rgb(var(--c-primary)); letter-spacing: .06em; }
+.place-label-province span { font-size: 13px; color: rgb(var(--c-fg)); }

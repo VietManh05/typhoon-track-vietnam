@@ -9,6 +9,28 @@ import {
     WeatherLocation,
 } from "../../types";
 import { Language, translations } from "../../i18n";
+import { VIETNAM_WEATHER_LOCATIONS } from "../../data/vietnamLocations";
+
+// Label-free basemaps: OSM/OpenTopoMap print neighbours in Thai/Chinese and name
+// Hoàng Sa in Chinese, so the map carries only our own Vietnamese labels.
+const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services";
+const BASEMAPS = {
+    dark: { url: `${ESRI}/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}`, attr: "&copy; Esri, GEBCO, NOAA", native: 13 },
+    osm: { url: `${ESRI}/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}`, attr: "&copy; Esri", native: 13 },
+    sat: { url: `${ESRI}/World_Imagery/MapServer/tile/{z}/{y}/{x}`, attr: "&copy; Esri World Imagery", native: 18 },
+} as const;
+
+// Vietnamese names for the region; sea name per Vietnamese usage.
+const REGION_LABELS: Array<[number, number, string, string, "country" | "sea"]> = [
+    [19.6, 102.6, "Lào", "Laos", "country"],
+    [12.8, 104.9, "Campuchia", "Cambodia", "country"],
+    [15.6, 100.9, "Thái Lan", "Thailand", "country"],
+    [24.3, 108.8, "Trung Quốc", "China", "country"],
+    [13.2, 122.6, "Philippines", "Philippines", "country"],
+    [12.6, 113.2, "Biển Đông", "East Sea", "sea"],
+    [18.8, 107.3, "Vịnh Bắc Bộ", "Gulf of Tonkin", "sea"],
+    [11.2, 101.5, "Vịnh Thái Lan", "Gulf of Thailand", "sea"],
+];
 import {
     ChevronDown,
     Eye,
@@ -88,6 +110,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
     const coneLayerRef = useRef<L.LayerGroup | null>(null);
     const compareLayerRef = useRef<L.LayerGroup | null>(null);
     const weatherLayerRef = useRef<L.LayerGroup | null>(null);
+    const placeLabelsRef = useRef<L.LayerGroup | null>(null);
 
     // WS6: Separate ref for the active cyclone marker — avoids full layer rebuild on scrub
     const cycloneMarkerRef = useRef<L.Marker | null>(null);
@@ -177,6 +200,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                     fillOpacity: 0.06,
                 },
             }).addTo(map);
+            placeLabelsRef.current = leaflet.layerGroup().addTo(map);
             islandsLayerRef.current = leaflet.layerGroup().addTo(map);
             coneLayerRef.current = leaflet.layerGroup().addTo(map);
             compareLayerRef.current = leaflet.layerGroup().addTo(map);
@@ -221,15 +245,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                 maxZoom: 15,
                 zoomControl: false,
             });
-            baseTileRef.current = L.tileLayer(
-                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {
-                    attribution:
-                        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                    subdomains: "abc",
-                    maxZoom: 19,
-                },
-            ).addTo(map);
+            baseTileRef.current = L.tileLayer(BASEMAPS.dark.url, {
+                attribution: BASEMAPS.dark.attr,
+                maxNativeZoom: BASEMAPS.dark.native,
+                maxZoom: 19,
+            }).addTo(map);
             finishInitialization(map, L, "leaflet");
         };
 
@@ -284,6 +304,31 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
             cycloneMarkerRef.current = null;
         };
     }, []);
+
+    // Vietnamese place labels drawn by us (the basemap has none).
+    const showProvinceNames = zoomLevel >= 7;
+    useEffect(() => {
+        const leaflet = leafletApiRef.current;
+        const layer = placeLabelsRef.current;
+        if (!mapReady || !leaflet || !layer) return;
+        layer.clearLayers();
+        const label = (lat: number, lon: number, text: string, kind: string, anchorY = 10) =>
+            leaflet.marker([lat, lon], {
+                interactive: false,
+                keyboard: false,
+                icon: leaflet.divIcon({
+                    className: `place-label place-label-${kind}`,
+                    html: `<span>${text}</span>`,
+                    iconSize: [160, 22],
+                    iconAnchor: [80, anchorY],
+                }),
+            }).addTo(layer);
+        for (const [lat, lon, vi, en, kind] of REGION_LABELS) label(lat, lon, lang === "vi" ? vi : en, kind);
+        if (showProvinceNames) {
+            // Sit below the weather bubble that shares the same point.
+            for (const place of VIETNAM_WEATHER_LOCATIONS) label(place.latitude, place.longitude, place.name, "province", -24);
+        }
+    }, [mapReady, lang, showProvinceNames]);
 
     useEffect(() => {
         if (!focusLocation || !mapInstanceRef.current) return;
@@ -362,22 +407,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
 
         mapInstanceRef.current.removeLayer(baseTileRef.current);
 
-        let url =
-            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-        let attr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-
-        if (basemapType === "osm") {
-            url = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
-            attr = "Map data &copy; OpenStreetMap contributors, SRTM | Map style &copy; OpenTopoMap";
-        } else if (basemapType === "sat") {
-            url =
-                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-            attr = "&copy; Esri World Imagery";
-        }
-
-        baseTileRef.current = L.tileLayer(url, {
-            attribution: attr,
-            maxZoom: basemapType === "osm" ? 17 : 18,
+        const base = BASEMAPS[basemapType];
+        baseTileRef.current = L.tileLayer(base.url, {
+            attribution: base.attr,
+            maxNativeZoom: base.native,
+            maxZoom: 19,
         }).addTo(mapInstanceRef.current);
         baseTileRef.current.bringToBack();
     }, [basemapType, mapProvider, mapReady]);

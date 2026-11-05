@@ -56,7 +56,7 @@ export default defineConfig({
         // FastAPI serves this package directory; a successful build must update it.
         outDir: "../../src/typhoon_vn/dashboard",
         emptyOutDir: true,
-        sourcemap: true,
+        sourcemap: false, // keep large source maps out of the served/committed bundle
         rollupOptions: {
             output: {
                 manualChunks: {

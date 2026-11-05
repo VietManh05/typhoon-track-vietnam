@@ -607,6 +607,37 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
             });
         }
 
+        // D. Explainable k-NN analog suggestion (what similar past storms did next).
+        const suggestion = forecast?.suggestion;
+        if (compareGroup && suggestion && suggestion.points.length > 0 && observations.length > 0) {
+            const lastObs = observations[observations.length - 1];
+            const analogNames = suggestion.analogs.map((a) => `${a.name} ${a.year}`).join(", ");
+            leaflet.polyline(
+                [
+                    [lastObs.lat, lastObs.lon] as L.LatLngExpression,
+                    ...suggestion.points.map((p) => [p.lat, p.lon] as L.LatLngExpression),
+                ],
+                { color: "#f472b6", weight: 3, dashArray: "2, 7", opacity: 0.95 },
+            ).addTo(compareGroup);
+            suggestion.points.forEach((p) => {
+                leaflet.circleMarker([p.lat, p.lon], {
+                    radius: 4,
+                    color: "#be185d",
+                    weight: 1.5,
+                    fillColor: "#f9a8d4",
+                    fillOpacity: 0.95,
+                })
+                    .bindPopup(`
+          <div class="text-xs font-mono p-1">
+            <div class="font-bold text-pink-400 font-display text-sm">${t.suggestion_title} +${p.horizon_hours} ${t.eta_hours_suffix}</div>
+            <div><strong>${t.popup_coords}:</strong> ${p.lat.toFixed(1)}°${lang === "vi" ? "B" : "N"}, ${p.lon.toFixed(1)}°${lang === "vi" ? "Đ" : "E"}</div>
+            <div><strong>${lang === "vi" ? "Bão tương tự" : "Similar storms"}:</strong> ${analogNames}</div>
+          </div>
+        `)
+                    .addTo(compareGroup);
+            });
+        }
+
         // Demo verification coordinates are explicitly labelled sample/best-track.
         // WS6: Only rebuild when data/toggles change — NOT on currentFixIndex
     }, [observationsKey, forecastKey, actualTrackKey, showCone, lang, mapReady]);

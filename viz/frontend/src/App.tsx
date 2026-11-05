@@ -47,12 +47,12 @@ import {
     fetchLocalWeather,
     fetchCurrentWeather,
     fetchWeatherLocations,
+    fetchHindcastIndex,
+    fetchHindcastTrack,
+    bearingDeg,
+    haversineKm,
 } from "./services/api";
-import {
-    MOCK_STORMS_LIST,
-    MOCK_TRACK_SIM,
-    MOCK_TRACK_YAGI,
-} from "./services/mockData";
+import { SuggestionPanel } from "./components/SuggestionPanel";
 import "./styles/explorer.css";
 import "./styles/fullscreen-map.css";
 import { Bot, CloudSun, Radar, ChartNoAxesCombined, PanelRightClose, PanelRightOpen, MapPin, CloudOff } from "lucide-react";
@@ -292,14 +292,24 @@ export const App: React.FC = () => {
             return;
         }
         if (isDemoMode) {
-            const data =
-                selectedStormId === MOCK_TRACK_YAGI.storm_id
-                    ? MOCK_TRACK_YAGI
-                    : MOCK_TRACK_SIM;
-            setStormTrack(data);
-            setCurrentFixIndex(Math.max(0, data.observations.length - 1));
-            setIsTrackLoading(false);
-            return;
+            // Hindcast archive: real past storms re-forecast by the trained model.
+            let cancelled = false;
+            setIsTrackLoading(true);
+            fetchHindcastTrack(selectedStormId)
+                .then((data) => {
+                    if (cancelled) return;
+                    setStormTrack(data);
+                    setCurrentFixIndex(Math.max(0, data.observations.length - 1));
+                })
+                .catch(() => {
+                    if (!cancelled) setStormTrack(null);
+                })
+                .finally(() => {
+                    if (!cancelled) setIsTrackLoading(false);
+                });
+            return () => {
+                cancelled = true;
+            };
         }
 
         let cancelled = false;
@@ -404,7 +414,7 @@ export const App: React.FC = () => {
     }, [storms, selectedStormId]);
 
     // Active observation / forecast point according to scrubber
-    const currentFix = useMemo(() => {
+    const rawFix = useMemo((): Fix | undefined => {
         if (
             !stormTrack ||
             !stormTrack.observations ||
@@ -423,15 +433,36 @@ export const App: React.FC = () => {
                 timestamp: p.valid_time,
                 lat: p.lat,
                 lon: p.lon,
-                wind_ms: p.wind_ms ?? 35,
-                pressure_hpa: p.pressure_hpa ?? 970,
-                intensity: (p.intensity as Fix["intensity"]) || "TY",
-                source: "Forecast Model",
-                wind_kmh: p.wind_ms ? Math.round(p.wind_ms * 3.6) : 126,
+                // The model forecasts position and class only; never invent values.
+                wind_ms: p.wind_ms ?? null,
+                pressure_hpa: p.pressure_hpa ?? null,
+                intensity: (p.intensity as Fix["intensity"]) || "UNK",
+                source: stormTrack.forecast.model_kind,
+                wind_kmh: p.wind_ms ? Math.round(p.wind_ms * 3.6) : undefined,
             };
         }
         return stormTrack.observations[stormTrack.observations.length - 1];
     }, [stormTrack, currentFixIndex, currentStorm]);
+
+    // Movement (bearing/speed) from the previous point on the same timeline.
+    const currentFix = useMemo(() => {
+        if (!rawFix || !stormTrack) return rawFix;
+        if (rawFix.bearing_deg != null && rawFix.speed_kmh != null) return rawFix;
+        const timeline = [
+            ...stormTrack.observations.map((o) => ({ t: o.timestamp, lat: o.lat, lon: o.lon })),
+            ...(stormTrack.forecast?.points ?? []).map((p) => ({ t: p.valid_time, lat: p.lat, lon: p.lon })),
+        ];
+        const index = timeline.findIndex((p) => p.t === rawFix.timestamp);
+        if (index < 1) return rawFix;
+        const prev = timeline[index - 1];
+        const hours = (Date.parse(rawFix.timestamp) - Date.parse(prev.t)) / 3.6e6;
+        if (!(hours > 0)) return rawFix;
+        return {
+            ...rawFix,
+            bearing_deg: rawFix.bearing_deg ?? bearingDeg(prev.lat, prev.lon, rawFix.lat, rawFix.lon),
+            speed_kmh: rawFix.speed_kmh ?? Math.round(haversineKm(prev.lat, prev.lon, rawFix.lat, rawFix.lon) / hours),
+        };
+    }, [rawFix, stormTrack]);
 
     // Calculate real-time province impacts
     const provinceImpacts: ProvinceImpact[] = useMemo(() => {
@@ -481,14 +512,20 @@ export const App: React.FC = () => {
     }, [selectedStormId]);
 
     // Demo data is opt-in and remains visibly offline.
-    const handleLoadDemo = useCallback(() => {
-        setIsDemoMode(true);
-        setLoadError(false);
-        setStorms(MOCK_STORMS_LIST);
-        setSelectedStormId(MOCK_STORMS_LIST[0].id);
-        setStormTrack(MOCK_TRACK_YAGI);
-        setCurrentFixIndex(MOCK_TRACK_YAGI.observations.length - 1);
-        setIsLive(false);
+    const handleLoadDemo = useCallback(async () => {
+        // "Demo" now means the hindcast archive of real 2021-2024 storms.
+        try {
+            const archive = await fetchHindcastIndex();
+            setIsDemoMode(true);
+            setLoadError(false);
+            setStorms(archive);
+            setStormTrack(null);
+            setSelectedStormId(archive[0]?.id ?? "");
+            setIsLive(false);
+        } catch (err) {
+            console.warn("Hindcast archive unavailable:", err);
+            setLoadError(true);
+        }
     }, []);
 
     // WS1: Show full-page skeleton during initial load
@@ -523,7 +560,9 @@ export const App: React.FC = () => {
             {isDemoMode && (
                 <div className="map-connection-row">
                     <div role="status" className="rounded-control border border-warning/35 bg-warning/10 px-3 py-2 text-xs font-semibold text-warning">
-                        {lang === "vi" ? "DEMO · Dữ liệu bão và thời tiết mẫu, chỉ để minh họa." : "DEMO · Sample storm and weather data for illustration only."}
+                        {lang === "vi"
+                            ? "DỰ BÁO LẠI · Bão thật 2021–2024 ảnh hưởng Việt Nam, được mô hình dự báo lại (mô hình chưa thấy các bão này khi huấn luyện). Đường tím: quỹ đạo thực tế. Thời tiết là dữ liệu mẫu."
+                            : "HINDCAST · Real 2021–2024 storms affecting Vietnam re-forecast by the model (unseen in training). Violet: actual track. Weather is sample data."}
                     </div>
                 </div>
             )}
@@ -598,6 +637,7 @@ export const App: React.FC = () => {
                                 showActualComparison={
                                     isDemoMode && Boolean(stormTrack?.actual_track?.length)
                                 }
+                                showSuggestion={Boolean(stormTrack?.forecast?.suggestion)}
                             />
                         </div>
 
@@ -673,6 +713,22 @@ export const App: React.FC = () => {
                                     storm={currentStorm}
                                     currentFix={currentFix}
                                     forecast={stormTrack?.forecast || null}
+                                    lang={lang}
+                                />
+                            </CollapsibleSection>
+                        )}
+
+                        {/* Explainable similar-storm suggestion (k-NN analogs) */}
+                        {detailTab === "storm" && !isTrackLoading && stormTrack?.forecast?.suggestion && (
+                            <CollapsibleSection
+                                id="similar-storms"
+                                title={t.suggestion_title}
+                                defaultOpen={true}
+                                lang={lang}
+                            >
+                                <SuggestionPanel
+                                    suggestion={stormTrack.forecast.suggestion}
+                                    hindcast={stormTrack.hindcast}
                                     lang={lang}
                                 />
                             </CollapsibleSection>

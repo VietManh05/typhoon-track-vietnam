@@ -3,22 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Hệ thống Giám sát & Dự báo Bão Việt Nam | Typhoon VN Decision Support</title>
-    <meta name="description" content="Hệ thống theo dõi quỹ đạo, dự báo đa thời đoạn và phân tích rủi ro bão nhiệt đới tại Biển Đông và lãnh thổ Việt Nam với mô hình Deep Learning." />
-    <meta name="keywords" content="typhoon vietnam, du bao bao, quy dao bao, bien dong, hoang sa, truong sa, khi tuong thuy van, disaster decision support" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hệ thống Giám sát &amp; Dự báo Bão Việt Nam | Typhoon VN Decision Support</title>
+    <meta
+      name="description"
+      content="Theo dõi bão nhiệt đới và thời tiết tại Việt Nam với dữ liệu nguồn được ghi rõ. Bản tin JMA là thông tin tham khảo; theo dõi NCHMF để nhận cảnh báo chính thức."
+    />
+    <meta
+      name="keywords"
+      content="typhoon vietnam, du bao bao, quy dao bao, bien dong, hoang sa, truong sa, khi tuong thuy van, disaster decision support"
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#000000" />
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script type="module" crossorigin src="/assets/index-CrAsNFk5.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BOZs3k2G.css">
+    <!-- Self-hosted Vietnamese webfonts (Be Vietnam Pro). Preload the two faces
+         used by the first paint to keep text render-blocking time minimal. -->
+    <link
+      rel="preload"
+      href="/fonts/BeVietnamPro-400-vietnamese.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/fonts/BeVietnamPro-600-vietnamese.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <script type="module" crossorigin src="/assets/index-TeN_PHkr.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-react-DJ1oPbzn.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-map-DGnrNSO-.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-BdmUdn-2.css">
   </head>
-  <body class="bg-slate-950 text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+  <body class="bg-page text-fg antialiased">
     <div id="root"></div>
   </body>
 </html>

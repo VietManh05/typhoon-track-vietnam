@@ -38,6 +38,6 @@ mlflow-ui:
 	$(PYTHON) -m mlflow ui --backend-store-uri ./mlruns
 
 dashboard:
-	cd viz/frontend && npm ci && npx tsc --noEmit && npx vite build
+	cd viz/frontend && npm ci && npx tsc --noEmit && npm test && npx vite build --outDir dist --emptyOutDir
 	$(PYTHON) -c "import shutil; shutil.rmtree('src/typhoon_vn/dashboard', ignore_errors=True); shutil.copytree('viz/frontend/dist', 'src/typhoon_vn/dashboard')"
 	$(PYTHON) scripts/check_dashboard_sync.py

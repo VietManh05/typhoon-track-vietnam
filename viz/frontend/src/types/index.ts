@@ -52,6 +52,7 @@ export interface ForecastResponse {
     warnings: string[];
     disclaimer: string;
     points: ForecastPoint[];
+    suggestion?: Suggestion | null;
 }
 
 export interface ActiveTyphoonItem {
@@ -80,12 +81,45 @@ export interface VerificationPoint {
     source: string;
 }
 
+export interface SuggestionPoint {
+    horizon_hours: number;
+    valid_time: string;
+    lat: number;
+    lon: number;
+}
+
+export interface AnalogStorm {
+    rank: number;
+    storm_id: string;
+    name: string;
+    year: number;
+    issue_time: string;
+}
+
+/** Explainable k-NN analog track: what similar historical storms did next. */
+export interface Suggestion {
+    method: string;
+    note: string;
+    points: SuggestionPoint[];
+    analogs: AnalogStorm[];
+}
+
+export interface HindcastSummary {
+    best_track_id: string;
+    name: string;
+    issue_time: string;
+    errors_km: { model: Record<string, number>; analog: Record<string, number> | null };
+    inside_cone: Record<string, boolean>;
+}
+
 export interface StormTrackResponse {
     storm_id: string;
     observations: Fix[];
     forecast: ForecastResponse | null;
     /** Demo/backtest only: observed best-track points after the forecast issue time. */
     actual_track?: VerificationPoint[];
+    /** Present on hindcasts of past storms (static archive). */
+    hindcast?: HindcastSummary;
 }
 
 export interface ProvinceImpact {

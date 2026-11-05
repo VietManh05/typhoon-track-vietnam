@@ -90,8 +90,9 @@ export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
     const categoryToken = getIntensityToken(category);
     const speed = windKmh(currentFix.wind_ms, currentFix.wind_kmh);
     const beaufort = currentFix.beaufort_level ?? beaufortFromKmh(speed);
-    const bearing = currentFix.bearing_deg ?? 285;
-    const movementSpeed = currentFix.speed_kmh ?? 20;
+    // Movement must come from the track; never substitute a default.
+    const bearing = currentFix.bearing_deg ?? null;
+    const movementSpeed = currentFix.speed_kmh ?? null;
     const warnings = forecast?.warnings ?? [];
 
     return (
@@ -194,7 +195,7 @@ export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
                         icon={
                             <Navigation
                                 className="h-4 w-4"
-                                style={{ transform: `rotate(${bearing}deg)` }}
+                                style={{ transform: `rotate(${bearing ?? 0}deg)` }}
                                 aria-hidden="true"
                             />
                         }
@@ -202,15 +203,17 @@ export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
                         accent="text-secondary"
                         value={
                             <>
-                                {movementSpeed}{" "}
-                                <span className="text-sm font-medium text-fg-muted">
-                                    km/h
-                                </span>
+                                {movementSpeed ?? "—"}{" "}
+                                {movementSpeed != null && (
+                                    <span className="text-sm font-medium text-fg-muted">
+                                        km/h
+                                    </span>
+                                )}
                             </>
                         }
                         secondary={
                             <>
-                                {getBearingCompass(bearing, t)} · {bearing}°
+                                {bearing != null ? `${getBearingCompass(bearing, t)} · ${bearing}°` : "—"}
                             </>
                         }
                     />

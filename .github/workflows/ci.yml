@@ -83,7 +83,8 @@ jobs:
 
       - run: npm ci
       - run: npx tsc --noEmit
-      - run: npx vite build
+      - run: npm test
+      - run: npx vite build --outDir dist --emptyOutDir
 
       - uses: actions/setup-python@v5
         with:

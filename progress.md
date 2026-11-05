@@ -187,3 +187,11 @@
 - `inference/analog.py` + `ANALOG_ARTIFACT`: artifact .npz không pickle (1005 bão 1980–2020, loại bão test); response có `suggestion` (đường k-NN + 5 bão tương tự có tên/năm); lỗi cửa sổ ngắn/không đều → cảnh báo, không lỗi.
 - Dashboard: đường gợi ý tím + nút bật/tắt, khung "Gợi ý theo bão tương tự", chú giải thu gọn mặc định, tự fitBounds theo bão.
 - Replay YAGI 2024 (06Z 04/09) ở chế độ production: LSTM 72h 580 km (trong nón), k-NN 656 km; analog PEIPAH 2007, DAN 1999, BETH 1996, ELLEN 1986, AERE 2016.
+
+## 2026-11-05 — Gộp vào app Cloudflare Pages (baoviet2026)
+
+- Nhập nguyên trạng app edge (JMA live, Functions, AI chat, NCHMF; trước đó chưa commit ở repo gốc) thành commit riêng.
+- JMA không cung cấp thời điểm cho quỹ đạo quá khứ (khoảng cách bước không đều) → không chạy k-NN live trung thực; thay vào đó: chế độ "Dự báo lại" dùng 20 bão thật 2021–2024 ảnh hưởng VN, dự báo bởi LSTM + k-NN đã huấn luyện (`scripts/export_hindcast.py`, file tĩnh `/data/hindcast`), có quỹ đạo thực tế và sai số.
+- Xóa `mockData.ts` (bão giả gán NCHMF/JMA); bỏ giá trị bịa (35 m/s, 970 hPa, 285°, 20 km/h); bỏ nhãn chú giải "Dự báo chính thức NCHMF/JTWC" không có dữ liệu; thêm lớp/khung gợi ý bão tương tự.
+- Kiểm thử: pytest 160, node 29, `wrangler pages dev` + trình duyệt.
+- Tồn tại (có từ trước): `/api/ai/chat` rate limit theo isolate, Origin tùy chọn → nên thêm Cloudflare Rate Limiting/Turnstile.

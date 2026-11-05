@@ -109,6 +109,17 @@ async function fetchJson(
 }
 
 // Calculate Haversine distance in km between two lat/lon pairs
+// Initial great-circle bearing in degrees (0 = north, clockwise)
+export function bearingDeg(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const toRad = Math.PI / 180;
+    const dLon = (lon2 - lon1) * toRad;
+    const y = Math.sin(dLon) * Math.cos(lat2 * toRad);
+    const x =
+        Math.cos(lat1 * toRad) * Math.sin(lat2 * toRad) -
+        Math.sin(lat1 * toRad) * Math.cos(lat2 * toRad) * Math.cos(dLon);
+    return Math.round(((Math.atan2(y, x) / toRad) + 360) % 360);
+}
+
 export function haversineKm(
     lat1: number,
     lon1: number,
@@ -296,4 +307,20 @@ export function calculateProvinceImpacts(
         .sort(
             (a, b) => a.min_forecast_distance_km - b.min_forecast_distance_km,
         );
+}
+
+// Hindcast archive: real 2021-2024 storms re-forecast offline by the trained
+// model + k-NN analog library, served as static files under /data/hindcast.
+export async function fetchHindcastIndex(): Promise<ActiveTyphoonItem[]> {
+    const res = await fetch("/data/hindcast/index.json", { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error(`hindcast index HTTP ${res.status}`);
+    const data = await res.json();
+    return Array.isArray(data.typhoons) ? data.typhoons : [];
+}
+
+export async function fetchHindcastTrack(id: string): Promise<StormTrackResponse> {
+    if (!/^HC-[A-Za-z0-9]+$/.test(id)) throw new Error("invalid hindcast id");
+    const res = await fetch(`/data/hindcast/${id}.json`, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error(`hindcast ${id} HTTP ${res.status}`);
+    return res.json();
 }

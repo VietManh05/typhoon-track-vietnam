@@ -134,17 +134,17 @@ export const Header: React.FC<HeaderProps> = ({
                             className={`h-1.5 w-1.5 rounded-full ${isLive ? "bg-success" : isDemoMode ? "bg-warning" : "bg-fg-muted"}`}
                             aria-hidden="true"
                         />
-                        {isLive ? (lang === "vi" ? "BÃO LIVE" : "STORM LIVE") : isDemoMode ? "DEMO" : (lang === "vi" ? "CHƯA KẾT NỐI" : "OFFLINE")}
+                        {isLive ? (lang === "vi" ? "BÃO LIVE" : "STORM LIVE") : isDemoMode ? (lang === "vi" ? "DỰ BÁO LẠI" : "HINDCAST") : (lang === "vi" ? "CHƯA KẾT NỐI" : "OFFLINE")}
                     </div>
                     <button
                         type="button"
                         className="inline-flex min-h-11 w-11 items-center justify-center gap-1.5 rounded-control border border-transparent bg-transparent text-[11px] font-semibold text-fg hover:border-primary hover:bg-white/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary sm:min-h-9 sm:w-auto sm:px-2.5"
                         onClick={() => { void onToggleDemo(); }}
                         aria-pressed={isDemoMode}
-                        title={isDemoMode ? (lang === "vi" ? "Tải lại dữ liệu trực tuyến" : "Reload live data") : (lang === "vi" ? "Chuyển sang dữ liệu demo" : "Switch to demo data")}
+                        title={isDemoMode ? (lang === "vi" ? "Tải lại dữ liệu trực tuyến" : "Reload live data") : (lang === "vi" ? "Xem dự báo lại các bão 2021–2024" : "View hindcasts of 2021–2024 storms")}
                     >
                         {isDemoMode ? <Radio size={15} aria-hidden="true" /> : <FlaskConical size={15} aria-hidden="true" />}
-                        <span className="hidden sm:inline">{isDemoMode ? (lang === "vi" ? "Dữ liệu trực tuyến" : "Live data") : (lang === "vi" ? "Chế độ demo" : "Demo mode")}</span>
+                        <span className="hidden sm:inline">{isDemoMode ? (lang === "vi" ? "Dữ liệu trực tuyến" : "Live data") : (lang === "vi" ? "Dự báo lại" : "Hindcasts")}</span>
                     </button>
                     <button
                         className="btn-icon header-alert-trigger"
@@ -164,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <div className="header-options-menu">
                             <button type="button" onClick={() => { void onToggleDemo(); optionsRef.current?.removeAttribute("open"); }} aria-pressed={isDemoMode}>
                                 {isDemoMode ? <Radio size={17} aria-hidden="true" /> : <FlaskConical size={17} aria-hidden="true" />}
-                                {isDemoMode ? (lang === "vi" ? "Dữ liệu trực tuyến" : "Live data") : (lang === "vi" ? "Chế độ demo" : "Demo mode")}
+                                {isDemoMode ? (lang === "vi" ? "Dữ liệu trực tuyến" : "Live data") : (lang === "vi" ? "Dự báo lại" : "Hindcasts")}
                             </button>
                             <button type="button" onClick={() => { onOpenAlerts(); optionsRef.current?.removeAttribute("open"); }}>
                                 <Bell size={17} aria-hidden="true" />{t.subscribe_alerts}

@@ -6,11 +6,13 @@ import { getIntensityToken } from "../../lib/storm";
 interface MapLegendProps {
     lang: Language;
     showActualComparison?: boolean;
+    showSuggestion?: boolean;
 }
 
 export const MapLegend: React.FC<MapLegendProps> = ({
     lang,
     showActualComparison = false,
+    showSuggestion = false,
 }) => {
     const compactLegendQuery = "(max-width: 1599px), (max-height: 1100px)";
     const [collapsed, setCollapsed] = useState(
@@ -114,19 +116,37 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <div
-                                className="h-0.5 w-4 border-t-2 border-secondary"
-                                aria-hidden="true"
-                            />
-                            <div
-                                className="h-2 w-2 rounded-full bg-secondary"
-                                aria-hidden="true"
-                            />
-                            <span className="text-[11px] text-fg-muted">
-                                {showActualComparison ? (lang === "vi" ? "Đường thực tế sau dự báo" : "Actual track after forecast") : t.legend_compare}
-                            </span>
-                        </div>
+                        {showActualComparison && (
+                            <div className="flex items-center gap-2">
+                                <div
+                                    className="h-0.5 w-4 border-t-2 border-secondary"
+                                    aria-hidden="true"
+                                />
+                                <div
+                                    className="h-2 w-2 rounded-full bg-secondary"
+                                    aria-hidden="true"
+                                />
+                                <span className="text-[11px] text-fg-muted">
+                                    {t.legend_compare}
+                                </span>
+                            </div>
+                        )}
+
+                        {showSuggestion && (
+                            <div className="flex items-center gap-2">
+                                <div
+                                    className="h-0.5 w-4 border-t-2 border-dotted border-pink-400"
+                                    aria-hidden="true"
+                                />
+                                <div
+                                    className="h-2 w-2 rounded-full bg-pink-400"
+                                    aria-hidden="true"
+                                />
+                                <span className="text-[11px] text-fg-muted">
+                                    {t.legend_suggestion}
+                                </span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Intensity Colors */}

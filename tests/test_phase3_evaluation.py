@@ -151,3 +151,21 @@ def test_run_training_without_test_split_skips_evaluation(tmp_path) -> None:
     result = run_training(config, output_dir=tmp_path / "run", frame=frame)
     assert result["evaluation"] is None
     assert not (tmp_path / "run" / "evaluation.json").exists()
+
+
+def test_run_training_exports_best_epoch_weights_not_last(tmp_path) -> None:
+    config = _config(tmp_path)
+    config.training.epochs = 6
+    config.training.patience = 100
+    config.training.learning_rate = 0.05  # val loss peaks at epoch 1
+    frame = generate_synthetic_catalogue(n_storms=12, n_fixes=24, seed=3)
+    result = run_training(config, output_dir=tmp_path / "run", frame=frame)
+
+    checkpoints = tmp_path / "run" / "checkpoints"
+    best = torch.load(checkpoints / "best.pt", weights_only=False)
+    last = torch.load(checkpoints / "last.pt", weights_only=False)
+    exported = torch.load(result["manifest"].parent / "weights.pt", weights_only=True)
+    assert best["epoch"] != last["epoch"], "fixture must overfit after best epoch"
+    for key, value in best["model_state_dict"].items():
+        assert torch.equal(exported[key], value), key
+    assert result["best_epoch"] == best["epoch"]

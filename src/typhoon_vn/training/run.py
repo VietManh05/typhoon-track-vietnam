@@ -136,6 +136,12 @@ def run_training(
         loss,
     )
     result = trainer.fit(train_loader, val_loader)
+    # Export/evaluate the best-validation weights, not the (possibly overfit) last.
+    best_path = output_dir / "checkpoints" / "best.pt"
+    if best_path.exists():
+        # Written by this trainer moments ago (holds RNG state, so not weights-only).
+        best = torch.load(best_path, map_location="cpu", weights_only=False)
+        model.load_state_dict(best["model_state_dict"])
     # Smoke artifact: radii are explicitly illustrative, not a real calibration claim.
     horizons_hours = [
         step * dataset_config.time_step_hours for step in config.dataset.horizon
@@ -209,6 +215,7 @@ def run_training(
         "history": result["history"],
         "split": split_manifest,
         "run_id": tracker.run_id,
+        "best_epoch": result["best_epoch"],
         "evaluation": evaluation,
     }
 

@@ -131,3 +131,11 @@
 - Synthetic 60 bão, 30 epoch (early stop 12), 6 bão test, mean km 6/12/24/48/72h: LSTM 8/8/12/20/29; persistence 1/2/5/13/23; CLIPER 1/3/8/22/38. Synthetic, không phải bằng chứng skill.
 - pytest 126 passed; flake8/isort/black pass.
 - Next Step: bước 4, IBTrACS WP thật.
+
+## 2026-11-05 — Benchmark IBTrACS WP thật
+
+- `Trainer.fit` trả trọng số epoch cuối; `run_training` giờ nạp `best.pt` trước khi export/đánh giá (test mới).
+- `scripts/run_ibtracs_benchmark.py` + `configs/ibtracs_benchmark.yaml`: 1980–2024, 1089 bão, split theo năm (test 2021–2024, 84 bão, 714 forecast).
+- Mean km 6/12/24/48/72h — LSTM 34/66/135/294/470; persistence 31/68/155/390/676; CLIPER-proxy 30/65/151/388/677. LSTM hơn persistence 13% ở 24h, 30% ở 72h; kém nhẹ ở 6h.
+- Evidence: `docs/planning/evidence/B01-ibtracs-benchmark.md`. pytest 127 passed.
+- Next Step: G11 calibrate cone từ phân phối sai số val; nhiều seed + CI cho benchmark.

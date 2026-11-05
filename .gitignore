@@ -58,3 +58,6 @@ viz/frontend/dist/
 
 # Local operational store
 data/operational/*.db
+
+# Local experiment outputs
+runs/

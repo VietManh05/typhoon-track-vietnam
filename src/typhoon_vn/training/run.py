@@ -162,7 +162,10 @@ def run_training(
     with tracker:
         tracker.log_params(config.model_dump(mode="json"))
         tracker.log_params(
-            {"dataset_version": dataset_version, "dataset_sha256": split_manifest["dataset_sha256"]}
+            {
+                "dataset_version": dataset_version,
+                "dataset_sha256": split_manifest["dataset_sha256"],
+            }
         )
         for record in result["history"]:
             epoch = int(record["epoch"])

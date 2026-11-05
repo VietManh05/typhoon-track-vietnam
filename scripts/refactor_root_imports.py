@@ -16,7 +16,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
-
 MODULE_MAP: dict[str, str] = {
     "data_loader": "typhoon_vn.datasets.legacy_dataset",
     "model": "typhoon_vn.models.legacy_lstm",
@@ -45,9 +44,7 @@ def _parser() -> argparse.ArgumentParser:
         help="Package directory to scan (default: src/typhoon_vn).",
     )
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument(
-        "--write", action="store_true", help="Update files in place."
-    )
+    mode.add_argument("--write", action="store_true", help="Update files in place.")
     mode.add_argument(
         "--check",
         action="store_true",
@@ -95,9 +92,7 @@ def _node_span(
     if not hasattr(node, "end_lineno") or node.end_lineno is None:
         raise ValueError("Python 3.11+ AST positions are required")
     start = _absolute_offset(lines, line_starts, node.lineno, node.col_offset)
-    end = _absolute_offset(
-        lines, line_starts, node.end_lineno, node.end_col_offset
-    )
+    end = _absolute_offset(lines, line_starts, node.end_lineno, node.end_col_offset)
     return start, end
 
 

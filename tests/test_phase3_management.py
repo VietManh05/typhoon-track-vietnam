@@ -15,9 +15,20 @@ from typhoon_vn.training.tuning import SearchSpace, run_search
 
 def _season_frame() -> pd.DataFrame:
     rows = []
-    for storm_id, start in (("A", "2023-12-30"), ("B", "2024-02-01"), ("C", "2025-03-01")):
-        for index, timestamp in enumerate(pd.date_range(start, periods=4, freq="6h", tz="UTC")):
-            row = {"storm_id": storm_id, "timestamp": timestamp, "lat": 10 + index, "lon": 110 + index}
+    for storm_id, start in (
+        ("A", "2023-12-30"),
+        ("B", "2024-02-01"),
+        ("C", "2025-03-01"),
+    ):
+        for index, timestamp in enumerate(
+            pd.date_range(start, periods=4, freq="6h", tz="UTC")
+        ):
+            row = {
+                "storm_id": storm_id,
+                "timestamp": timestamp,
+                "lat": 10 + index,
+                "lon": 110 + index,
+            }
             for feature_index, name in enumerate(FEATURE_COLUMNS):
                 row[name] = float(feature_index + index)
             rows.append(row)
@@ -52,7 +63,15 @@ def test_search_uses_validation_only_and_seals_test_until_selection() -> None:
         return params["hidden_size"] / 100 + fold
 
     result = run_search(
-        SearchSpace(hidden_size=(8, 16), num_layers=(1,), dropout=(0.0,), learning_rate=(0.001,), batch_size=(8,), sequence_length=(4, 6, 8), horizon_weights=((1.0, 1.0),)),
+        SearchSpace(
+            hidden_size=(8, 16),
+            num_layers=(1,),
+            dropout=(0.0,),
+            learning_rate=(0.001,),
+            batch_size=(8,),
+            sequence_length=(4, 6, 8),
+            horizon_weights=((1.0, 1.0),),
+        ),
         folds=(0, 1),
         objective=objective,
         n_trials=3,
@@ -74,13 +93,46 @@ def _bundle(directory: Path, text: str = "bundle") -> Path:
 
 def test_registry_promotion_gate_and_rollback(tmp_path) -> None:
     registry = ModelRegistry(tmp_path / "registry")
-    first = registry.register(_bundle(tmp_path / "b1", "one"), version="v1", metadata={"dataset_version": "d1"})
-    second = registry.register(_bundle(tmp_path / "b2", "two"), version="v2", metadata={"dataset_version": "d1"})
+    first = registry.register(
+        _bundle(tmp_path / "b1", "one"),
+        version="v1",
+        metadata={"dataset_version": "d1"},
+    )
+    second = registry.register(
+        _bundle(tmp_path / "b2", "two"),
+        version="v2",
+        metadata={"dataset_version": "d1"},
+    )
     policy = PromotionPolicy(max_mean_error_km=100.0, min_calibration_coverage=0.8)
-    registry.promote(first.version, "staging", metrics={"mean_error_km": 80.0, "calibration_coverage": 0.9}, policy=policy)
-    registry.promote(first.version, "production", metrics={"mean_error_km": 80.0, "calibration_coverage": 0.9}, policy=policy)
+    registry.promote(
+        first.version,
+        "staging",
+        metrics={"mean_error_km": 80.0, "calibration_coverage": 0.9},
+        policy=policy,
+    )
+    registry.promote(
+        first.version,
+        "production",
+        metrics={"mean_error_km": 80.0, "calibration_coverage": 0.9},
+        policy=policy,
+    )
     with pytest.raises(ValueError, match="promotion gate"):
-        registry.promote(second.version, "production", metrics={"mean_error_km": 120.0, "calibration_coverage": 0.9}, policy=policy)
-    registry.promote(second.version, "staging", metrics={"mean_error_km": 70.0, "calibration_coverage": 0.9}, policy=policy)
-    registry.promote(second.version, "production", metrics={"mean_error_km": 70.0, "calibration_coverage": 0.9}, policy=policy)
+        registry.promote(
+            second.version,
+            "production",
+            metrics={"mean_error_km": 120.0, "calibration_coverage": 0.9},
+            policy=policy,
+        )
+    registry.promote(
+        second.version,
+        "staging",
+        metrics={"mean_error_km": 70.0, "calibration_coverage": 0.9},
+        policy=policy,
+    )
+    registry.promote(
+        second.version,
+        "production",
+        metrics={"mean_error_km": 70.0, "calibration_coverage": 0.9},
+        policy=policy,
+    )
     assert registry.rollback("production") == "v1"

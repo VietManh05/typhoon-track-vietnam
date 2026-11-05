@@ -25,7 +25,9 @@ def leave_one_season_out_splits(
     )
     seasons = sorted(int(value) for value in data["_season"].unique())
     if len(seasons) < 2:
-        raise ValueError("leave-one-season-out validation requires at least two seasons")
+        raise ValueError(
+            "leave-one-season-out validation requires at least two seasons"
+        )
     folds: list[tuple[int, pd.DataFrame, pd.DataFrame]] = []
     for season in seasons:
         validation = data[data["_season"] == season].drop(columns="_season")

@@ -31,10 +31,9 @@ def _validate_sequence(
     lengths = valid.sum(dim=1)
     if (lengths < 1).any():
         raise ValueError("each sequence must contain at least one valid timestep")
-    expected = (
-        torch.arange(x.shape[1], device=x.device).unsqueeze(0)
-        < lengths.unsqueeze(1)
-    )
+    expected = torch.arange(x.shape[1], device=x.device).unsqueeze(
+        0
+    ) < lengths.unsqueeze(1)
     if not torch.equal(valid, expected):
         raise ValueError("mask must describe right-padded contiguous sequences")
     return valid, lengths

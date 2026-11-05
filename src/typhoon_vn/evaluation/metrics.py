@@ -177,12 +177,16 @@ def intensity_classification_scores(
             true_positive = np.sum((p_h == class_id) & (t_h == class_id))
             false_positive = np.sum((p_h == class_id) & (t_h != class_id))
             false_negative = np.sum((p_h != class_id) & (t_h == class_id))
-            p_score = float(true_positive / (true_positive + false_positive)) if (
-                true_positive + false_positive
-            ) else 0.0
-            r_score = float(true_positive / (true_positive + false_negative)) if (
-                true_positive + false_negative
-            ) else 0.0
+            p_score = (
+                float(true_positive / (true_positive + false_positive))
+                if (true_positive + false_positive)
+                else 0.0
+            )
+            r_score = (
+                float(true_positive / (true_positive + false_negative))
+                if (true_positive + false_negative)
+                else 0.0
+            )
             f_score = (
                 2 * p_score * r_score / (p_score + r_score)
                 if p_score + r_score

@@ -206,7 +206,9 @@ class ClimatologyPersistenceBaseline:
     ) -> "ClimatologyPersistenceBaseline":
         required = {"storm_id", "timestamp", "lat", "lon"}
         if not required.issubset(frame.columns):
-            raise ValueError(f"baseline frame missing columns: {sorted(required - set(frame))}")
+            raise ValueError(
+                f"baseline frame missing columns: {sorted(required - set(frame))}"
+            )
         corrections: dict[int, list[np.ndarray]] = {step: [] for step in horizon_steps}
         delta = pd.Timedelta(hours=time_step_hours)
         for _, group in frame.groupby("storm_id", sort=False):

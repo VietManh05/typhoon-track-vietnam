@@ -6,10 +6,10 @@ and a cone-radius heuristic compatible with the multi-horizon outputs.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from dataclasses import dataclass
 import json
 import math
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -254,7 +254,9 @@ class DeepEnsemble:
         if not self.models:
             raise ValueError("deep ensemble requires at least one model")
         contract = (self.models[0].n_horizons, self.models[0].n_classes)
-        if any((model.n_horizons, model.n_classes) != contract for model in self.models):
+        if any(
+            (model.n_horizons, model.n_classes) != contract for model in self.models
+        ):
             raise ValueError("all ensemble members must share the same output contract")
 
     def predict(
@@ -313,9 +315,7 @@ class CalibratedCone:
         radii = np.maximum.accumulate(radii)
         return cls(horizon_values, tuple(float(value) for value in radii), coverage)
 
-    def coverage_report(
-        self, errors_km: np.ndarray | torch.Tensor
-    ) -> dict[int, float]:
+    def coverage_report(self, errors_km: np.ndarray | torch.Tensor) -> dict[int, float]:
         errors = (
             errors_km.detach().cpu().numpy()
             if isinstance(errors_km, torch.Tensor)
@@ -387,7 +387,9 @@ class CalibratedCone:
                     "type": "Feature",
                     "geometry": {
                         "type": "Polygon",
-                        "coordinates": [[[point_lon, point_lat] for point_lat, point_lon in ring]],
+                        "coordinates": [
+                            [[point_lon, point_lat] for point_lat, point_lon in ring]
+                        ],
                     },
                     "properties": {
                         "horizon_hours": horizon,

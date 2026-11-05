@@ -194,8 +194,7 @@ def backtest_catalogue(
                 ),
                 "intensity_accuracy": float(
                     np.mean(
-                        group["pred_intensity_class"]
-                        == group["actual_intensity_class"]
+                        group["pred_intensity_class"] == group["actual_intensity_class"]
                     )
                 ),
                 "n_forecasts": len(errs),

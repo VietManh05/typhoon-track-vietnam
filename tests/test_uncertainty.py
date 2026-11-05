@@ -21,7 +21,10 @@ def test_calibrated_cone_round_trip_and_geojson(tmp_path) -> None:
     assert geojson["properties"]["calibrated_coverage"] == 0.75
     polygons = [f for f in geojson["features"] if f["geometry"]["type"] == "Polygon"]
     assert len(polygons) == 2
-    assert polygons[0]["geometry"]["coordinates"][0][0] == polygons[0]["geometry"]["coordinates"][0][-1]
+    assert (
+        polygons[0]["geometry"]["coordinates"][0][0]
+        == polygons[0]["geometry"]["coordinates"][0][-1]
+    )
 
 
 def test_quantile_calibration_reports_coverage_width_and_crossing() -> None:

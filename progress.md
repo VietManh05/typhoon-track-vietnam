@@ -108,3 +108,14 @@
 - Targeted Phase-2 data suite: 41 passed. Full regression: 105 passed, 2 dependency deprecation warnings.
 - Plan validator pass: 818/818 checkbox, 731 nodes, 2.977 links, roadmap unchanged. Flake8/isort/Black pass trên phạm vi Phase 2.
 - Phase 2 đóng với 256/256 task G00–G06 complete; không commit/push mới. Phase 3 chưa bắt đầu.
+
+## 2026-11-05 — Dựng lại môi trường và baseline kiểm thử
+
+- Untrack `viz/frontend/node_modules`, `.pytest_tmp_phase3_slice`, checkpoint `.pth`, `data/operational/typhoon.db`; cập nhật `.gitignore`.
+- venv Python 3.11.9; `pip install -e ".[api,train,ingestion,dev]"` và `pip check` pass.
+- flake8/isort/black pass trên `src tests scripts`.
+- pytest: 119 passed, 1 warning (httpx/starlette deprecation) khi bỏ qua 2 file test chưa có implementation:
+  - `tests/test_environment_forecast.py` cần `ForecastField` trong `ingestion/providers/environment.py`.
+  - `tests/test_phase3_management.py` cần `training.cross_validation`, `training.registry`, `training.tuning` (G14/G15).
+- Lỗi `DEBUG=release` trong báo cáo 19/09 không tái hiện trong môi trường sạch (cần `env -u DEBUG` nếu shell có biến này).
+- Next Step: chốt Phase 3 (G07/G08/G12), rồi dữ liệu IBTrACS thật.

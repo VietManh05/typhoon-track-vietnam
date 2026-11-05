@@ -118,7 +118,6 @@ def test_api_auth_validation_and_rate_limit() -> None:
         _env_file=None,
         api_key="secret",
         requests_per_minute=1,
-        cache_enabled=False,
         operational_database_url="sqlite:///:memory:",
     )
     app = create_app(
@@ -140,7 +139,6 @@ def test_api_auth_validation_and_rate_limit() -> None:
 def test_api_returns_422_for_invalid_observation_interval() -> None:
     settings = Settings(
         _env_file=None,
-        cache_enabled=False,
         operational_database_url="sqlite:///:memory:",
     )
     app = create_app(
@@ -188,7 +186,6 @@ def test_dashboard_read_routes_follow_public_read_setting(public_read) -> None:
         api_key="secret",
         public_read=public_read,
         requests_per_minute=50,
-        cache_enabled=False,
         operational_database_url="sqlite:///:memory:",
     )
     app = create_app(
@@ -223,7 +220,6 @@ def test_public_read_routes_are_still_rate_limited() -> None:
         api_key="secret",
         public_read=True,
         requests_per_minute=1,
-        cache_enabled=False,
         operational_database_url="sqlite:///:memory:",
     )
     app = create_app(
@@ -242,7 +238,6 @@ def test_public_reads_do_not_consume_authenticated_rate_limit() -> None:
         api_key="secret",
         public_read=True,
         requests_per_minute=1,
-        cache_enabled=False,
         operational_database_url="sqlite:///:memory:",
     )
     app = create_app(
@@ -261,3 +256,79 @@ def test_public_reads_do_not_consume_authenticated_rate_limit() -> None:
             client.get("/typhoons/active", headers={"X-API-Key": "x"}).status_code
             == 401
         )
+
+
+def test_keyed_edge_requests_are_limited_per_forwarded_viewer() -> None:
+    settings = Settings(
+        _env_file=None,
+        api_key="secret",
+        requests_per_minute=1,
+        operational_database_url="sqlite:///:memory:",
+    )
+    app = create_app(
+        settings=settings,
+        store=Store("sqlite:///:memory:"),
+        forecaster=TyphoonForecaster(),
+    )
+    edge = {"X-API-Key": "secret"}
+    with TestClient(app) as client:
+        # One Cloudflare address, two viewers: separate buckets.
+        assert (
+            client.get("/alerts", headers={**edge, "X-Client-IP": "a"}).status_code
+            == 200
+        )
+        assert (
+            client.get("/alerts", headers={**edge, "X-Client-IP": "b"}).status_code
+            == 200
+        )
+        assert (
+            client.get("/alerts", headers={**edge, "X-Client-IP": "a"}).status_code
+            == 429
+        )
+        # Without the key the forwarded address is not trusted.
+        spoof = {"X-API-Key": "x", "X-Client-IP": "c"}
+        assert client.get("/alerts", headers=spoof).status_code == 401
+
+
+def test_version_names_the_bundle_revision_the_edge_approves(tmp_path) -> None:
+    import hashlib
+
+    bundle = bundle_path(tmp_path)
+    app = create_app(
+        settings=Settings(
+            _env_file=None, operational_database_url="sqlite:///:memory:"
+        ),
+        store=Store("sqlite:///:memory:"),
+        forecaster=TyphoonForecaster(bundle, allow_baseline=False),
+    )
+    with TestClient(app) as client:
+        body = client.get("/version").json()
+    manifest = (tmp_path / "bundle" / "manifest.json").read_bytes()
+    assert body["model_revision"] == hashlib.sha256(manifest).hexdigest()
+    assert body["model_kind"] == "trained-model"
+
+
+def test_track_still_returns_observations_when_forecast_fails() -> None:
+    store = Store("sqlite:///:memory:")
+    app = create_app(
+        settings=Settings(
+            _env_file=None, operational_database_url="sqlite:///:memory:"
+        ),
+        store=store,
+        forecaster=TyphoonForecaster(),
+    )
+    gap = fixes()
+    gap[-1] = gap[-1].model_copy(
+        update={"timestamp": gap[-2].timestamp + timedelta(hours=30)}
+    )
+    from typhoon_vn.api.schemas import ObservationBatch
+
+    store.upsert_observations(
+        ObservationBatch(storm_id="S", name="S", observations=gap)
+    )
+    with TestClient(app) as client:
+        response = client.get("/typhoons/S/track")
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["observations"]) == 6 and body["forecast"] is None
+    assert "24 hours" in body["forecast_unavailable"]

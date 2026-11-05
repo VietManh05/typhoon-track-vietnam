@@ -46,7 +46,6 @@ def test_env_template_and_settings_loader(monkeypatch):
         "APP_ENV",
         "DATA_DIR",
         "DATABASE_URL",
-        "REDIS_URL",
         "MODEL_REGISTRY_URI",
     ):
         assert re.search(rf"(?m)^{key}=", template)

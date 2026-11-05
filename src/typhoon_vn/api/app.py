@@ -34,7 +34,7 @@ def create_app(
     settings: Settings | None = None, store=None, forecaster=None
 ) -> FastAPI:
     settings = get_settings() if settings is None else settings
-    services = {"store": store, "forecaster": forecaster, "redis": None}
+    services = {"store": store, "forecaster": forecaster}
     lock = RLock()
     # Separate limiter state so unauthenticated public reads can never exhaust
     # the capacity used by key-holding operators and writers.
@@ -56,15 +56,7 @@ def create_app(
     @asynccontextmanager
     async def lifespan(app):
         initialize()
-        if settings.cache_enabled:
-            import redis
-
-            services["redis"] = redis.Redis.from_url(
-                settings.redis_url, socket_connect_timeout=1, socket_timeout=1
-            )
         yield
-        if services["redis"]:
-            services["redis"].close()
         if store is None and services["store"]:
             services["store"].engine.dispose()
 
@@ -79,7 +71,6 @@ def create_app(
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
-        allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
@@ -100,7 +91,10 @@ def create_app(
             request.headers.get("X-API-Key", ""), settings.api_key
         ):
             raise HTTPException(401, "Valid X-API-Key required")
-        rate_limit(request, limiters["auth"])
+        # The edge proxies every viewer from a few Cloudflare IPs; trust its
+        # forwarded viewer address only once the key has been verified.
+        viewer = request.headers.get("X-Client-IP") if settings.api_key else None
+        rate_limit(request, limiters["auth"], viewer)
 
     def authorize_read(request: Request):
         """Dashboard read routes: public when ``public_read``, always rate limited."""
@@ -109,14 +103,20 @@ def create_app(
         else:
             authorize(request)
 
-    def rate_limit(request: Request, requests: defaultdict) -> None:
+    def rate_limit(
+        request: Request, requests: defaultdict, address: str | None = None
+    ) -> None:
         now = time.monotonic()
-        address = request.client.host if request.client else "local"
+        address = (address or "")[:64] or (
+            request.client.host if request.client else "local"
+        )
         with lock:
-            # Bound cardinality and expire inactive clients.
-            for key in list(requests):
-                if not requests[key] or requests[key][-1] <= now - 60:
-                    del requests[key]
+            # Bound cardinality and expire inactive clients (only when large,
+            # so a normal request does not scan every client).
+            if len(requests) > 1000:
+                for key in list(requests):
+                    if not requests[key] or requests[key][-1] <= now - 60:
+                        del requests[key]
             if address not in requests and len(requests) >= 10000:
                 raise HTTPException(429, "Rate limiter at capacity")
             window = requests[address]
@@ -156,6 +156,7 @@ def create_app(
         return {
             "version": __version__,
             "model_version": service.version,
+            "model_revision": service.revision,
             "model_kind": service.kind,
             "dataset_version": service.dataset,
         }
@@ -197,15 +198,6 @@ def create_app(
             raise HTTPException(422, str(exc)) from exc
         db().save_forecast(result)
         evaluate_alerts(db(), result.model_dump(mode="json"))
-        if services["redis"]:
-            try:
-                services["redis"].setex(
-                    "forecast:" + key, 1800, result.model_dump_json()
-                )
-            except Exception:
-                logger.warning(
-                    "Redis unavailable; durable database cache remains active"
-                )
         return result
 
     @app.post(
@@ -223,12 +215,18 @@ def create_app(
         fixes = db().track(storm_id)
         if not fixes:
             raise HTTPException(404, "Storm not found")
+        forecast, reason = None, None
+        if len(fixes) > 1:
+            try:
+                forecast = compute(ForecastRequest(storm_id=storm_id))
+            except HTTPException as exc:
+                # Observations are still worth showing when no forecast is possible.
+                reason = exc.detail
         return {
             "storm_id": storm_id,
             "observations": fixes,
-            "forecast": (
-                compute(ForecastRequest(storm_id=storm_id)) if len(fixes) > 1 else None
-            ),
+            "forecast": forecast,
+            "forecast_unavailable": reason,
         }
 
     @app.get("/typhoons/{storm_id}/impact", dependencies=[Depends(authorize)])

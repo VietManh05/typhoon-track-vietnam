@@ -28,12 +28,10 @@ class Settings(BaseSettings):
     # and operator routes always require it. Read routes stay rate limited.
     public_read: bool = True
     requests_per_minute: int = Field(default=120, ge=1)
-    cache_enabled: bool = False
     data_dir: Path = Path("data")
     model_registry_uri: str = "./mlruns"
     feature_store_dir: Path = Path("data/processed/features")
     database_url: str = "postgresql+psycopg://typhoon:typhoon@localhost:5432/typhoon"
-    redis_url: str = "redis://localhost:6379/0"
     minio_endpoint: str = "localhost:9000"
     minio_access_key: str = "minioadmin"
     minio_secret_key: str = "minioadmin"

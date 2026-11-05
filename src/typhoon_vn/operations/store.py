@@ -14,6 +14,7 @@ from sqlalchemy import (
     Table,
     Text,
     create_engine,
+    func,
     insert,
     select,
 )
@@ -120,21 +121,41 @@ class Store:
         return [Fix.model_validate_json(row) for row in rows]
 
     def active(self, hours=48):
-        threshold = datetime.now(timezone.utc) - timedelta(hours=hours)
+        from typhoon_vn.api.schemas import Fix
+
+        # Timestamps are stored as UTC isoformat strings, so they sort as text.
+        threshold = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+        latest = (
+            select(
+                observations.c.storm_id,
+                func.max(observations.c.timestamp).label("last"),
+                func.count().label("n"),
+            )
+            .group_by(observations.c.storm_id)
+            .having(func.max(observations.c.timestamp) >= threshold)
+            .subquery()
+        )
+        query = (
+            select(storms.c.id, storms.c.name, latest.c.n, observations.c.payload)
+            .join(latest, latest.c.storm_id == storms.c.id)
+            .join(
+                observations,
+                (observations.c.storm_id == latest.c.storm_id)
+                & (observations.c.timestamp == latest.c.last),
+            )
+            .order_by(storms.c.id)
+        )
         with self.engine.connect() as conn:
-            entries = conn.execute(select(storms)).mappings().all()
-        results = []
-        for entry in entries:
-            track = self.track(entry["id"])
-            if track and track[-1].timestamp >= threshold:
-                results.append(
-                    {
-                        **dict(entry),
-                        "latest": track[-1].model_dump(mode="json"),
-                        "observation_count": len(track),
-                    }
-                )
-        return results
+            rows = conn.execute(query).all()
+        return [
+            {
+                "id": row.id,
+                "name": row.name,
+                "latest": Fix.model_validate_json(row.payload).model_dump(mode="json"),
+                "observation_count": row.n,
+            }
+            for row in rows
+        ]
 
     def cached(self, key):
         with self.engine.connect() as conn:

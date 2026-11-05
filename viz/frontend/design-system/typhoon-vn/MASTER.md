@@ -4,45 +4,40 @@ This file documents the frontend visual contract. Runtime values live in `src/in
 
 ## Direction
 
-- Product: real-time tropical cyclone monitoring and decision support.
-- Visual language: dark scientific command center, calm density, map-first hierarchy.
-- Principles: clarity before decoration, status never conveyed by color alone, restrained motion, compact controls, tabular numerical data.
-- Avoid: pervasive glass, heavy shadows, animated gradients, oversized pills, decorative glow, mixed icon families.
+- Product: tropical-cyclone track suggestion and decision support for Vietnam, used by the general public, including older people with little app experience.
+- Visual language: bright daylight weather app (white cards on a soft sky background, one clear-sky blue accent), modelled on mainstream weather apps; map-first hierarchy.
+- Principles: readability before decoration, plain Vietnamese wording instead of codes, status never conveyed by colour alone, big touch targets, restrained motion.
+- Avoid: navy/neon "command centre" styling, glowing effects, small letter-spaced capitals, technical codes (STS, UNK, storm IDs) as primary labels.
 
 ## Color tokens
 
-| Semantic role | Value |
-| --- | --- |
-| Background | `#07101F` |
-| Surface 1 | `#0B1526` |
-| Surface 2 | `#101C2F` |
-| Elevated | `#142238` |
-| Border source | `#94A3B8` at 12–22% |
-| Primary | `#22D3EE` |
-| Primary deep | `#38BDF8` |
-| Secondary | `#8B5CF6` |
-| Success | `#10B981` |
-| Warning | `#F59E0B` |
-| Danger | `#F43F5E` |
-| Text primary | `#F8FAFC` |
-| Text secondary | `#94A3B8` |
-| Text muted | `#64748B` |
+Runtime values are RGB triplets in `src/index.css`. Daylight (`html.light`) is the default; night is opt-in.
 
-Storm classes use the same semantic palette: TD cyan, TS emerald, STS amber, TY orange, STY rose, SUPERTY violet.
+| Semantic role | Daylight (default) | Night (opt-in) |
+| --- | --- | --- |
+| Background | `#EEF5FC` (sky gradient at top) | `#14161A` |
+| Surface 1 / 2 / 3 | `#FFFFFF` / `#F6F9FD` / `#E2ECF7` | `#1E2126` / `#282C32` / `#343940` |
+| Primary (clear-sky blue) | `#0063CC` | `#6EB4FF` |
+| Success / Warning / Danger | `#15803D` / `#B45309` / `#C81E1E` | `#4ADE80` / `#FBBF24` / `#FF7878` |
+| Text primary / secondary / muted | `#111827` / `#374151` / `#4B5563` | `#F6F7F9` / `#CED4DC` / `#B0B8C4` |
+
+All daylight text colours keep at least 7:1 contrast on white (WCAG AAA). On the night accent, selected controls use dark text.
+
+Storm classes use `--c-storm-*` tokens per theme (TD cyan-blue, TS green, STS amber, TY orange, STY red, SUPERTY violet); map lines use mid-tone hex values readable on both basemaps. Labels show the Vietnamese class name ("Bão mạnh"), never the code alone.
 
 ## Typography
 
-- UI: self-hosted Be Vietnam Pro, weights 400/500/600/700.
-- Data: self-hosted JetBrains Mono, weights 400/500.
-- Metadata 10–12px; secondary UI 12–13px; standard UI 14px; card title 16–18px; primary values 22–28px.
-- All measurements use tabular figures and a non-breaking gap before units.
+- UI: self-hosted Be Vietnam Pro; data: JetBrains Mono, tabular figures.
+- Minimum text 13px; secondary 14–15px; body 17px; primary values 26–56px.
+- Sentence case everywhere; no uppercase letter-spaced labels.
+- Easy-read overrides live in `src/styles/easy-read.css`, loaded last.
 
 ## Shape, spacing, elevation
 
 - Spacing follows a 4/8px rhythm.
 - Badge radius 6px, control radius 9px, card radius 12px, panel radius 14px.
 - Panels use a 1px low-opacity border and one restrained shadow level.
-- Touch targets are at least 40px in the dense web UI; primary mobile actions target 44px when space permits.
+- Touch targets are at least 48px (map controls, tabs, storm chips, timeline buttons).
 
 ## Component rules
 

@@ -697,9 +697,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
             cycloneMarkerRef.current = leaflet.marker([lat, lon], {
                 icon: cycloneIcon,
                 zIndexOffset: 1000,
+                // Accessible name for the focusable marker (screen readers, tooltip).
+                title: lang === "vi" ? "Vị trí tâm bão hiện tại" : "Current storm centre",
             }).addTo(mapInstanceRef.current);
         }
-    }, [currentFixIndex, observations, forecast, mapReady]);
+    }, [currentFixIndex, observations, forecast, mapReady, lang]);
 
     return (
         <div

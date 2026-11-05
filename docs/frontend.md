@@ -9,16 +9,16 @@ Hệ thống giao diện trực quan hóa, theo dõi quỹ đạo và đánh gi�
 - **Tech Stack**:
   - **Framework**: React 18 + TypeScript 5
   - **Bundler**: Vite 5
-  - **Bản đồ GIS**: Leaflet 1.9 với tile layers Esri Dark Gray Canvas (mặc định, không cần key), OpenStreetMap, Esri World Imagery. CARTO Dark Matter đã bỏ vì nay yêu cầu API key
+  - **Bản đồ GIS**: Leaflet 1.9 với OpenStreetMap (mặc định, không cần key; chế độ tối đảo màu ô bản đồ), OpenTopoMap (Địa hình), Esri World Imagery (Vệ tinh)
   - **Hệ thống biểu tượng**: Lucide React
-  - **Thiết kế**: Vanilla CSS với CSS Variables & Glassmorphism chuẩn khí tượng vũ trụ (Dark mode & Light mode)
+  - **Thiết kế**: Tailwind + CSS Variables; giao diện sáng "trời trong" mặc định, dễ đọc cho mọi lứa tuổi (chữ ≥ 13px, nút ≥ 48px, tương phản ≥ 7:1), chế độ tối tùy chọn. Chi tiết: `viz/frontend/design-system/typhoon-vn/MASTER.md`
   - **Đa ngôn ngữ**: Hệ thống từ điển song ngữ Tiếng Việt 🇻🇳 (mặc định) và English 🇬🇧
 
 ## 2. Các Thành Phần Chính
 
 ### 2.1. Bản Đồ Tương Tác & Chủ Quyền Lãnh Thổ (`src/components/Map/TyphoonMap.tsx`)
 - Tọa độ trung tâm: Vùng Biển Đông và lãnh thổ Việt Nam (`[16.5, 110.0]`, zoom 6).
-- Lớp 63 tỉnh/thành phố (`/data/vietnam_provinces.geojson`): Trích xuất từ GADM v4.1, có hover tooltip và hỗ trợ bấm chọn để phân tích rủi ro.
+- Lớp 63 tỉnh/thành phố (`/data/vietnam_provinces.geojson`): Trích xuất từ GADM v4.1, có hover tooltip và hỗ trợ bấm chọn để phân tích rủi ro. Lưu ý: ranh giới là 63 tỉnh trước sáp nhập 07/2025; tra cứu thời tiết dùng danh mục 34 tỉnh/thành hiện hành (kèm tên cũ để tìm kiếm). Cần thay bằng ranh giới 34 tỉnh khi có dữ liệu chính thức.
 - Lớp khẳng định chủ quyền biển đảo (`/data/vietnam_islands.json`):
   - **Quần đảo Hoàng Sa** (Thuộc TP. Đà Nẵng, Việt Nam)
   - **Quần đảo Trường Sa** (Thuộc Tỉnh Khánh Hòa, Việt Nam)

@@ -108,7 +108,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
 
                         <div className="flex items-center gap-2">
                             <div
-                                className="h-3 w-4 rounded-badge border border-primary/60 bg-primary/20"
+                                className="h-3 w-4 rounded-badge border border-dashed border-[#ea580c] bg-[#fb923c]/20"
                                 aria-hidden="true"
                             />
                             <span className="text-xs text-fg-muted">

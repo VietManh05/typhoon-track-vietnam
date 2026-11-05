@@ -137,3 +137,53 @@ html:not(.light) .timeline-player .btn-primary {
 .place-label-country span { font-size: 15px; letter-spacing: .04em; }
 .place-label-sea span { font-size: 17px; font-style: italic; color: rgb(var(--c-primary)); letter-spacing: .06em; }
 .place-label-province span { font-size: 13px; color: rgb(var(--c-fg)); }
+
+/* ---------- Windy-style compact map chrome (tablet/desktop) ----------
+   Search top-left, layers as an always-visible one-tap column below it,
+   map controls as one horizontal bar bottom-right. Phones keep the
+   collapsible layer menu (rules in fullscreen-map.css). */
+@media (min-width: 768px) {
+  .immersive-map .map-stage > .map-location-search {
+    top: calc(var(--map-chrome-height, 72px) + 24px);
+    left: 16px;
+    width: 280px;
+  }
+  .immersive-map .map-layer-toolbar,
+  .immersive-map:not(.details-is-open) .map-layer-toolbar {
+    top: calc(var(--map-chrome-height, 72px) + 84px);
+    left: 16px;
+    width: auto;
+    max-width: none;
+    padding: 6px;
+  }
+  .immersive-map .map-toolbar-toggle { display: none; }
+  .immersive-map .map-toolbar-content,
+  .immersive-map .map-toolbar-content[hidden] {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .immersive-map .map-layer-toolbar .segmented { display: flex; flex-direction: column; gap: 4px; }
+  .immersive-map .map-layer-toolbar :is(.segmented-item, .chip) {
+    justify-content: flex-start;
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+  }
+  .immersive-map .map-stage:has(.map-layer-toolbar.is-open) > .map-location-search,
+  .immersive-map .map-stage:has(.map-layer-toolbar.is-open) .map-navigation { visibility: visible; }
+
+  .immersive-map .map-navigation {
+    top: auto;
+    left: auto;
+    right: 16px;
+    bottom: 150px;
+    flex-direction: row;
+    align-items: center;
+  }
+  .immersive-map.details-is-open .map-navigation { right: calc(var(--detail-width) + 32px); }
+  .immersive-map .map-navigation .map-zoom-group { display: flex; flex-direction: row; }
+}

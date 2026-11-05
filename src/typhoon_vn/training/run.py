@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
@@ -23,6 +24,7 @@ from typhoon_vn.features.build import FEATURE_COLUMNS, FeatureBuilder
 from typhoon_vn.features.scaling import FeatureScaler
 from typhoon_vn.models.baselines import CLIPERForecaster, PersistenceForecaster
 from typhoon_vn.models.lstm import LSTMTrackForecaster
+from typhoon_vn.models.uncertainty import CalibratedCone
 from typhoon_vn.training.config_loader import PipelineConfig, load_config
 from typhoon_vn.training.experiment import ExperimentTracker
 from typhoon_vn.training.losses import MultiHorizonLoss
@@ -142,11 +144,26 @@ def run_training(
         # Written by this trainer moments ago (holds RNG state, so not weights-only).
         best = torch.load(best_path, map_location="cpu", weights_only=False)
         model.load_state_dict(best["model_state_dict"])
-    # Smoke artifact: radii are explicitly illustrative, not a real calibration claim.
     horizons_hours = [
         step * dataset_config.time_step_hours for step in config.dataset.horizon
     ]
-    radii = {str(hour): max(30.0, hour * 5.0) for hour in horizons_hours}
+    coverage = config.uncertainty.coverage
+    val_errors = _error_matrix(model, val, dataset_config, scaler)
+    cone = None
+    if val_errors is not None and len(val_errors) >= 2:
+        cone = CalibratedCone.fit(val_errors, horizons_hours, coverage=coverage)
+        radii = {str(h): r for h, r in zip(horizons_hours, cone.radii_km)}
+        uncertainty_method = (
+            f"Empirical {coverage:.0%} quantile of validation-split track error "
+            f"({len(val_errors)} forecasts, {val['storm_id'].nunique()} storms); "
+            "same split as early stopping, errors within a storm are correlated"
+        )
+    else:
+        radii = {str(hour): max(30.0, hour * 5.0) for hour in horizons_hours}
+        uncertainty_method = (
+            "Illustrative radius 5 km/hour (minimum 30 km); too few validation "
+            "forecasts to calibrate"
+        )
     manifest = export_bundle(
         output_dir / "bundle",
         model,
@@ -160,11 +177,22 @@ def run_training(
         validation_radius_km=radii,
         split_manifest=split_manifest,
         synthetic=dataset_version.startswith("synthetic"),
+        uncertainty_method=uncertainty_method,
     )
     load_bundle(manifest)
     evaluation = _evaluate_test_split(
         model, test, dataset_config, scaler, n_classes=train_ds.n_classes
     )
+    if evaluation is not None and cone is not None:
+        test_errors = _error_matrix(model, test, dataset_config, scaler)
+        evaluation["cone"] = {
+            "coverage_target": coverage,
+            "calibration_split": "val",
+            "radius_km": radii,
+            "test_coverage": {
+                str(h): v for h, v in cone.coverage_report(test_errors).items()
+            },
+        }
     if evaluation is not None:
         (output_dir / "evaluation.json").write_text(
             json.dumps(evaluation, indent=2), encoding="utf-8"
@@ -230,6 +258,27 @@ _SUMMARY_FIELDS = (
     "mean_cross_track_error_km",
     "n_forecasts",
 )
+
+
+def _error_matrix(
+    model: torch.nn.Module,
+    frame: pd.DataFrame,
+    dataset_config: DatasetConfig,
+    scaler: FeatureScaler,
+) -> np.ndarray | None:
+    """Track errors (km) shaped ``(forecasts, horizons)`` for one split."""
+
+    if frame.empty:
+        return None
+    detail, _ = backtest_catalogue(model, frame, config=dataset_config, scaler=scaler)
+    if detail.empty:
+        return None
+    table = detail.pivot_table(
+        index=["storm_id", "issue_time"],
+        columns="horizon_h",
+        values="track_error_km",
+    ).sort_index(axis=1)
+    return table.dropna().to_numpy(dtype=float)
 
 
 def _evaluate_test_split(

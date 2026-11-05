@@ -139,3 +139,11 @@
 - Mean km 6/12/24/48/72h — LSTM 34/66/135/294/470; persistence 31/68/155/390/676; CLIPER-proxy 30/65/151/388/677. LSTM hơn persistence 13% ở 24h, 30% ở 72h; kém nhẹ ở 6h.
 - Evidence: `docs/planning/evidence/B01-ibtracs-benchmark.md`. pytest 127 passed.
 - Next Step: G11 calibrate cone từ phân phối sai số val; nhiều seed + CI cho benchmark.
+
+## 2026-11-05 — G11 cone calibration, G15 registry/promotion gate
+
+- `run_training` fit `CalibratedCone` trên sai số LSTM của val split (`uncertainty.coverage`, mặc định 0.8); bán kính và mô tả phương pháp ghi vào bundle; API đọc `uncertainty_method` từ manifest.
+- IBTrACS: bán kính 52/97/210/455/714 km (6–72h); coverage test 84/82/86/85/82% (mục tiêu 80%). Bán kính minh hoạ cũ ở 72h = 360 km (chỉ ~½).
+- `training/registry.py`: `ModelRegistry` (register/promote/rollback, pin SHA-256 manifest, production phải qua staging), `PromotionPolicy` (sai số tối đa, coverage tối thiểu, tỉ lệ so với persistence), `promotion_metrics`. 8 test mới trong `tests/test_registry.py`.
+- Gate đề xuất tại 72h: ≤550 km, coverage ≥0.75, ≤0.9× persistence → PASS (470 km, 0.82, 0.70). Ngưỡng chờ chủ dự án duyệt.
+- pytest 136 passed. `tests/test_phase3_management.py` vẫn chờ `cross_validation`/`tuning` (G14).

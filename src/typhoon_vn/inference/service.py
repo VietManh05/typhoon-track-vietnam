@@ -64,9 +64,7 @@ class TyphoonForecaster:
                 self.bundle["manifest"]["validation_radius_km"][str(h)]
                 for h in request.horizons
             ]
-            uncertainty = (
-                "80th percentile validation radial error; not calibrated coverage"
-            )
+            uncertainty = self.bundle["manifest"]["uncertainty_method"]
             warnings.append(
                 "Experimental model; held-out validation is not operational certification"
             )

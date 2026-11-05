@@ -110,6 +110,9 @@ def export_bundle(
     validation_radius_km: dict[str, float],
     split_manifest: dict[str, Any],
     synthetic: bool = False,
+    uncertainty_method: str = (
+        "held-out validation radial error; not calibrated coverage"
+    ),
 ) -> Path:
     """Export a deterministic, checksum-verified directory bundle."""
 
@@ -143,7 +146,7 @@ def export_bundle(
         "horizons_hours": list(horizons_hours),
         "intensity_labels": list(INTENSITY_LABELS),
         "validation_radius_km": validation_radius_km,
-        "uncertainty_method": "held-out validation radial error; not calibrated coverage",
+        "uncertainty_method": uncertainty_method,
         "split_manifest_sha256": _sha256(split_path),
         "files": {
             "weights.pt": _sha256(weights),

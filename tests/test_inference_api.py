@@ -66,6 +66,7 @@ def bundle_path(tmp_path):
         input_len=4,
         horizons_hours=[6, 12, 24, 48, 72],
         validation_radius_km={str(h): float(h) for h in [6, 12, 24, 48, 72]},
+        uncertainty_method="test-only cone method",
         split_manifest={"train": ["WP012024"], "val": [], "test": [], "seed": 1},
         synthetic=True,
     )
@@ -95,7 +96,7 @@ def test_trained_bundle_forecast_has_provenance_and_loads_once(
         for p in first.points
     )
     assert "not an official weather warning" in first.disclaimer
-    assert first.uncertainty_method
+    assert first.uncertainty_method == "test-only cone method"
 
 
 def test_missing_artifact_and_time_freshness_fail_or_warn(tmp_path) -> None:

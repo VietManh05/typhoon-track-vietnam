@@ -24,6 +24,7 @@ import pandas as pd
 from typhoon_vn.features.bridge import load_raw_observations, to_canonical_frame
 from typhoon_vn.features.cleaning import clean_tracks
 from typhoon_vn.training.config_loader import load_config
+from typhoon_vn.training.registry import PromotionPolicy, promotion_metrics
 from typhoon_vn.training.run import run_training
 
 
@@ -72,6 +73,32 @@ def _markdown(summary: dict) -> str:
         lines.append(f"| {name} | {cells} |")
     counts = " | ".join(str(row["n_forecasts"]) for row in models["lstm"])
     lines += [f"| n forecasts | {counts} |", ""]
+    cone = summary["evaluation"].get("cone")
+    if cone:
+        radius = " | ".join(f"{cone['radius_km'][str(h)]:.0f}" for h in horizons)
+        hit = " | ".join(f"{cone['test_coverage'][str(h)]:.0%}" for h in horizons)
+        lines += [
+            f"Cone calibrated on the {cone['calibration_split']} split for "
+            f"{cone['coverage_target']:.0%} coverage:",
+            "",
+            "| | " + " | ".join(f"{h}h" for h in horizons) + " |",
+            "|---|" + "---:|" * len(horizons),
+            f"| radius km | {radius} |",
+            f"| test coverage | {hit} |",
+            "",
+        ]
+    gate = summary.get("promotion_gate")
+    if gate:
+        verdict = "PASS" if not gate["failures"] else "FAIL"
+        lines += [
+            f"Promotion gate at {gate['horizon_h']}h (proposed thresholds): "
+            f"**{verdict}**",
+            "",
+            f"- policy: {gate['policy']}",
+            f"- metrics: {gate['metrics']}",
+        ]
+        lines += [f"- failed: {failure}" for failure in gate["failures"]]
+        lines.append("")
     lines.append(
         "Research benchmark only; not an operational warning. CLIPER is a "
         "damped-persistence proxy, not operational CLIPER5."
@@ -88,6 +115,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--years", type=_years, default=(1980, 2024))
     parser.add_argument("--epochs", type=int, help="override training.epochs")
+    gate = parser.add_argument_group("promotion gate (proposed defaults)")
+    gate.add_argument("--gate-horizon", type=int, default=72)
+    gate.add_argument("--max-error-km", type=float, default=550.0)
+    gate.add_argument("--min-coverage", type=float, default=0.75)
+    gate.add_argument("--max-persistence-ratio", type=float, default=0.9)
     args = parser.parse_args(argv)
 
     raw_csv = args.data_root / "raw/downloads/ibtracs/ibtracs-wp.csv"
@@ -133,6 +165,18 @@ def main(argv: list[str] | None = None) -> int:
         "history": result["history"],
         "evaluation": result["evaluation"],
         "manifest": str(result["manifest"]),
+    }
+    policy = PromotionPolicy(
+        max_mean_error_km=args.max_error_km,
+        min_calibration_coverage=args.min_coverage,
+        max_persistence_error_ratio=args.max_persistence_ratio,
+    )
+    metrics = promotion_metrics(result["evaluation"], horizon_h=args.gate_horizon)
+    summary["promotion_gate"] = {
+        "horizon_h": args.gate_horizon,
+        "policy": vars(policy),
+        "metrics": {k: round(v, 3) for k, v in metrics.items()},
+        "failures": policy.failures(metrics),
     }
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / "benchmark.json").write_text(

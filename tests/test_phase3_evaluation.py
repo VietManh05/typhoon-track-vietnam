@@ -169,3 +169,25 @@ def test_run_training_exports_best_epoch_weights_not_last(tmp_path) -> None:
     for key, value in best["model_state_dict"].items():
         assert torch.equal(exported[key], value), key
     assert result["best_epoch"] == best["epoch"]
+
+
+def test_run_training_calibrates_cone_on_validation_and_reports_test_coverage(
+    tmp_path,
+) -> None:
+    config = _config(tmp_path)
+    config.uncertainty.coverage = 0.7
+    frame = generate_synthetic_catalogue(n_storms=12, n_fixes=24, seed=3)
+    result = run_training(config, output_dir=tmp_path / "run", frame=frame)
+
+    manifest = json.loads(result["manifest"].read_text())
+    radii = [manifest["validation_radius_km"][str(h)] for h in HORIZONS_H]
+    assert all(r > 0 for r in radii) and radii == sorted(radii)
+    assert "validation" in manifest["uncertainty_method"]
+    assert "70%" in manifest["uncertainty_method"]
+
+    cone = result["evaluation"]["cone"]
+    assert cone["coverage_target"] == 0.7
+    assert cone["calibration_split"] == "val"
+    assert [float(cone["radius_km"][str(h)]) for h in HORIZONS_H] == radii
+    assert set(map(int, cone["test_coverage"])) == set(HORIZONS_H)
+    assert all(0.0 <= v <= 1.0 for v in cone["test_coverage"].values())

@@ -18,13 +18,15 @@ from typhoon_vn.datasets.typhoon_dataset import (
     collate_fn,
     split_by_storm_or_year,
 )
+from typhoon_vn.evaluation.backtest import backtest_catalogue
 from typhoon_vn.features.build import FEATURE_COLUMNS, FeatureBuilder
 from typhoon_vn.features.scaling import FeatureScaler
+from typhoon_vn.models.baselines import CLIPERForecaster, PersistenceForecaster
 from typhoon_vn.models.lstm import LSTMTrackForecaster
 from typhoon_vn.training.config_loader import PipelineConfig, load_config
 from typhoon_vn.training.experiment import ExperimentTracker
 from typhoon_vn.training.losses import MultiHorizonLoss
-from typhoon_vn.training.pipeline import export_bundle, load_bundle
+from typhoon_vn.training.pipeline import export_bundle, load_bundle, position_stats
 from typhoon_vn.training.reproducibility import seed_worker, set_global_determinism
 from typhoon_vn.training.trainer import Trainer, TrainingConfig
 
@@ -104,6 +106,8 @@ def run_training(
         "hidden_size": config.model.hidden_size,
         "num_layers": config.model.num_layers,
         "dropout": config.model.dropout,
+        # Predict displacement from the last fix (physical degrees).
+        **position_stats(scaler),
     }
     model = LSTMTrackForecaster(**model_config)
     loss = MultiHorizonLoss(
@@ -152,6 +156,13 @@ def run_training(
         synthetic=dataset_version.startswith("synthetic"),
     )
     load_bundle(manifest)
+    evaluation = _evaluate_test_split(
+        model, test, dataset_config, scaler, n_classes=train_ds.n_classes
+    )
+    if evaluation is not None:
+        (output_dir / "evaluation.json").write_text(
+            json.dumps(evaluation, indent=2), encoding="utf-8"
+        )
     tracker = ExperimentTracker(
         output_dir,
         name=config.experiment.name,
@@ -175,10 +186,20 @@ def run_training(
             )
         tracker.log_artifact(manifest)
         tracker.log_artifact(manifest.parent / "split-manifest.json")
+        if evaluation is not None:
+            for name, rows in evaluation["models"].items():
+                tracker.log_metrics(
+                    {
+                        f"test_{name}_err_km_{row['horizon_h']}h": row["mean_error_km"]
+                        for row in rows
+                    }
+                )
+            tracker.log_artifact(output_dir / "evaluation.json")
     result_payload = {
         "history": result["history"],
         "manifest": str(manifest),
         "run_id": tracker.run_id,
+        "evaluation": evaluation,
     }
     (output_dir / "result.json").write_text(
         json.dumps(result_payload, indent=2), encoding="utf-8"
@@ -188,6 +209,65 @@ def run_training(
         "history": result["history"],
         "split": split_manifest,
         "run_id": tracker.run_id,
+        "evaluation": evaluation,
+    }
+
+
+_SUMMARY_FIELDS = (
+    "horizon_h",
+    "mean_error_km",
+    "median_error_km",
+    "rmse_km",
+    "p90_km",
+    "mean_along_track_error_km",
+    "mean_cross_track_error_km",
+    "n_forecasts",
+)
+
+
+def _evaluate_test_split(
+    model: torch.nn.Module,
+    test: pd.DataFrame,
+    dataset_config: DatasetConfig,
+    scaler: FeatureScaler,
+    *,
+    n_classes: int,
+) -> dict[str, Any] | None:
+    """Score the trained model and motion baselines on the held-out test storms.
+
+    The LSTM sees train-fitted scaled features; the baselines need raw lat/lon
+    in the first two feature columns, so they run without the scaler.
+    """
+
+    if test.empty:
+        return None
+    steps = list(dataset_config.horizon)
+    candidates = {
+        "lstm": (model, scaler),
+        "persistence": (
+            PersistenceForecaster(len(steps), n_classes, horizon_steps=steps),
+            None,
+        ),
+        "cliper": (
+            CLIPERForecaster(len(steps), n_classes, horizon_steps=steps),
+            None,
+        ),
+    }
+    models: dict[str, list[dict[str, Any]]] = {}
+    for name, (candidate, candidate_scaler) in candidates.items():
+        _, summary = backtest_catalogue(
+            candidate, test, config=dataset_config, scaler=candidate_scaler
+        )
+        if summary.empty:
+            return None
+        models[name] = [
+            {field: row[field] for field in _SUMMARY_FIELDS}
+            for row in json.loads(summary.to_json(orient="records"))
+        ]
+    return {
+        "split": "test",
+        "n_storms": int(test["storm_id"].nunique()),
+        "models": models,
     }
 
 

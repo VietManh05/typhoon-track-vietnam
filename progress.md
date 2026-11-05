@@ -119,3 +119,15 @@
   - `tests/test_phase3_management.py` cần `training.cross_validation`, `training.registry`, `training.tuning` (G14/G15).
 - Lỗi `DEBUG=release` trong báo cáo 19/09 không tái hiện trong môi trường sạch (cần `env -u DEBUG` nếu shell có biến này).
 - Next Step: chốt Phase 3 (G07/G08/G12), rồi dữ liệu IBTrACS thật.
+
+## 2026-11-05 — Phase 3: sửa toạ độ dự báo, đánh giá test split
+
+- BUG (critical): `TyphoonDataset` scale cả `lat/lon` trước khi lấy target, nên LSTM học và `predict_bundle` trả về toạ độ đã chuẩn hoá (~0°, 0°) như độ thật. Range check không bắt được.
+  - Sửa: target luôn lấy từ giá trị vật lý trước khi scale.
+  - LSTM nhận `position_mean/position_scale` (thống kê scaler của lat/lon) và dự báo độ dịch chuyển từ vị trí cuối; output là độ thật.
+  - Bundle bắt buộc có hai khoá này và phải khớp `scaler.json`; bundle cũ bị từ chối (fail closed). Checkpoint cũ `checkpoints/best_model_epoch53_loss0.0185.pth` không tương thích.
+- `backtest_storm/backtest_catalogue` nhận `scaler`.
+- `run_training` chấm LSTM, persistence, CLIPER-proxy trên test split; ghi `evaluation.json` và log metric `test_<model>_err_km_<h>h`.
+- Synthetic 60 bão, 30 epoch (early stop 12), 6 bão test, mean km 6/12/24/48/72h: LSTM 8/8/12/20/29; persistence 1/2/5/13/23; CLIPER 1/3/8/22/38. Synthetic, không phải bằng chứng skill.
+- pytest 126 passed; flake8/isort/black pass.
+- Next Step: bước 4, IBTrACS WP thật.

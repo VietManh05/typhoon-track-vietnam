@@ -49,6 +49,11 @@ class LSTMTrackForecaster(TrackForecaster):
 
     A single LSTM reads the input window and a fully-connected head emits
     ``n_horizons`` lat/lon pairs plus intensity logits.
+
+    When ``position_mean``/``position_scale`` (the train-fitted scaler
+    statistics of input features 0 and 1, i.e. lat/lon) are given, the head
+    predicts a displacement in degrees from the last observed position and
+    ``reg`` is that position plus the displacement, in physical degrees.
     """
 
     def __init__(
@@ -59,8 +64,24 @@ class LSTMTrackForecaster(TrackForecaster):
         hidden_size: int = 128,
         num_layers: int = 2,
         dropout: float = 0.2,
+        position_mean: list[float] | None = None,
+        position_scale: list[float] | None = None,
     ) -> None:
         super().__init__()
+        if (position_mean is None) != (position_scale is None):
+            raise ValueError("position_mean and position_scale must be set together")
+        self.residual = position_mean is not None
+        if self.residual:
+            if len(position_mean) != 2 or len(position_scale) != 2:
+                raise ValueError("position statistics must hold lat and lon")
+            if min(position_scale) <= 0:
+                raise ValueError("position_scale must be positive")
+            self.register_buffer(
+                "position_mean", torch.tensor(position_mean, dtype=torch.float32)
+            )
+            self.register_buffer(
+                "position_scale", torch.tensor(position_scale, dtype=torch.float32)
+            )
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self._n_horizons = n_horizons
@@ -83,6 +104,11 @@ class LSTMTrackForecaster(TrackForecaster):
         # x: (B, T, F)
         context = self.encode(x, mask)  # (B, hidden_size)
         reg = self.reg_head(context).view(-1, self.n_horizons, 2)
+        if self.residual:
+            _, lengths = _validate_sequence(x, mask)
+            last = _last_valid(x[..., :2], lengths)  # scaled lat/lon
+            anchor = last * self.position_scale + self.position_mean
+            reg = anchor.unsqueeze(1) + reg
         cls = self.cls_head(context).view(-1, self.n_horizons, self.n_classes)
         wind = self.wind_head(context).view(-1, self.n_horizons, 1)
         pressure = self.pressure_head(context).view(-1, self.n_horizons, 1)

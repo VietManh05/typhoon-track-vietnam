@@ -15,7 +15,7 @@ from typhoon_vn.inference.service import TyphoonForecaster
 from typhoon_vn.models.lstm import LSTMTrackForecaster
 from typhoon_vn.operations.store import Store
 from typhoon_vn.settings import Settings
-from typhoon_vn.training.pipeline import export_bundle
+from typhoon_vn.training.pipeline import export_bundle, position_stats
 
 
 def fixes(*, stale: bool = False, future: bool = False):
@@ -50,6 +50,7 @@ def bundle_path(tmp_path):
         "hidden_size": 8,
         "num_layers": 1,
         "dropout": 0.0,
+        **position_stats(scaler),
     }
     model = LSTMTrackForecaster(**config)
     for parameter in model.parameters():

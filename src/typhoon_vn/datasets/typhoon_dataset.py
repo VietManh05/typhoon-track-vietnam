@@ -88,6 +88,13 @@ class TyphoonDataset(torch.utils.data.Dataset):
 
         # Explicit custom lists are selected from this same transformed frame.
 
+        # Targets are always physical units (degrees), even when lat/lon are also
+        # scaled input features; serving returns model output as coordinates.
+        missing_targets = [c for c in self.config.target_cols if c not in df.columns]
+        if missing_targets:
+            raise ValueError(f"Target columns missing from frame: {missing_targets}")
+        targets = df[list(self.config.target_cols)].to_numpy(dtype=np.float32)
+
         if self.scaler is not None:
             if not self.scaler.is_fitted:
                 raise ValueError("dataset scaler must be fitted on training data")
@@ -100,6 +107,7 @@ class TyphoonDataset(torch.utils.data.Dataset):
             raise ValueError(f"Feature columns missing from frame: {missing}")
 
         for storm_id, group in df.groupby(self.schema.storm_id, sort=False):
+            frame_rows = group.index.to_numpy()
             group = group.reset_index(drop=True)
             total = len(group)
             if group[self.schema.timestamp].duplicated().any():
@@ -141,9 +149,7 @@ class TyphoonDataset(torch.utils.data.Dataset):
                 for position in target_positions:
                     assert position is not None
                     target_row = group.iloc[position]
-                    y_reg_list.append(
-                        [float(target_row[col]) for col in self.config.target_cols]
-                    )
+                    y_reg_list.append(targets[frame_rows[position]].tolist())
                     intensity = str(
                         target_row.get(self.schema.intensity, "UNK")
                     ).upper()

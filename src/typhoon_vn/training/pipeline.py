@@ -77,6 +77,25 @@ def _scaler_from_state(state: dict[str, Any]) -> FeatureScaler:
     return scaler
 
 
+def position_stats(scaler: FeatureScaler) -> dict[str, list[float]]:
+    """Scaler statistics of the lat/lon features the residual LSTM anchors on."""
+
+    if not scaler.is_fitted or scaler.feature_columns[:2] != ["lat", "lon"]:
+        raise ValueError("scaler must be fitted with lat/lon as the first features")
+    return {
+        "position_mean": [float(v) for v in scaler._scaler.mean_[:2]],
+        "position_scale": [float(v) for v in scaler._scaler.scale_[:2]],
+    }
+
+
+def _check_position_stats(constructor: dict[str, Any], scaler: FeatureScaler) -> None:
+    expected = position_stats(scaler)
+    for key, values in expected.items():
+        given = constructor.get(key)
+        if not isinstance(given, list) or not np.allclose(given, values):
+            raise ValueError(f"model {key} does not match the bundle scaler")
+
+
 def export_bundle(
     directory: str | Path,
     model: LSTMTrackForecaster,
@@ -98,6 +117,7 @@ def export_bundle(
     directory.mkdir(parents=True, exist_ok=True)
     if scaler.feature_columns != list(FEATURE_COLUMNS):
         raise ValueError("scaler feature contract does not match FEATURE_COLUMNS")
+    _check_position_stats(model_config, scaler)
     if sorted(map(int, validation_radius_km)) != sorted(horizons_hours):
         raise ValueError("calibration radii must cover every horizon")
 
@@ -192,6 +212,8 @@ def load_bundle(path: str | Path) -> dict[str, Any]:
         "hidden_size",
         "num_layers",
         "dropout",
+        "position_mean",
+        "position_scale",
     }
     if not isinstance(constructor, dict) or set(constructor) != allowed:
         raise ValueError("invalid model constructor schema")
@@ -210,6 +232,7 @@ def load_bundle(path: str | Path) -> dict[str, Any]:
     scaler = _scaler_from_state(scaler_state)
     if scaler.feature_columns != manifest["feature_columns"]:
         raise ValueError("scaler feature columns mismatch")
+    _check_position_stats(constructor, scaler)
     model = LSTMTrackForecaster(**constructor)
     state = torch.load(root / "weights.pt", map_location="cpu", weights_only=True)
     model.load_state_dict(state, strict=True)

@@ -113,6 +113,49 @@ def intensity_table(pred: pd.DataFrame, tracks: pd.DataFrame, methods) -> str:
     return "\n".join(lines)
 
 
+def storm_bootstrap(
+    pred: pd.DataFrame,
+    methods,
+    reference: str,
+    horizon: int = 72,
+    n_boot: int = 5000,
+    seed: int = 0,
+) -> str:
+    """Paired storm-level bootstrap of mean error difference vs ``reference``.
+
+    Forecasts from one storm are correlated, so storms (not windows) are
+    resampled; each storm contributes its mean error at ``horizon``.
+    """
+
+    per_storm = (
+        pred[pred.horizon_h == horizon]
+        .groupby(["storm_id", "method"])["error_km"]
+        .mean()
+        .unstack()
+    )
+    rng = np.random.default_rng(seed)
+    draws = rng.integers(0, len(per_storm), size=(n_boot, len(per_storm)))
+    lines = [
+        f"Reference: {LABELS[reference]}, {horizon} h, {len(per_storm)} test "
+        f"storms, {n_boot} storm-level bootstrap resamples (negative = better "
+        "than the reference).",
+        "",
+        "| method | mean diff (km) | 95% CI | better in % of resamples |",
+        "|---|---:|---:|---:|",
+    ]
+    for method in methods:
+        if method == reference:
+            continue
+        diff = (per_storm[method] - per_storm[reference]).to_numpy()
+        boot = diff[draws].mean(axis=1)
+        low, high = np.percentile(boot, [2.5, 97.5])
+        lines.append(
+            f"| {LABELS[method]} | {diff.mean():+.0f} | [{low:+.0f}, {high:+.0f}] "
+            f"| {np.mean(boot < 0):.0%} |"
+        )
+    return "\n".join(lines)
+
+
 def pick_case_issue(storm_pred: pd.DataFrame) -> str:
     """Issue time whose 72 h verifying position is closest to Vietnam."""
 
@@ -189,6 +232,15 @@ def main(argv: list[str] | None = None) -> int:
     (out / "error_by_intensity.md").write_text(
         "# Sai số 72h theo cường độ lúc phát dự báo (km)\n\n"
         + intensity_table(pred, test_f, methods)
+        + "\n",
+        encoding="utf-8",
+    )
+
+    (out / "significance.md").write_text(
+        "# Paired storm-level bootstrap at 72 h\n\n## vs persistence\n\n"
+        + storm_bootstrap(pred, methods, "persistence")
+        + "\n\n## vs LSTM\n\n"
+        + storm_bootstrap(pred, methods, "lstm")
         + "\n",
         encoding="utf-8",
     )

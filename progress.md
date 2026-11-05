@@ -173,3 +173,11 @@
 - G19: `operations/live.py` đọc NOAA IBTrACS ACTIVE (miễn phí, không key) qua cùng mapping/cleaning khi train; `typhoon-vn worker --ibtracs-active|--snapshot`; service `worker` trong docker-compose (6 h).
 - Chạy thật 2026-11-05: 1 bão WP (IN-FA, WP302026), chỉ 2 điểm trong vùng model, mới nhất 03/11 00Z → không đủ 4 điểm để dự báo, ngoài cửa sổ active 48 h. Độ trễ nguồn là giới hạn thật.
 - pytest 147 passed, 3 skipped.
+
+## 2026-11-05 — So sánh phương pháp cho báo cáo môn AI
+
+- Thêm k-NN analog (case-based, nêu tên bão tương tự), gradient boosting, wrapper residual cho mọi mạng nơ-ron, cửa sổ đánh giá dùng chung, tập con bão ảnh hưởng VN (≤300 km bờ biển).
+- IBTrACS 1980–2024, split theo năm (test 2021–2024, 84 bão; VN 27 bão), 3 seed. 72 h: persistence 676, k-NN 462, GBM 476, LSTM 464±5, Attention-LSTM 473±9, Transformer 468±5 km.
+- Bootstrap theo bão (72 h, 50 bão): mọi phương pháp học tốt hơn persistence có ý nghĩa; k-NN/GBM/Transformer không khác LSTM có ý nghĩa; Attention-LSTM kém hơn (+30 km).
+- Ablation thật: LSTM học tọa độ tuyệt đối 115/121/164/305/473 km (6h kém 3,5×).
+- Báo cáo nháp: `docs/report/README.md` (+ bảng, hình, case YAGI/SAOLA/YINXING/CONSON).

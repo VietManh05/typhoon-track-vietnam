@@ -1,0 +1,34 @@
+# HawkScan DAST config for the FastAPI backend (src/typhoon_vn/api/app.py).
+# Run the API locally first, e.g.:
+#   API_KEY=scan-local-key uvicorn typhoon_vn.api.app:app --port 8000
+# then: SCAN_API_KEY=scan-local-key hawk scan
+app:
+  applicationId: ${APP_ID:5bc8285b-2e7d-4efd-bc4f-cfcccd719b45}
+  env: ${APP_ENV:Development}
+  host: ${APP_HOST:http://127.0.0.1:8000}
+  # FastAPI serves its own accurate spec.
+  openApiConf:
+    path: /openapi.json
+  authentication:
+    # Static key sent as "X-API-Key: <key>" on every request.
+    external:
+      values:
+        - type: TOKEN
+          value:
+            name: X-API-Key
+            val: ${SCAN_API_KEY:scan-local-key}
+    # /alerts is 401 without the key and 200 with it.
+    testPath:
+      path: /alerts
+      success: ".*200.*"
+      requestMethod: GET
+
+tags:
+  - name: _STACKHAWK_AGENT
+    value: ${HAWK_AGENT:none}
+  - name: _STACKHAWK_GIT_COMMIT_SHA
+    value: ${COMMIT_SHA:none}
+  - name: _STACKHAWK_GIT_BRANCH
+    value: ${BRANCH_NAME:none}
+  - name: git_origin
+    value: vietmanh05/typhoon-track-vietnam

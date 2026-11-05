@@ -337,6 +337,25 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
         map.setView([focusLocation.latitude, focusLocation.longitude], 7, { animate: !window.matchMedia("(prefers-reduced-motion: reduce)").matches });
     }, [focusLocation, mapReady]);
 
+    // Picking a storm brings it into view (track + forecast); scrubbing the
+    // timeline keeps the same track, so the view does not jump.
+    useEffect(() => {
+        const map = mapInstanceRef.current;
+        if (!map || !mapReady || !observationsKey) return;
+        const points: L.LatLngTuple[] = [
+            ...observations.map((o) => [o.lat, o.lon] as L.LatLngTuple),
+            ...(forecast?.points ?? []).map((p) => [p.lat, p.lon] as L.LatLngTuple),
+        ];
+        map.fitBounds(L.latLngBounds(points), {
+            // Keep the storm clear of the header (top) and timeline (bottom).
+            paddingTopLeft: [80, 180],
+            paddingBottomRight: [100, 170],
+            maxZoom: 7,
+            animate: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [observationsKey, forecastKey, mapReady]);
+
     useEffect(() => {
         if (!mapReady || !weatherLayerRef.current) return;
         const leaflet = leafletApiRef.current;

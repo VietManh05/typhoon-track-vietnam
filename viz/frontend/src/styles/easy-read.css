@@ -150,28 +150,31 @@ html:not(.light) .timeline-player .btn-primary {
   }
   .immersive-map .map-layer-toolbar,
   .immersive-map:not(.details-is-open) .map-layer-toolbar {
-    top: calc(var(--map-chrome-height, 72px) + 84px);
+    top: calc(var(--map-chrome-height, 72px) + 76px);
     left: 16px;
     width: auto;
     max-width: none;
-    padding: 6px;
+    padding: 4px;
+    border-radius: 12px;
   }
   .immersive-map .map-toolbar-toggle { display: none; }
   .immersive-map .map-toolbar-content,
   .immersive-map .map-toolbar-content[hidden] {
     display: flex !important;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
     gap: 4px;
   }
-  .immersive-map .map-layer-toolbar .segmented { display: flex; flex-direction: column; gap: 4px; }
+  /* One compact row of one-tap layer buttons, so the map keeps its space. */
+  .immersive-map .map-layer-toolbar .segmented { display: flex; flex-direction: row; gap: 2px; padding: 0; }
   .immersive-map .map-layer-toolbar :is(.segmented-item, .chip) {
-    justify-content: flex-start;
-    min-height: 44px;
-    padding: 0 14px;
-    border-radius: 10px;
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 9px;
     font-family: inherit;
-    font-size: 15px;
+    font-size: 14px;
+    white-space: nowrap;
   }
   .immersive-map .map-stage:has(.map-layer-toolbar.is-open) > .map-location-search,
   .immersive-map .map-stage:has(.map-layer-toolbar.is-open) .map-navigation { visibility: visible; }
@@ -186,4 +189,107 @@ html:not(.light) .timeline-player .btn-primary {
   }
   .immersive-map.details-is-open .map-navigation { right: calc(var(--detail-width) + 32px); }
   .immersive-map .map-navigation .map-zoom-group { display: flex; flex-direction: row; }
+}
+
+/* Timeline slider: visible rail, blue fill up to the current step, big thumb. */
+input.timeline-range { height: 32px; cursor: pointer; }
+input.timeline-range::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    rgb(var(--c-primary)) 0 var(--progress, 0%),
+    rgb(var(--c-line) / .28) var(--progress, 0%) 100%);
+}
+input.timeline-range::-webkit-slider-thumb {
+  width: 24px;
+  height: 24px;
+  margin-top: -8px;
+  border: 4px solid rgb(var(--c-surface-1));
+  box-shadow: 0 1px 6px rgb(0 0 0 / .35);
+}
+input.timeline-range::-moz-range-track { height: 8px; border-radius: 999px; background: rgb(var(--c-line) / .28); }
+input.timeline-range::-moz-range-progress { height: 8px; border-radius: 999px; background: rgb(var(--c-primary)); }
+input.timeline-range::-moz-range-thumb { width: 18px; height: 18px; border: 4px solid rgb(var(--c-surface-1)); }
+
+/* ---------- Transparent chrome that stays readable ----------
+   Header, storm strip, timeline and disclaimer float over the map with no
+   card behind them (user preference). A halo in the page colour keeps text
+   legible on any tile; buttons and chips keep their own solid backgrounds. */
+html .immersive-map .map-top-chrome.map-top-chrome,
+html .immersive-map .map-top-chrome header,
+html .immersive-map .storm-strip,
+html .immersive-map .disclaimer-strip {
+  /* !important: earlier theme rules use higher-specificity :is() selectors. */
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.immersive-map :is(.map-top-chrome, .disclaimer-strip, .map-column > .timeline-player)
+  :is(h1, h2, span, time, p, div, a):not(.chip):not(.badge):not(.data-badge) {
+  text-shadow:
+    0 0 2px rgb(var(--c-surface-1)),
+    0 0 6px rgb(var(--c-surface-1)),
+    0 0 12px rgb(var(--c-surface-1) / .9);
+}
+.immersive-map .map-top-chrome .chip { background: rgb(var(--c-surface-1) / .92); }
+
+/* Narrower timeline: sized to its content instead of the full map width. */
+@media (min-width: 768px) {
+  .immersive-map .map-column > .timeline-player {
+    width: min(880px, calc(100vw - 32px));
+    max-width: min(880px, calc(100vw - 32px));
+    right: auto;
+  }
+}
+
+/* Plain header: only Vietnam time (UTC is noise for most readers and
+   collided with map labels once the header became transparent). */
+.immersive-map .header-utc,
+.immersive-map .header-clock-divider { display: none; }
+.immersive-map .header-clocks { background: transparent; border-color: transparent; }
+/* With no backgrounds, keep header clock and disclaimer over the open sea
+   (right side) instead of over the densely labelled land in the centre. */
+@media (min-width: 768px) {
+  .immersive-map .header-clocks { margin-left: auto; margin-right: 12px; }
+  .immersive-map .disclaimer-strip { justify-content: flex-end; padding-right: 24px; }
+}
+
+/* ---------- Frosted (not boxed) chrome ----------
+   Fully transparent text got lost in busy map labels. Keep "no card" (no
+   border, no shadow) but add a light frosted backdrop: the map still shows
+   through, blurred, so text stays readable. Overrides the transparent block. */
+html .immersive-map .map-top-chrome.map-top-chrome,
+html .immersive-map .map-column > .timeline-player,
+html .immersive-map .disclaimer-strip {
+  background: rgb(var(--c-surface-1) / .62) !important;
+  backdrop-filter: blur(12px) saturate(1.1) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html .immersive-map .map-top-chrome.map-top-chrome { border-radius: 16px; }
+html .immersive-map .map-column > .timeline-player { border-radius: 14px; }
+html .immersive-map .disclaimer-strip { width: max-content; margin-left: auto; border-radius: 10px 10px 0 0; padding: 4px 14px; }
+
+/* Map controls: one vertical column on the right edge (like Windy/Google Maps). */
+@media (min-width: 768px) {
+  .immersive-map .map-navigation { flex-direction: column; align-items: flex-end; gap: 8px; }
+  .immersive-map .map-navigation .map-zoom-group { flex-direction: column; }
+}
+
+/* Vietnam clock: large, bold, high-contrast (was small blue monospace). */
+.immersive-map .header-clocks time,
+.immersive-map .header-clocks time.text-primary {
+  color: rgb(var(--c-fg)) !important;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.immersive-map .header-clocks div:not(:has(time)) {
+  color: rgb(var(--c-fg-2));
+  font-size: 13px;
+  font-weight: 650;
 }

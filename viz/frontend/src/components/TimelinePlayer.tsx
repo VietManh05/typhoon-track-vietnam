@@ -152,7 +152,9 @@ export const TimelinePlayer: React.FC<TimelinePlayerProps> = ({
                     onChange={(event) =>
                         onSelectIndex(Number(event.target.value))
                     }
-                    className="min-w-0 flex-1 focus-ring"
+                    className="timeline-range min-w-0 flex-1 focus-ring"
+                    // Filled part of the rail shows how far playback has gone.
+                    style={{ "--progress": `${totalCount > 1 ? (currentIndex / (totalCount - 1)) * 100 : 0}%` } as React.CSSProperties}
                     aria-label={t.aria_timeline_slider}
                     aria-valuetext={`${frame.label} — ${formatted} — ${frame.category}`}
                 />

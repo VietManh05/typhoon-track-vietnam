@@ -299,3 +299,7 @@ html .immersive-map .disclaimer-strip { width: max-content; margin-left: auto; b
 @media (min-width: 768px) {
   .immersive-map .map-column > .timeline-player { bottom: 18px; }
 }
+
+/* No browser focus box around a clicked province polygon (mouse only);
+   keyboard focus keeps its visible ring. */
+.leaflet-interactive:focus:not(:focus-visible) { outline: none; }

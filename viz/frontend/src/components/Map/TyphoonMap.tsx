@@ -9,7 +9,7 @@ import {
     WeatherLocation,
 } from "../../types";
 import { Language, translations } from "../../i18n";
-import { VIETNAM_WEATHER_LOCATIONS } from "../../data/vietnamLocations";
+import { VIETNAM_WEATHER_LOCATIONS, fold } from "../../data/vietnamLocations";
 import { sweptCone } from "../../lib/cone";
 
 // Label-free basemaps: OSM/OpenTopoMap print neighbours in Thai/Chinese and name
@@ -112,6 +112,9 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
     const compareLayerRef = useRef<L.LayerGroup | null>(null);
     const weatherLayerRef = useRef<L.LayerGroup | null>(null);
     const placeLabelsRef = useRef<L.LayerGroup | null>(null);
+    // Province click handlers are bound once at map init; read the latest callback.
+    const onSelectProvinceRef = useRef(onSelectProvince);
+    onSelectProvinceRef.current = onSelectProvince;
 
     // WS6: Separate ref for the active cyclone marker — avoids full layer rebuild on scrub
     const cycloneMarkerRef = useRef<L.Marker | null>(null);
@@ -124,6 +127,8 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
     const [controlsOpen, setControlsOpen] = useState(false);
     const [zoomLevel, setZoomLevel] = useState(6);
     const [islandsData, setIslandsData] = useState<any[]>([]);
+    // Province polygon centroids keyed by folded name, for label placement.
+    const [provinceCentroids, setProvinceCentroids] = useState<Record<string, [number, number]>>({});
     const [mapReady, setMapReady] = useState(false);
     const [mapProvider, setMapProvider] = useState<"loading" | "windy" | "leaflet">(
         WINDY_API_KEY ? "loading" : "leaflet",
@@ -217,15 +222,18 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                     if (cancelled || !mapInstanceRef.current) return;
                     provincesLayerRef.current?.clearLayers();
                     provincesLayerRef.current?.addData(geojson);
+                    setProvinceCentroids(Object.fromEntries(
+                        (geojson.features ?? []).map((f: any) => [fold(String(f.properties?.name ?? "")), f.properties?.centroid]),
+                    ));
                     provincesLayerRef.current?.eachLayer((layer: any) => {
                         const props = layer.feature?.properties;
                         if (!props) return;
-                        layer.bindTooltip(props.name, {
+                        layer.bindTooltip(String(props.name).replace(/(\p{Ll})(\p{Lu})/gu, "$1 $2"), {
                             permanent: false,
                             direction: "center",
                             className: "tvn-tooltip",
                         });
-                        layer.on("click", () => onSelectProvince(props.id));
+                        layer.on("click", () => onSelectProvinceRef.current(props.id));
                     });
                 })
                 .catch((error) =>
@@ -327,9 +335,17 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
         for (const [lat, lon, vi, en, kind] of REGION_LABELS) label(lat, lon, lang === "vi" ? vi : en, kind);
         if (showProvinceNames) {
             // Sit below the weather bubble that shares the same point.
-            for (const place of VIETNAM_WEATHER_LOCATIONS) label(place.latitude, place.longitude, place.name, "province", -24);
+            for (const place of VIETNAM_WEATHER_LOCATIONS) {
+                // Label at the province's area centre, not its capital: capitals
+                // such as Vinh sit on a border and read as the neighbour's name.
+                const centre = provinceCentroids[fold(place.name)];
+                // Near the capital the weather bubble would cover it: sit below the bubble.
+                const nearBubble = !centre || Math.hypot(centre[0] - place.latitude, centre[1] - place.longitude) < 0.35;
+                if (nearBubble) label(place.latitude, place.longitude, place.name, "province", -24);
+                else label(centre[0], centre[1], place.name, "province");
+            }
         }
-    }, [mapReady, lang, showProvinceNames]);
+    }, [mapReady, lang, showProvinceNames, provinceCentroids]);
 
     useEffect(() => {
         if (!focusLocation || !mapInstanceRef.current) return;

@@ -12,11 +12,11 @@ if (out/"task_catalog.json").exists():
     raise SystemExit("Refuse to regenerate an existing plan; preserve task statuses.")
 history=out/"history/2026-09-18-before-replan"
 history.mkdir(parents=True,exist_ok=True)
-for name in ("task_plan.md","findings.md","progress.md"):
+for name in ("docs/planning/task_plan.md","docs/planning/findings.md","docs/planning/progress.md"):
     target=history/name
     if (root/name).exists() and not target.exists():
         shutil.copy2(root/name,target)
-source=root/"ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md"
+source=root/"docs/planning/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md"
 source_hash=hashlib.sha256(source.read_bytes()).hexdigest()
 lines=source.read_text(encoding="utf-8").splitlines()
 records=[]

@@ -8,12 +8,15 @@ from uuid import uuid4
 
 from sqlalchemy import (
     Column,
+    Float,
+    Index,
     Integer,
     MetaData,
     String,
     Table,
     Text,
     create_engine,
+    func,
     insert,
     select,
 )
@@ -32,6 +35,11 @@ observations = Table(
     Column("storm_id", String(80), primary_key=True),
     Column("timestamp", String(40), primary_key=True),
     Column("payload", Text, nullable=False),
+    # Positions duplicated from the payload for spatial queries (migration 0002).
+    # On PostGIS a generated geography column ``geog`` + GIST index also exist.
+    Column("lat", Float),
+    Column("lon", Float),
+    Index("ix_observations_storm_time", "storm_id", "timestamp"),
 )
 forecasts = Table(
     "forecasts",
@@ -77,6 +85,13 @@ class Store:
         from typhoon_vn.operations.migrations import upgrade
 
         upgrade(self.engine)
+        self.spatial_backend = "python"
+        if self.engine.dialect.name == "postgresql":
+            from sqlalchemy import inspect
+
+            columns = inspect(self.engine).get_columns("observations")
+            if any(column["name"] == "geog" for column in columns):
+                self.spatial_backend = "postgis"
 
     def upsert_observations(self, batch):
         # SQL upserts are atomic across API/worker processes.
@@ -96,11 +111,17 @@ class Store:
                     storm_id=batch.storm_id,
                     timestamp=fix.timestamp.isoformat(),
                     payload=fix.model_dump_json(),
+                    lat=fix.lat,
+                    lon=fix.lon,
                 )
                 conn.execute(
                     statement.on_conflict_do_update(
                         index_elements=["storm_id", "timestamp"],
-                        set_={"payload": fix.model_dump_json()},
+                        set_={
+                            "payload": fix.model_dump_json(),
+                            "lat": fix.lat,
+                            "lon": fix.lon,
+                        },
                     )
                 )
 
@@ -119,22 +140,125 @@ class Store:
             )
         return [Fix.model_validate_json(row) for row in rows]
 
-    def active(self, hours=48):
-        threshold = datetime.now(timezone.utc) - timedelta(hours=hours)
+    def storms_near(self, lat, lon, radius_km, max_age_hours=48):
+        """Storms whose latest fix (within ``max_age_hours``) lies within
+        ``radius_km`` of a point, nearest first. Uses PostGIS ``ST_DWithin`` on
+        the geography column when available, else haversine in Python."""
+
+        from sqlalchemy import text
+
+        since = (
+            datetime.now(timezone.utc) - timedelta(hours=max_age_hours)
+        ).isoformat()
         with self.engine.connect() as conn:
-            entries = conn.execute(select(storms)).mappings().all()
-        results = []
-        for entry in entries:
-            track = self.track(entry["id"])
-            if track and track[-1].timestamp >= threshold:
-                results.append(
+            if self.spatial_backend == "postgis":
+                rows = conn.execute(
+                    text(
+                        """
+                        WITH latest AS (
+                            SELECT DISTINCT ON (storm_id) storm_id, timestamp,
+                                   lat, lon, geog
+                            FROM observations
+                            WHERE timestamp >= :since AND geog IS NOT NULL
+                            ORDER BY storm_id, timestamp DESC
+                        ), point AS (
+                            SELECT ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography
+                                AS g
+                        )
+                        SELECT storm_id, timestamp, lat, lon,
+                               ST_Distance(latest.geog, point.g) / 1000.0 AS km
+                        FROM latest, point
+                        WHERE ST_DWithin(latest.geog, point.g, :meters)
+                        ORDER BY km
+                        """
+                    ),
                     {
-                        **dict(entry),
-                        "latest": track[-1].model_dump(mode="json"),
-                        "observation_count": len(track),
-                    }
+                        "since": since,
+                        "lat": lat,
+                        "lon": lon,
+                        "meters": radius_km * 1000,
+                    },
+                ).all()
+                found = [(r.storm_id, r.timestamp, r.lat, r.lon, r.km) for r in rows]
+            else:
+                from typhoon_vn.features.geo import haversine_km
+
+                last = (
+                    select(
+                        observations.c.storm_id,
+                        func.max(observations.c.timestamp).label("last"),
+                    )
+                    .where(observations.c.timestamp >= since)
+                    .group_by(observations.c.storm_id)
+                    .subquery()
                 )
-        return results
+                rows = conn.execute(
+                    select(
+                        observations.c.storm_id,
+                        observations.c.timestamp,
+                        observations.c.lat,
+                        observations.c.lon,
+                    ).join(
+                        last,
+                        (observations.c.storm_id == last.c.storm_id)
+                        & (observations.c.timestamp == last.c.last),
+                    )
+                ).all()
+                found = []
+                for r in rows:
+                    if r.lat is None or r.lon is None:
+                        continue
+                    km = haversine_km(lat, lon, r.lat, r.lon)
+                    if km <= radius_km:
+                        found.append((r.storm_id, r.timestamp, r.lat, r.lon, km))
+                found.sort(key=lambda item: item[4])
+        return [
+            {
+                "storm_id": storm_id,
+                "timestamp": timestamp,
+                "lat": float(p_lat),
+                "lon": float(p_lon),
+                "distance_km": round(float(km), 1),
+            }
+            for storm_id, timestamp, p_lat, p_lon, km in found
+        ]
+
+    def active(self, hours=48):
+        from typhoon_vn.api.schemas import Fix
+
+        # Timestamps are stored as UTC isoformat strings, so they sort as text.
+        threshold = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+        latest = (
+            select(
+                observations.c.storm_id,
+                func.max(observations.c.timestamp).label("last"),
+                func.count().label("n"),
+            )
+            .group_by(observations.c.storm_id)
+            .having(func.max(observations.c.timestamp) >= threshold)
+            .subquery()
+        )
+        query = (
+            select(storms.c.id, storms.c.name, latest.c.n, observations.c.payload)
+            .join(latest, latest.c.storm_id == storms.c.id)
+            .join(
+                observations,
+                (observations.c.storm_id == latest.c.storm_id)
+                & (observations.c.timestamp == latest.c.last),
+            )
+            .order_by(storms.c.id)
+        )
+        with self.engine.connect() as conn:
+            rows = conn.execute(query).all()
+        return [
+            {
+                "id": row.id,
+                "name": row.name,
+                "latest": Fix.model_validate_json(row.payload).model_dump(mode="json"),
+                "observation_count": row.n,
+            }
+            for row in rows
+        ]
 
     def cached(self, key):
         with self.engine.connect() as conn:
@@ -197,6 +321,58 @@ class Store:
                     .limit(100)
                 ).scalars()
             ]
+
+    def recent_forecasts(self, limit=2000):
+        """Most recently issued forecasts (payload dicts), newest first."""
+
+        with self.engine.connect() as conn:
+            return [
+                json.loads(payload)
+                for payload in conn.execute(
+                    select(forecasts.c.payload)
+                    .order_by(forecasts.c.issue_time.desc())
+                    .limit(limit)
+                ).scalars()
+            ]
+
+    def pending_alerts(self, limit=500):
+        """Alert drafts not yet delivered or given up on, oldest first.
+
+        Status lives in the JSON payload, so filter while streaming instead of
+        applying LIMIT first: old delivered/failed rows must not hide new drafts.
+        """
+
+        drafts = []
+        with self.engine.connect() as conn:
+            rows = conn.execution_options(stream_results=True).execute(
+                select(alerts.c.payload).order_by(alerts.c.created_at)
+            )
+            for payload in rows.scalars():
+                alert = json.loads(payload)
+                if alert.get("status") == "draft":
+                    drafts.append(alert)
+                    if len(drafts) >= limit:
+                        break
+        return drafts
+
+    def update_alert(self, alert_id, fields):
+        from sqlalchemy import update
+
+        with self.lock, self.engine.begin() as conn:
+            payload = conn.execute(
+                select(alerts.c.payload)
+                .where(alerts.c.id == alert_id)
+                .with_for_update()
+            ).scalar()
+            if payload is None:
+                raise KeyError(alert_id)
+            alert = {**json.loads(payload), **fields}
+            conn.execute(
+                update(alerts)
+                .where(alerts.c.id == alert_id)
+                .values(payload=json.dumps(alert))
+            )
+        return alert
 
     def record_alert(self, subscription_id, forecast, subscription, closest):
         import hashlib

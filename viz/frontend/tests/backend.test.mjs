@@ -38,6 +38,7 @@ test("approved model bridge requires exact revision and fresh observations", asy
         });
         if (path === "/typhoons/active") {
             assert.equal(options.headers.get("X-API-Key"), "server-only-key");
+            assert.equal(options.headers.get("X-Client-IP"), "203.0.113.7");
             return Response.json({ typhoons: [{
                 id: "WP012026", name: "Fixture", latest: {
                     timestamp, lat: 15, lon: 120, source: "reviewed-observation",
@@ -46,10 +47,10 @@ test("approved model bridge requires exact revision and fresh observations", asy
         }
         throw new Error(`Unexpected path ${path}`);
     };
-    const feed = await approvedActiveFeed(env, pageUrl);
+    const feed = await approvedActiveFeed(env, pageUrl, "203.0.113.7");
     assert.equal(feed.version.model_version, "approved-v1");
     assert.equal(feed.items[0].id, "WP012026");
-    assert.equal(await approvedActiveFeed({ ...env, TYPHOON_APPROVED_MODEL_REVISION: "b".repeat(64) }, pageUrl), null);
+    assert.equal(await approvedActiveFeed({ ...env, TYPHOON_APPROVED_MODEL_REVISION: "b".repeat(64) }, pageUrl, "203.0.113.7"), null);
 });
 
 test("track bridge returns only a matching approved forecast", async () => {

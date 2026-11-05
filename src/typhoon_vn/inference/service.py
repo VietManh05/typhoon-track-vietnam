@@ -40,6 +40,13 @@ class TyphoonForecaster:
         self.version = (
             self.bundle["manifest"]["version"] if self.bundle else "persistence-v1"
         )
+        # The manifest pins every bundle file's checksum, so its hash names
+        # the exact model build the edge's TYPHOON_APPROVED_MODEL_REVISION approves.
+        self.revision = None
+        if self.bundle:
+            manifest = Path(artifact)
+            manifest = manifest if manifest.is_file() else manifest / "manifest.json"
+            self.revision = hashlib.sha256(manifest.read_bytes()).hexdigest()
         self.kind = "trained-model" if self.bundle else "motion-baseline"
         self.dataset = (
             self.bundle["manifest"]["dataset_version"] if self.bundle else "none"

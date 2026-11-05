@@ -1,12 +1,14 @@
 """Forecast API and bilingual dashboard."""
 
 import hmac
+import ipaddress
 import logging
 import time
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from pathlib import Path
 from threading import RLock
+from uuid import uuid4
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,6 +25,7 @@ from typhoon_vn.api.schemas import (
 )
 from typhoon_vn.features.geo import haversine_km
 from typhoon_vn.inference.service import TyphoonForecaster
+from typhoon_vn.operations.monitoring import verify_forecasts
 from typhoon_vn.operations.store import Store
 from typhoon_vn.operations.worker import evaluate_alerts, update
 from typhoon_vn.settings import Settings, get_settings
@@ -34,12 +37,26 @@ def create_app(
     settings: Settings | None = None, store=None, forecaster=None
 ) -> FastAPI:
     settings = get_settings() if settings is None else settings
-    services = {"store": store, "forecaster": forecaster, "redis": None}
+    services = {"store": store, "forecaster": forecaster}
     lock = RLock()
     # Separate limiter state so unauthenticated public reads can never exhaust
     # the capacity used by key-holding operators and writers.
-    limiters = {"auth": defaultdict(deque), "public": defaultdict(deque)}
-    counters = {"requests": 0, "errors": 0, "forecast_cache_hits": 0}
+    # Edge-forwarded viewers get their own state so a viewer surge can never fill
+    # the operator/writer limiter.
+    limiters = {
+        "auth": defaultdict(deque),
+        "public": defaultdict(deque),
+        "edge": defaultdict(deque),
+    }
+    counters = {
+        "requests": 0,
+        "errors": 0,
+        "forecast_cache_hits": 0,
+        "forecasts_issued": 0,
+    }
+    # Prometheus-style request latency histogram (seconds).
+    buckets = (0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0)
+    latency = {"counts": [0] * (len(buckets) + 1), "sum": 0.0}
 
     def initialize():
         with lock:
@@ -56,15 +73,7 @@ def create_app(
     @asynccontextmanager
     async def lifespan(app):
         initialize()
-        if settings.cache_enabled:
-            import redis
-
-            services["redis"] = redis.Redis.from_url(
-                settings.redis_url, socket_connect_timeout=1, socket_timeout=1
-            )
         yield
-        if services["redis"]:
-            services["redis"].close()
         if store is None and services["store"]:
             services["store"].engine.dispose()
 
@@ -79,7 +88,6 @@ def create_app(
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
-        allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
@@ -87,9 +95,28 @@ def create_app(
     @app.middleware("http")
     async def accounting(request, call_next):
         counters["requests"] += 1
+        request_id = uuid4().hex
+        started = time.perf_counter()
         response = await call_next(request)
+        elapsed = time.perf_counter() - started
+        with lock:
+            latency["sum"] += elapsed
+            index = next(
+                (i for i, edge in enumerate(buckets) if elapsed <= edge), len(buckets)
+            )
+            latency["counts"][index] += 1
         if response.status_code >= 400:
             counters["errors"] += 1
+        # One structured line per request; no query strings or headers (no secrets).
+        logger.info(
+            "request id=%s method=%s path=%s status=%s ms=%.1f",
+            request_id,
+            request.method,
+            request.url.path,
+            response.status_code,
+            elapsed * 1000,
+        )
+        response.headers["X-Request-ID"] = request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["X-Frame-Options"] = "DENY"
@@ -100,7 +127,23 @@ def create_app(
             request.headers.get("X-API-Key", ""), settings.api_key
         ):
             raise HTTPException(401, "Valid X-API-Key required")
-        rate_limit(request, limiters["auth"])
+        # The edge proxies every viewer from a few Cloudflare IPs; trust its
+        # forwarded viewer address only once the key has been verified.
+        viewer = viewer_address(request) if settings.api_key else None
+        if viewer:
+            rate_limit(request, limiters["edge"], viewer)
+        else:
+            rate_limit(request, limiters["auth"])
+
+    def viewer_address(request: Request) -> str | None:
+        """Valid X-Client-IP; IPv6 grouped by /64 so one host cannot fan out."""
+        try:
+            ip = ipaddress.ip_address(request.headers.get("X-Client-IP", "").strip())
+        except ValueError:
+            return None
+        if ip.version == 6:
+            return str(ipaddress.ip_network(f"{ip}/64", strict=False))
+        return str(ip)
 
     def authorize_read(request: Request):
         """Dashboard read routes: public when ``public_read``, always rate limited."""
@@ -109,14 +152,18 @@ def create_app(
         else:
             authorize(request)
 
-    def rate_limit(request: Request, requests: defaultdict) -> None:
+    def rate_limit(
+        request: Request, requests: defaultdict, address: str | None = None
+    ) -> None:
         now = time.monotonic()
-        address = request.client.host if request.client else "local"
+        address = address or (request.client.host if request.client else "local")
         with lock:
-            # Bound cardinality and expire inactive clients.
-            for key in list(requests):
-                if not requests[key] or requests[key][-1] <= now - 60:
-                    del requests[key]
+            # Bound cardinality and expire inactive clients (only when large,
+            # so a normal request does not scan every client).
+            if len(requests) > 1000:
+                for key in list(requests):
+                    if not requests[key] or requests[key][-1] <= now - 60:
+                        del requests[key]
             if address not in requests and len(requests) >= 10000:
                 raise HTTPException(429, "Rate limiter at capacity")
             window = requests[address]
@@ -156,6 +203,7 @@ def create_app(
         return {
             "version": __version__,
             "model_version": service.version,
+            "model_revision": service.revision,
             "model_kind": service.kind,
             "dataset_version": service.dataset,
         }
@@ -164,12 +212,37 @@ def create_app(
         "/metrics", response_class=PlainTextResponse, dependencies=[Depends(authorize)]
     )
     def metrics():
-        return (
-            "\n".join(
-                f"typhoon_{name}_total {value}" for name, value in counters.items()
+        lines = []
+        for name, value in counters.items():
+            lines.append(f"# TYPE typhoon_{name}_total counter")
+            lines.append(f"typhoon_{name}_total {value}")
+        lines.append("# TYPE typhoon_http_request_duration_seconds histogram")
+        with lock:
+            cumulative = 0
+            for edge, count in zip((*buckets, "+Inf"), latency["counts"]):
+                cumulative += count
+                lines.append(
+                    f'typhoon_http_request_duration_seconds_bucket{{le="{edge}"}} '
+                    f"{cumulative}"
+                )
+            lines.append(
+                f"typhoon_http_request_duration_seconds_sum {latency['sum']:.6f}"
             )
-            + "\n"
-        )
+            lines.append(f"typhoon_http_request_duration_seconds_count {cumulative}")
+        # Live skill: issued forecasts verified against later observations.
+        report = verify_forecasts(db())
+        for gauge, key in (
+            ("forecast_verified", "n"),
+            ("forecast_error_km_mean", "mean_error_km"),
+            ("forecast_cone_coverage", "cone_coverage"),
+        ):
+            lines.append(f"# TYPE typhoon_{gauge} gauge")
+            for row in report["horizons"]:
+                if row[key] is not None:
+                    lines.append(
+                        f'typhoon_{gauge}{{horizon_h="{row["horizon_h"]}"}} {row[key]}'
+                    )
+        return "\n".join(lines) + "\n"
 
     def compute(body):
         service = initialize()["forecaster"]
@@ -195,17 +268,9 @@ def create_app(
             result = service.forecast(body)
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
+        counters["forecasts_issued"] += 1
         db().save_forecast(result)
         evaluate_alerts(db(), result.model_dump(mode="json"))
-        if services["redis"]:
-            try:
-                services["redis"].setex(
-                    "forecast:" + key, 1800, result.model_dump_json()
-                )
-            except Exception:
-                logger.warning(
-                    "Redis unavailable; durable database cache remains active"
-                )
         return result
 
     @app.post(
@@ -218,17 +283,40 @@ def create_app(
     def active():
         return {"typhoons": db().active(), "disclaimer": DISCLAIMER}
 
+    @app.get("/typhoons/near", dependencies=[Depends(authorize_read)])
+    def near(lat: float, lon: float, radius_km: float = 500.0):
+        """Active storms whose latest fix is within ``radius_km`` of a point."""
+
+        if not -90 <= lat <= 90 or not -180 <= lon <= 180:
+            raise HTTPException(422, "Invalid location coordinates")
+        if not 0 < radius_km <= 2000:
+            raise HTTPException(422, "radius_km must be in (0, 2000]")
+        store = db()
+        return {
+            "location": {"lat": lat, "lon": lon},
+            "radius_km": radius_km,
+            "spatial_backend": store.spatial_backend,
+            "typhoons": store.storms_near(lat, lon, radius_km),
+            "disclaimer": DISCLAIMER,
+        }
+
     @app.get("/typhoons/{storm_id}/track", dependencies=[Depends(authorize_read)])
     def track(storm_id: str):
         fixes = db().track(storm_id)
         if not fixes:
             raise HTTPException(404, "Storm not found")
+        forecast, reason = None, None
+        if len(fixes) > 1:
+            try:
+                forecast = compute(ForecastRequest(storm_id=storm_id))
+            except HTTPException as exc:
+                # Observations are still worth showing when no forecast is possible.
+                reason = exc.detail
         return {
             "storm_id": storm_id,
             "observations": fixes,
-            "forecast": (
-                compute(ForecastRequest(storm_id=storm_id)) if len(fixes) > 1 else None
-            ),
+            "forecast": forecast,
+            "forecast_unavailable": reason,
         }
 
     @app.get("/typhoons/{storm_id}/impact", dependencies=[Depends(authorize)])

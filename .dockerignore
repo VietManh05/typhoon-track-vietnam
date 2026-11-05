@@ -11,3 +11,17 @@ data/external
 checkpoints
 mlruns
 mlartifacts
+.env.*
+!.env.example
+runs
+data/operational
+*.db
+*.pt
+*.pth
+*.npz
+.pytest-local
+.pytest_tmp*
+.playwright-mcp
+.wrangler
+viz/frontend/node_modules
+viz/frontend/dist

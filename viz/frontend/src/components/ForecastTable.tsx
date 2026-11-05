@@ -35,13 +35,13 @@ export const ForecastTable: React.FC<ForecastTableProps> = ({
                         {t.forecast_table}
                     </h2>
                 </div>
-                <time className="font-mono text-[10px] text-fg-muted">
+                <time className="font-mono text-2xs text-fg-muted">
                     {formatShortDateTime(forecast.issue_time, lang)}
                 </time>
             </div>
             <div className="forecast-table-wrap p-2 pt-1">
                 <table
-                    className="forecast-table w-full table-fixed border-collapse text-left font-mono text-[10px]"
+                    className="forecast-table w-full table-fixed border-collapse text-left font-mono text-2xs"
                     aria-label={t.aria_forecast_table}
                 >
                     <colgroup>
@@ -124,7 +124,7 @@ export const ForecastTable: React.FC<ForecastTableProps> = ({
                     </tbody>
                 </table>
             </div>
-            <p className="border-t border-line px-4 py-2 font-mono text-[10px] italic text-fg-faint">
+            <p className="border-t border-line px-4 py-2 font-mono text-2xs italic text-fg-faint">
                 * {forecast.uncertainty_method}
             </p>
         </section>

@@ -63,3 +63,7 @@ data/operational/*.db
 runs/
 .playwright-mcp/
 .wrangler/
+
+# Personal editor / AI-tool configuration (kept locally, not part of the project)
+.agent/
+.grapuco/

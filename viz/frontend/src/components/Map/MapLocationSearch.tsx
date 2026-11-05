@@ -45,6 +45,8 @@ export function MapLocationSearch({ lang, locations, onSelect }: Props) {
                 <input
                     id="map-location-query"
                     type="search"
+                    role="combobox"
+                    aria-autocomplete="list"
                     autoComplete="off"
                     value={query}
                     placeholder={vi ? "Tìm địa điểm thời tiết..." : "Find a weather location..."}

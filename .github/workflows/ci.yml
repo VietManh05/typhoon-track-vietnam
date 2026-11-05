@@ -32,7 +32,6 @@ jobs:
           --health-timeout 5s
           --health-retries 20
     env:
-      PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
       TEST_POSTGRES_URL: postgresql+psycopg://typhoon:typhoon@localhost:5432/typhoon
     steps:
       - uses: actions/checkout@v4
@@ -46,6 +45,8 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
+          # torch alone from the PyTorch CPU index; the rest only from PyPI.
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.4,<3"
           python -m pip install -e ".[api,train,ingestion,dev]"
           python -m pip check
 

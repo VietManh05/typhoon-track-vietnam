@@ -14,13 +14,13 @@ Phase 2 — Kiểm chứng nền tảng và dữ liệu (complete); không có t
 
 ## Nơi lưu kế hoạch
 
-- [Chỉ mục](docs/planning/README.md): 635 task WBS, 24 task bổ sung, 28 tiêu chí nghiệm thu.
-- [14 việc làm ngay](docs/planning/next_tasks.md): lát cắt đầu tiên, không cộng trùng phạm vi.
-- [Quy tắc thực thi và gate](docs/planning/execution_policy.md).
-- [Đối chiếu 818 checkbox nguồn](docs/planning/traceability.md).
-- [Task bổ sung](docs/planning/supplemental_tasks.md).
-- [Task catalog](docs/planning/task_catalog.json): chỉ mục để kiểm tra coverage.
-- [Kế hoạch cũ được lưu](docs/planning/history/2026-09-18-before-replan/task_plan.md).
+- [Chỉ mục](README.md): 635 task WBS, 24 task bổ sung, 28 tiêu chí nghiệm thu.
+- [14 việc làm ngay](next_tasks.md): lát cắt đầu tiên, không cộng trùng phạm vi.
+- [Quy tắc thực thi và gate](execution_policy.md).
+- [Đối chiếu 818 checkbox nguồn](traceability.md).
+- [Task bổ sung](supplemental_tasks.md).
+- [Task catalog](task_catalog.json): chỉ mục để kiểm tra coverage.
+- [Kế hoạch cũ được lưu](history/2026-09-18-before-replan/task_plan.md).
 
 ## Phases
 
@@ -37,7 +37,7 @@ Phase 2 — Kiểm chứng nền tảng và dữ liệu (complete); không có t
 - [x] G00: nền tảng repository và môi trường đã nghiệm thu đủ T00-001–T00-045.
 - [x] G01–G06: nghiệm thu nguồn dữ liệu, địa lý, cleaning và features.
 - [x] S01/S03/S08: bổ sung contract dữ liệu bắt buộc của Phase 2.
-- **Status:** complete — [evidence](docs/planning/evidence/PHASE-2.md)
+- **Status:** complete — [evidence](evidence/PHASE-2.md)
 
 ### Phase 3: Training, đánh giá, uncertainty và registry
 - [x] R10–R12: checkpoint/resume, bundle, CLI smoke.

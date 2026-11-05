@@ -75,7 +75,7 @@ def visit(node):
 for key in graph:
     visit(key)
 link_count = 0
-for md in [root / "task_plan.md", root / "findings.md"] + list(out.glob("*.md")):
+for md in [root / "docs/planning/task_plan.md", root / "docs/planning/findings.md"] + list(out.glob("*.md")):
     text = md.read_text(encoding="utf-8-sig")
     for link in re.findall(r"\]\(([^)]+)\)", text):
         if link.startswith(("http:", "https:", "app:")):

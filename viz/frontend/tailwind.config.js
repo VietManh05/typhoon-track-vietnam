@@ -51,12 +51,12 @@ export default {
         /* Domain scale — WMO / NCHMF storm intensity classes.
            Mapped onto the accent palette so the UI never invents new hues. */
         storm: {
-          td: '#22d3ee', // Tropical Depression
-          ts: '#10b981', // Tropical Storm
-          sts: '#f59e0b', // Severe Tropical Storm
-          ty: '#fb923c', // Typhoon
-          sty: '#f43f5e', // Severe Typhoon
-          superty: '#8b5cf6', // Super Typhoon
+          td: 'rgb(var(--c-storm-td) / <alpha-value>)', // Tropical Depression
+          ts: 'rgb(var(--c-storm-ts) / <alpha-value>)', // Tropical Storm
+          sts: 'rgb(var(--c-storm-sts) / <alpha-value>)', // Severe Tropical Storm
+          ty: 'rgb(var(--c-storm-ty) / <alpha-value>)', // Typhoon
+          sty: 'rgb(var(--c-storm-sty) / <alpha-value>)', // Severe Typhoon
+          superty: 'rgb(var(--c-storm-superty) / <alpha-value>)', // Super Typhoon
         },
       },
 
@@ -66,7 +66,11 @@ export default {
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Consolas', 'monospace'],
       },
       fontSize: {
-        '2xs': ['0.6875rem', { lineHeight: '1rem', letterSpacing: '0.01em' }], // 11px — micro labels
+        // Larger floor than Tailwind defaults so older readers never see < 13px text.
+        '2xs': ['0.8125rem', { lineHeight: '1.15rem', letterSpacing: '0.01em' }], // 13px
+        xs: ['0.875rem', { lineHeight: '1.3rem' }], // 14px
+        sm: ['0.9375rem', { lineHeight: '1.45rem' }], // 15px
+        base: ['1.0625rem', { lineHeight: '1.65rem' }], // 17px
         metric: ['1.75rem', { lineHeight: '1.15', letterSpacing: '-0.02em' }], // 28px — major values
         hero: ['2rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }], // 32px
       },

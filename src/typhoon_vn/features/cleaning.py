@@ -52,16 +52,27 @@ def validate(
     df: pd.DataFrame,
     schema: TrackSchema | None = None,
     report: CleaningReport | None = None,
+    bounds: tuple[float, float, float, float] | None = None,
 ) -> pd.DataFrame:
-    """Drop rows with invalid coordinates or unphysical wind/pressure values."""
+    """Drop rows with invalid coordinates or unphysical wind/pressure values.
+
+    ``bounds`` is ``(lat_min, lat_max, lon_min, lon_max)``; the default is the
+    Vietnam-focused box in :mod:`constants`.
+    """
 
     schema = schema or TrackSchema()
+    lat_min, lat_max, lon_min, lon_max = bounds or (
+        C.LAT_MIN,
+        C.LAT_MAX,
+        C.LON_MIN,
+        C.LON_MAX,
+    )
     out = df.copy()
     before = len(out)
 
     coord_ok = (
-        out[schema.lat].between(C.LAT_MIN, C.LAT_MAX)
-        & out[schema.lon].between(C.LON_MIN, C.LON_MAX)
+        out[schema.lat].between(lat_min, lat_max)
+        & out[schema.lon].between(lon_min, lon_max)
         & out[schema.lat].notna()
         & out[schema.lon].notna()
     )
@@ -180,6 +191,7 @@ def clean_tracks(
     df: pd.DataFrame,
     schema: TrackSchema | None = None,
     report: CleaningReport | None = None,
+    bounds: tuple[float, float, float, float] | None = None,
 ) -> tuple[pd.DataFrame, CleaningReport]:
     """Run the full pipeline and return ``(cleaned_frame, report)``."""
 
@@ -188,7 +200,7 @@ def clean_tracks(
     report.n_input = len(df)
 
     out = coerce_frame(df, schema)
-    out = validate(out, schema, report)
+    out = validate(out, schema, report, bounds=bounds)
     out = deduplicate(out, schema, report)
     out = out.sort_values([schema.storm_id, schema.timestamp]).reset_index(drop=True)
     out = interpolate_missing(out, schema, report)

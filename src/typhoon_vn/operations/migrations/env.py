@@ -8,8 +8,14 @@ from typhoon_vn.operations.store import metadata
 config = context.config
 
 
+# PostGIS-only objects created by migration 0002 outside SQLAlchemy metadata.
+POSTGIS_ONLY = {"geog", "ix_observations_geog"}
+
+
 def include_name(name, type_, parent_names) -> bool:
     # Only manage our own tables (PostGIS images ship TIGER/topology tables).
+    if name in POSTGIS_ONLY:
+        return False
     return type_ != "table" or name in metadata.tables
 
 

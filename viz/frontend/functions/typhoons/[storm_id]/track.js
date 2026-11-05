@@ -17,6 +17,7 @@ export async function onRequestGet({ params, env, request }) {
     if (approved) {
         const response = await backendJson(env, request.url, `/typhoons/${id}/track`, {
             serviceKey: true,
+            clientIp: request.headers.get("CF-Connecting-IP"),
             timeoutMs: 12000,
         });
         const data = response?.data;

@@ -158,6 +158,41 @@ gần bờ biển Việt Nam nhất (trường hợp khó: bão sắp đổ bộ
 
 ![YAGI 2024](figures/case_WP122024.png)
 
+### 5.5 Tối ưu huấn luyện: điều gì thực sự giúp mô hình chính xác hơn
+
+Quy trình: mọi lựa chọn chỉ dựa trên **validation 2017–2020**; tập test 2021–2024
+chạy **một lần**. Đánh giá trên cùng các cửa sổ (bão vùng Việt Nam, đủ 48 h lịch
+sử). Chi tiết: [training_study.md](training_study.md),
+[steering_study.md](steering_study.md).
+
+**(a) Chỉ dùng thông tin quỹ đạo — đã chạm trần.** So với LSTM gốc (val 201 km),
+không thay đổi nào giúp: dữ liệu toàn lưu vực (212), lịch sử 48 h (212), loss
+theo km (203), mạng lớn/nhỏ hơn (206–207), Transformer (207). Ensemble trên test
+chỉ −7,5 km, KTC 95% [−16, +1,5] → không có ý nghĩa.
+
+**(b) Thêm dòng dẫn đường khí quyển — cải thiện có ý nghĩa.** 11 đặc trưng từ
+tái phân tích NCEP/NCAR R1 (miễn phí) tại đúng thời điểm quan trắc: dòng dẫn
+đường lớp sâu trong vành 200–800 km, gió 500 hPa, đứt gió 200–850 hPa, độ cao
+500 hPa và chênh lệch 5° về bốn hướng (vị trí áp cao cận nhiệt).
+
+| Test 2021–2024 (3 seed) | 6h | 12h | 24h | 48h | 72h | TB |
+|---|---:|---:|---:|---:|---:|---:|
+| LSTM chỉ quỹ đạo (gốc) | 32 | 64 | 131 | 286 | 469 | 197 |
+| LSTM + dòng dẫn đường | 30 | 58 | 118 | 270 | 465 | 188 |
+| Transformer + dòng dẫn đường | 30 | 57 | 115 | 265 | 450 | 183 |
+| **Ensemble (LSTM + Transformer) + dòng dẫn đường** | **28** | **54** | **112** | **259** | **443** | **179** |
+
+- Ensemble được chọn trên validation; so với mô hình gốc tại 72 h: **−35 km,
+  KTC 95% [−62, −9]** (bootstrap theo 44 cơn bão) → cải thiện có ý nghĩa thống
+  kê; tại 24 h giảm ~15%, trung bình các mốc giảm ~9%.
+- Gradient boosting + dòng dẫn đường đạt test tốt nhất (TB 176 km) nhưng kém hơn
+  trên validation nên **không được chọn** — giữ đúng quy trình, không chọn theo
+  điểm test.
+- **Hạn chế còn lại:** YAGI 2024 vẫn bị dự báo đổi hướng tây bắc (sai 72 h
+  ~620–670 km với mọi mô hình). Lưới 2,5° và các đặc trưng tóm tắt chưa đủ để mô
+  hình nhận ra áp cao cận nhiệt mạnh trong ca này; hướng tiếp theo là dữ liệu
+  độ phân giải cao hơn (ERA5 0,25°) và đặc trưng dạng ảnh (CNN trên trường gió).
+
 ## 6. Hệ thống demo
 
 - API FastAPI: `/typhoons/active`, `/typhoons/{id}/track` (dự báo + nón),
@@ -180,9 +215,9 @@ gần bờ biển Việt Nam nhất (trường hợp khó: bão sắp đổ bộ
 
 ## 7. Hạn chế và hướng phát triển
 
-- Chỉ dùng đặc trưng quỹ đạo; chưa dùng trường khí quyển (gió tầng 500 hPa,
-  áp cao cận nhiệt) vốn quyết định hướng đi. Bổ sung ERA5 là hướng cải thiện lớn
-  nhất.
+- Mô hình đang phục vụ (website, API) vẫn là LSTM chỉ dùng quỹ đạo. Mô hình
+  có dòng dẫn đường chính xác hơn (mục 5.5) cần dữ liệu khí quyển tại thời điểm
+  dự báo (ví dụ phân tích GFS) để đưa vào vận hành.
 - Nón bất định là đường tròn đẳng hướng; sai số thực tế dọc/ngang quỹ đạo khác
   nhau.
 - Dữ liệu ACTIVE trễ vài ngày; chưa có nguồn bản tin thời gian thực.

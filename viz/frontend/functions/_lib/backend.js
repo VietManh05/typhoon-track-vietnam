@@ -30,6 +30,8 @@ export async function backendJson(env, pageUrl, path, options = {}) {
     const headers = new Headers({ Accept: "application/json" });
     if (options.serviceKey && env?.TYPHOON_BACKEND_API_KEY?.trim()) {
         headers.set("X-API-Key", env.TYPHOON_BACKEND_API_KEY.trim());
+        // Backend rate-limits keyed calls per viewer, not per Cloudflare egress IP.
+        if (options.clientIp) headers.set("X-Client-IP", options.clientIp);
     }
     if (options.clientRequest) {
         for (const name of ["Authorization", "X-API-Key"]) {
@@ -87,12 +89,13 @@ export function freshBackendStorm(item) {
         Number.isFinite(latest?.lon) && latest.lon >= -180 && latest.lon <= 180;
 }
 
-export async function approvedActiveFeed(env, pageUrl) {
+export async function approvedActiveFeed(env, pageUrl, clientIp) {
     const work = (async () => {
         const version = await approvedBackend(env, pageUrl);
         if (!version) return null;
         const response = await backendJson(env, pageUrl, "/typhoons/active", {
             serviceKey: true,
+            clientIp,
         });
         const items = response?.data?.typhoons;
         if (!response?.ok || !Array.isArray(items) || items.length === 0 ||

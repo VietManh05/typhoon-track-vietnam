@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from typhoon_vn.api.schemas import ObservationBatch
 from typhoon_vn.cli import main
 from typhoon_vn.inference.service import TyphoonForecaster
 from typhoon_vn.operations.live import batches_from_ibtracs_csv
@@ -68,8 +69,23 @@ def test_worker_stores_live_batches_and_forecasts(tmp_path) -> None:
     batches = batches_from_ibtracs_csv(_csv(start), source_url="u", checksum="a" * 64)
     store = Store(f"sqlite:///{tmp_path / 'live.db'}")
     run_worker(store, TyphoonForecaster(), source=lambda: batches, once=True)
+    old = ObservationBatch(
+        storm_id="OLD", name="OLD", observations=store.track("WP402026")[:2]
+    )
+    store.upsert_observations(
+        old.model_copy(
+            update={
+                "observations": [
+                    f.model_copy(update={"timestamp": f.timestamp - timedelta(days=5)})
+                    for f in old.observations
+                ]
+            }
+        )
+    )
     active = store.active()
     assert [entry["id"] for entry in active] == ["WP402026"]
+    assert active[0]["observation_count"] == 4
+    assert active[0]["latest"] == store.track("WP402026")[-1].model_dump(mode="json")
     assert len(store.track("WP402026")) == 4
 
 

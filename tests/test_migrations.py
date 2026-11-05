@@ -20,6 +20,8 @@ def _revision(engine) -> str | None:
 
 def _diff(engine) -> list:
     def own_tables(name, type_, parent_names) -> bool:
+        if name in {"geog", "ix_observations_geog"}:  # PostGIS-only (0002)
+            return False
         return type_ != "table" or name in metadata.tables
 
     with engine.connect() as conn:
@@ -38,16 +40,27 @@ def test_fresh_database_is_migrated_to_head(tmp_path) -> None:
 def test_legacy_create_all_database_is_stamped_without_data_loss(tmp_path) -> None:
     url = f"sqlite:///{tmp_path / 'legacy.db'}"
     engine = create_engine(url)
-    metadata.create_all(engine)  # how Store built schemas before Alembic
+    # Recreate the pre-Alembic layout (== revision 0001) without alembic_version,
+    # as Store's old metadata.create_all produced it.
+    upgrade(engine, "0001")
     with engine.begin() as conn:
+        conn.exec_driver_sql("DROP TABLE alembic_version")
         conn.execute(schema_versions.insert().values(version=1))
         conn.exec_driver_sql("INSERT INTO typhoons (id, name) VALUES ('S1', 'Kept')")
+        conn.exec_driver_sql(
+            "INSERT INTO observations (storm_id, timestamp, payload) VALUES "
+            "('S1', '2024-01-01T00:00:00+00:00', '{\"lat\": 15.5, \"lon\": 110.25}')"
+        )
     engine.dispose()
 
     store = Store(url)
     assert _revision(store.engine) == HEAD
     with store.engine.connect() as conn:
         assert conn.exec_driver_sql("SELECT name FROM typhoons").scalar() == "Kept"
+        # 0002 backfills positions from existing JSON payloads.
+        assert conn.exec_driver_sql(
+            "SELECT lat, lon FROM observations WHERE storm_id = 'S1'"
+        ).one() == (15.5, 110.25)
 
 
 def test_upgrade_is_idempotent(tmp_path) -> None:

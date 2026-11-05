@@ -44,7 +44,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
     <article className="metric-tile min-h-[132px]">
         <div className={`mb-2 flex items-center gap-2 ${accent}`}>
             {icon}
-            <h3 className="text-xs font-semibold uppercase tracking-[0.08em] text-fg-muted">
+            <h3 className="text-xs font-semibold text-fg-muted">
                 {label}
             </h3>
         </div>

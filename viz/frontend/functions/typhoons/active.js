@@ -8,7 +8,9 @@ export async function onRequestGet({ env, request }) {
             activeItem(await storm(item.tropicalCyclone)),
         ));
     })().then((typhoons) => ({ typhoons }), () => null);
-    const approved = await approvedActiveFeed(env, request.url);
+    const approved = await approvedActiveFeed(
+        env, request.url, request.headers.get("CF-Connecting-IP"),
+    );
     if (approved) {
         return Response.json(
             { typhoons: approved.items, feedAvailable: true, source: "Typhoon VN backend", modelVersion: approved.version.model_version, disclaimer: approved.disclaimer },

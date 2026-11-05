@@ -69,6 +69,20 @@ def test_analog_with_k1_reuses_the_matching_historical_case() -> None:
     assert explanation[0]["distance"] < 1e-3
 
 
+def test_analog_steering_columns_with_nan_add_no_distance() -> None:
+    windows = _windows()
+    steering = np.random.default_rng(0).normal(size=(*windows.x_raw.shape[:2], 2))
+    steering[::2] = np.nan  # half the library has no reanalysis coverage
+    x_raw = np.concatenate([windows.x_raw, steering], axis=2)
+    model = AnalogForecaster(
+        k=1, weights={"track": 1.0, "position": 1.0, "season": 0.5, "steering": 1.0}
+    ).fit(x_raw, windows.y, windows.storm_ids, windows.issue_times)
+    prediction = model.predict(x_raw[:4])
+    assert np.isfinite(prediction).all()
+    assert np.allclose(prediction, windows.y[:4], atol=1e-4)
+    assert model.explain(x_raw[:1], top=1)[0][0]["distance"] < 1e-3
+
+
 def test_analog_explain_lists_distinct_storms() -> None:
     windows = _windows(n_storms=8)
     model = AnalogForecaster(k=30).fit(

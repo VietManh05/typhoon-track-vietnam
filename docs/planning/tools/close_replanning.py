@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 root=Path.cwd()
-p=root/"task_plan.md"
+p=root/"docs/planning/task_plan.md"
 s=p.read_text(encoding="utf-8-sig")
 s=s.replace("- [ ] Kiểm tra tự động ID, liên kết, coverage, DAG và trạng thái.",
             "- [x] Kiểm tra tự động ID, liên kết, coverage, DAG và trạng thái — pass; xem docs/planning/plan_validation.json.")
@@ -9,7 +9,7 @@ s=s.replace("- **Status:** in_progress","- **Status:** complete",1)
 s=s.replace("Phase 2 — Kiểm chứng nền tảng và hiện trạng; task kế tiếp R01 chưa bắt đầu.",
             "Phase 2 — Kiểm chứng nền tảng và hiện trạng (pending); task kế tiếp R01 chưa bắt đầu.")
 p.write_text(s,encoding="utf-8")
-with (root/"progress.md").open("a",encoding="utf-8") as f:
+with (root/"docs/planning/progress.md").open("a",encoding="utf-8") as f:
     f.write("""
 ## 2026-09-18 — Lập lại kế hoạch theo yêu cầu mới
 - Phạm vi phiên: chỉ lập kế hoạch chi tiết; không sửa thêm code sản phẩm.
@@ -43,6 +43,6 @@ with (root/"progress.md").open("a",encoding="utf-8") as f:
 - Phase 2 và các implementation tasks: pending.
 - Next Step: R01, kiểm kê trạng thái làm việc; sau đó R02 môi trường và R03 cô lập checkpoint trước baseline pytest.
 """)
-with (root/"findings.md").open("a",encoding="utf-8") as f:
+with (root/"docs/planning/findings.md").open("a",encoding="utf-8") as f:
     f.write("\n## Kết quả kiểm tra kế hoạch\nCoverage 818/818, không trùng ID, dependency DAG hợp lệ, roadmap hash không đổi. Chi tiết tại docs/planning/plan_validation.json. Đây là kiểm chứng cấu trúc kế hoạch, không phải bằng chứng phần mềm đã hoạt động.\n")
 

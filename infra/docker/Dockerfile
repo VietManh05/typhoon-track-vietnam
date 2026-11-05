@@ -2,8 +2,7 @@ FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu
+    PIP_NO_CACHE_DIR=1
 
 WORKDIR /app
 
@@ -11,8 +10,11 @@ COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
 
 # [train] brings torch (CPU wheel) and scikit-learn, required to serve the
-# trained LSTM bundle and the k-NN analog suggestions.
+# trained LSTM bundle and the k-NN analog suggestions. torch is installed
+# alone from the PyTorch CPU index; everything else comes only from PyPI, so
+# no package name can resolve across both indexes (dependency confusion).
 RUN python -m pip install --upgrade pip \
+    && python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.4,<3" \
     && python -m pip install ".[api,train]" \
     && useradd --create-home --uid 10001 app \
     && mkdir -p /app/data /models \

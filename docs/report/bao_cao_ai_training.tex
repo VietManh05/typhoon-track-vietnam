@@ -1,0 +1,388 @@
+% Biên dịch bằng XeLaTeX:  xelatex bao_cao_ai_training.tex  (chạy trong docs/report để thấy hình)
+\documentclass[12pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{booktabs,array,longtable,graphicx,float,enumitem,amsmath,xcolor}
+\usepackage[hidelinks]{hyperref}
+\setlist{nosep,leftmargin=1.5em}
+\renewcommand{\arraystretch}{1.15}
+\newcommand{\fig}[2]{\IfFileExists{#1}{\begin{figure}[H]\centering\includegraphics[width=0.85\linewidth]{#1}\caption{#2}\end{figure}}{}}
+
+\title{\textbf{BÁO CÁO CHI TIẾT DỰ ÁN}\\[4pt]
+\large XÂY DỰNG HỆ THỐNG HỖ TRỢ GỢI Ý ĐƯỜNG ĐI CỦA CƠN BÃO VIỆT NAM\\[2pt]
+\normalsize Trọng tâm: huấn luyện và đánh giá mô hình trí tuệ nhân tạo}
+\author{Typhoon VN Forecast System}
+\date{06/11/2026}
+
+\begin{document}
+\maketitle
+
+\section{Thông tin chung}
+\begin{tabular}{@{}ll@{}}
+Tên dự án & Typhoon VN Forecast System \\
+Phiên bản khai báo & 0.1.0 \\
+Ngôn ngữ và nền tảng & Python 3.11, PyTorch, scikit-learn, Pandas, NumPy, FastAPI \\
+Giấy phép & MIT \\
+Thời điểm đánh giá & 06/11/2026 \\
+\end{tabular}
+
+\medskip
+Mục tiêu của dự án là xây dựng hệ thống AI hỗ trợ ra quyết định, gợi ý đường đi
+của xoáy thuận nhiệt đới có khả năng ảnh hưởng Việt Nam và Biển Đông. Báo cáo này
+tập trung vào phần huấn luyện mô hình: cách phát biểu bài toán, dữ liệu huấn luyện,
+các phương pháp AI đã so sánh, quy trình chọn mô hình, kết quả thực nghiệm và
+các thí nghiệm tối ưu huấn luyện.
+
+\textbf{Giới hạn an toàn:} Sản phẩm chỉ mang tính tham khảo, phục vụ học tập và
+nghiên cứu; không phải bản tin dự báo khí tượng chính thức và không thay thế bản
+tin của Trung tâm Dự báo Khí tượng Thủy văn Quốc gia (NCHMF).
+
+\section{Bài toán và phạm vi}
+``Gợi ý đường đi của cơn bão'' được mô hình hóa là \textbf{bài toán dự báo chuỗi
+thời gian nhiều bước} (multi-horizon regression), không phải bài toán tìm đường:
+cơn bão không ``chọn'' đường đi, nên mục tiêu là ước lượng vị trí tâm bão tương lai
+cùng độ bất định của nó.
+
+\begin{itemize}
+  \item \textbf{Đầu vào:} 4 quan trắc gần nhất cách nhau 6 giờ (24 giờ lịch sử);
+        mỗi quan trắc có 47 đặc trưng.
+  \item \textbf{Đầu ra:} vị trí tâm bão tại $+6, +12, +24, +48, +72$ giờ.
+  \item \textbf{Biểu diễn đầu ra:} \emph{độ dịch chuyển} $(\Delta\varphi, \Delta\lambda)$
+        so với vị trí cuối, thay vì tọa độ tuyệt đối (mục~\ref{sec:ablation}).
+  \item \textbf{Hàm mất mát:} Smooth~L1 trên độ dịch chuyển (đơn vị độ).
+  \item \textbf{Độ đo:} sai số khoảng cách vòng lớn (Haversine, km) giữa vị trí dự
+        báo và vị trí thực; độ phủ (coverage) của nón bất định.
+\end{itemize}
+
+\noindent\textbf{Trong phạm vi:} chuẩn bị dữ liệu, tạo đặc trưng, huấn luyện và so
+sánh các phương pháp AI, kiểm định thống kê, đóng gói mô hình phục vụ API/demo.\\
+\textbf{Ngoài phạm vi:} phát hành cảnh báo chính thức, dự báo cường độ/mưa/lũ,
+gửi thông báo thực tế.
+
+\section{Kiến trúc tổng thể pipeline huấn luyện}
+\begin{center}
+\small IBTrACS WP (1980--2024) $\rightarrow$ làm sạch, chuẩn hóa $\rightarrow$
+đặc trưng quỹ đạo (+ dòng dẫn đường NCEP/NCAR) $\rightarrow$ cửa sổ chuỗi, chia theo năm
+$\rightarrow$ huấn luyện (validation) $\rightarrow$ đánh giá test một lần
+$\rightarrow$ model bundle $\rightarrow$ FastAPI / dashboard.
+\end{center}
+Các module độc lập: \texttt{ingestion} (tải, parse), \texttt{features} (làm sạch,
+đặc trưng, scaler), \texttt{datasets} (cửa sổ, chia tập), \texttt{models} và
+\texttt{training} (baseline, LSTM, Transformer, checkpoint), \texttt{evaluation}
+(sai số track, bootstrap), \texttt{inference} (nạp bundle, k-NN analog, nón bất định).
+
+\section{Dữ liệu và quản trị nguồn gốc}
+\begin{itemize}
+  \item \textbf{Nguồn:} NOAA IBTrACS v04r01, lưu vực Tây Bắc Thái Bình Dương (WP),
+        giai đoạn 1980--2024; tọa độ WGS84, thời gian UTC.
+  \item \textbf{Làm sạch:} chuẩn hóa đơn vị (knot $\rightarrow$ m/s), khử trùng lặp,
+        chỉ giữ quan trắc synop 6 giờ, giới hạn vùng 0--30°N, 100--140°E.
+        Sau làm sạch còn \textbf{24.024 quan trắc, 1.089 cơn bão}.
+  \item \textbf{Dữ liệu môi trường:} tái phân tích NCEP/NCAR R1 (lưới 2,5°, miễn phí)
+        lấy đúng thời điểm quan trắc để tạo đặc trưng dòng dẫn đường.
+  \item \textbf{Truy vết:} mỗi quan sát lưu nguồn, URL và SHA-256 tệp gốc; dữ liệu
+        vi phạm WGS84, thiếu múi giờ hoặc giá trị không hữu hạn bị từ chối.
+\end{itemize}
+
+\subsection*{Chia tập không rò rỉ}
+Chia \textbf{theo năm, giữ nguyên cả cơn bão}; scaler chỉ fit trên train.
+
+\begin{table}[H]\centering
+\begin{tabular}{lccc}
+\toprule
+Tập & Giai đoạn & Số bão & Ghi chú \\
+\midrule
+Train & 1980--2016 & 895 & $\approx$7.800 cửa sổ huấn luyện \\
+Validation & 2017--2020 & 110 & chọn mô hình, siêu tham số \\
+Test & 2021--2024 & 84 & chạy một lần, 714 cửa sổ \\
+Tập con ảnh hưởng VN & 2021--2024 & 27 & đi vào trong 300 km bờ biển, 278 cửa sổ \\
+\bottomrule
+\end{tabular}
+\caption{Chia tập dữ liệu}
+\end{table}
+
+\section{Làm sạch và tạo đặc trưng}
+Một \texttt{FeatureBuilder} dùng chung cho huấn luyện và suy luận (tránh
+training--serving skew). 47 đặc trưng theo thứ tự cố định:
+\begin{itemize}
+  \item \textbf{Vị trí và độ trễ:} vĩ độ, kinh độ, chênh lệch và lag 1--3 bước.
+  \item \textbf{Động học:} quãng đường bước, hướng (bearing), tốc độ km/h, gia tốc,
+        góc rẽ, tốc độ rẽ; timestamp trùng/lùi không sinh tốc độ giả.
+  \item \textbf{Thời gian:} sin/cos của giờ, ngày, tháng, ngày trong năm; cờ mùa bão.
+  \item \textbf{Địa lý:} khoảng cách, hướng tới bờ biển Việt Nam và các điểm tham
+        chiếu (Hoàng Sa, Trường Sa, Đà Nẵng, \dots).
+  \item \textbf{Cường độ:} gió (m/s), khí áp (hPa), biến thiên và one-hot cấp bão.
+\end{itemize}
+\textbf{Đặc trưng dòng dẫn đường (11 biến, thí nghiệm mục~\ref{sec:steering}):}
+dòng dẫn đường lớp sâu trong vành 200--800 km (\texttt{dlm\_u}, \texttt{dlm\_v}),
+gió 500 hPa, đứt gió 200--850 hPa, độ cao địa thế vị 500 hPa và chênh lệch 5° về
+bốn hướng (phản ánh vị trí áp cao cận nhiệt).
+
+\texttt{FeatureScaler} chỉ fit trên train, lưu thứ tự cột, giá trị bù, mean, scale;
+từ chối schema thiếu/thừa/đổi thứ tự cột và xử lý cột toàn NaN/Inf.
+
+\section{Mô hình và huấn luyện}
+\subsection{Các phương pháp so sánh}
+\begin{table}[H]\centering\small
+\begin{tabular}{l l p{8cm}}
+\toprule
+Nhóm & Phương pháp & Ý tưởng \\
+\midrule
+Mốc so sánh & Persistence & Giữ nguyên vận tốc 6 giờ gần nhất \\
+Mốc so sánh & CLIPER-proxy & Persistence có suy giảm (không phải CLIPER5 chính thức) \\
+AI cổ điển & k-NN analog & Lập luận dựa trên tình huống: tìm các đoạn bão lịch sử
+giống nhất, trung bình có trọng số đường đi tiếp theo, \textbf{nêu tên bão tương tự} để giải thích \\
+Học máy & Gradient boosting & HistGradientBoosting hồi quy độ dịch chuyển \\
+Học sâu & LSTM & 2 lớp, hidden 128, dropout 0,2; đọc 4 bước, đầu ra 5 mốc \\
+Học sâu & Attention-LSTM & LSTM + attention cộng trên chuỗi đầu vào \\
+Học sâu & Transformer & Encoder self-attention + mã hóa vị trí \\
+\bottomrule
+\end{tabular}
+\caption{Các phương pháp AI được huấn luyện và so sánh}
+\end{table}
+
+\subsection{Cấu hình huấn luyện}
+\begin{itemize}
+  \item Bộ tối ưu Adam, learning rate $10^{-3}$, weight decay $10^{-5}$,
+        lịch cosine, gradient clipping 1,0.
+  \item Tối đa 100 epoch, early stopping patience 10, giữ trọng số epoch tốt nhất
+        trên validation; hỗ trợ checkpoint và resume.
+  \item Mạng nơ-ron chạy 3 seed (0, 1, 2), báo cáo trung bình $\pm$ độ lệch chuẩn;
+        persistence, CLIPER và k-NN là tất định.
+  \item Siêu tham số k-NN chọn trên validation: $k=40$, trọng số vị trí 1,0, mùa 0,5.
+  \item Seq2Seq có trong mã nguồn nhưng không đưa vào so sánh do teacher forcing
+        trộn tọa độ chuẩn hóa với mục tiêu vật lý.
+\end{itemize}
+
+\subsection{Quy trình chọn mô hình}
+Mọi lựa chọn (kiến trúc, đặc trưng, siêu tham số, thành viên ensemble) chỉ dựa trên
+\textbf{validation 2017--2020}. Tập test 2021--2024 được chạy \textbf{một lần}
+sau khi đã chốt cấu hình. Kiểm định ý nghĩa dùng bootstrap theo \emph{cơn bão}
+(các dự báo của cùng một bão tương quan với nhau), 5.000 lần lấy mẫu lại.
+
+\section{Model bundle và tính tái lập}
+Mô hình sau huấn luyện được đóng gói gồm \texttt{weights.pt}, \texttt{scaler.json},
+\texttt{split-manifest.json} và \texttt{manifest.json} (phiên bản, SHA-256 dataset,
+cấu hình mô hình, độ dài đầu vào, horizon, hash schema đặc trưng, bán kính nón,
+checksum từng tệp). Khi nạp: allowlist loại mô hình, kiểm tra checksum, kích thước
+đặc trưng, horizon và scaler; PyTorch nạp với \texttt{weights\_only=True}.
+
+Tái lập kết quả:
+{\small
+\begin{verbatim}
+python scripts/run_ibtracs_benchmark.py --data-root data \
+    --output-dir runs/ibtracs-benchmark
+python scripts/run_model_comparison.py --data-root data \
+    --output-dir runs/model-comparison --seeds 0 1 2
+python scripts/plot_error_analysis.py --run runs/model-comparison \
+    --data-root data
+python scripts/build_analog_artifact.py --data-root data \
+    --output runs/analog/analog-wp.npz
+\end{verbatim}}
+
+\section{Phục vụ mô hình (API và demo)}
+\begin{itemize}
+  \item FastAPI: \texttt{/forecast}, \texttt{/typhoons/active},
+        \texttt{/typhoons/\{id\}/track} (dự báo + nón), \texttt{/health},
+        \texttt{/ready}, \texttt{/version}; worker lấy dữ liệu NOAA IBTrACS ACTIVE.
+  \item Mỗi dự báo kèm đường đi gợi ý của k-NN analog và 5 cơn bão lịch sử giống nhất
+        (tên, năm). Thư viện analog chỉ gồm bão 1980--2020, không chứa bão test.
+  \item Demo công khai \url{https://baoviet2026.pages.dev}: 20 bão thật 2021--2024
+        ảnh hưởng Việt Nam; sai số 72 h trung bình của LSTM trên 20 bão: 408 km.
+\end{itemize}
+
+\section{Hạ tầng phát triển}
+Khai báo dependency trong \texttt{pyproject.toml} (nhóm \texttt{train}: PyTorch,
+Pandas, scikit-learn; \texttt{experiment}: DVC, MLflow). Docker Compose cung cấp
+API, worker, PostGIS (migration Alembic, truy vấn bán kính \texttt{ST\_DWithin}) và
+MinIO; image Docker phục vụ mô hình đã huấn luyện, chạy với user không phải root.
+
+\section{Kết quả thực nghiệm}
+\subsection{Sai số trung bình trên toàn bộ 84 bão test (km)}
+\begin{table}[H]\centering
+\begin{tabular}{lrrrrr}
+\toprule
+Phương pháp & 6h & 12h & 24h & 48h & 72h \\
+\midrule
+Persistence & 31 & 68 & 155 & 390 & 676 \\
+CLIPER-proxy & 30 & 65 & 151 & 388 & 677 \\
+k-NN analog & 32 & 64 & 133 & 290 & \textbf{462} \\
+Gradient boosting & \textbf{29} & \textbf{60} & \textbf{129} & 292 & 476 \\
+LSTM & 33 $\pm$ 0 & 65 $\pm$ 1 & 133 $\pm$ 1 & \textbf{289} $\pm$ 1 & 464 $\pm$ 5 \\
+Attention-LSTM & 35 $\pm$ 3 & 68 $\pm$ 4 & 138 $\pm$ 5 & 297 $\pm$ 10 & 473 $\pm$ 9 \\
+Transformer & 33 $\pm$ 1 & 64 $\pm$ 1 & 133 $\pm$ 3 & 293 $\pm$ 3 & 468 $\pm$ 5 \\
+\bottomrule
+\end{tabular}
+\caption{Sai số track trung bình, toàn tập test 2021--2024}
+\end{table}
+
+\subsection{Sai số trên 27 bão ảnh hưởng Việt Nam (km)}
+\begin{table}[H]\centering
+\begin{tabular}{lrrrrr}
+\toprule
+Phương pháp & 6h & 12h & 24h & 48h & 72h \\
+\midrule
+Persistence & 33 & 70 & 159 & 388 & 642 \\
+CLIPER-proxy & 32 & 68 & 159 & 414 & 710 \\
+k-NN analog & 33 & 65 & 134 & 290 & 476 \\
+Gradient boosting & \textbf{30} & 61 & 131 & 295 & 491 \\
+LSTM & 32 $\pm$ 0 & 63 $\pm$ 0 & 133 $\pm$ 1 & 292 $\pm$ 6 & 468 $\pm$ 9 \\
+Attention-LSTM & 34 $\pm$ 3 & 66 $\pm$ 4 & 138 $\pm$ 4 & 298 $\pm$ 6 & 471 $\pm$ 3 \\
+Transformer & 32 $\pm$ 1 & \textbf{62} $\pm$ 1 & \textbf{130} $\pm$ 2 & \textbf{289} $\pm$ 3 & \textbf{463} $\pm$ 10 \\
+\bottomrule
+\end{tabular}
+\caption{Sai số track trung bình, bão ảnh hưởng Việt Nam}
+\end{table}
+
+\fig{figures/error_by_horizon.png}{Sai số theo thời hạn dự báo}
+
+\subsection{Kiểm định thống kê (bootstrap theo cơn bão, 72 h, 50 bão)}
+\begin{table}[H]\centering\small
+\begin{tabular}{lrr}
+\toprule
+Phương pháp & So với persistence (km, KTC 95\%) & So với LSTM (km, KTC 95\%) \\
+\midrule
+CLIPER-proxy & $-15$ [$-101$, $+65$] & $+188$ [$+113$, $+256$] \\
+k-NN analog & $-201$ [$-268$, $-131$] & $+3$ [$-29$, $+34$] \\
+Gradient boosting & $-191$ [$-252$, $-126$] & $+12$ [$-20$, $+48$] \\
+LSTM & $-203$ [$-262$, $-145$] & --- \\
+Attention-LSTM & $-173$ [$-229$, $-116$] & $+30$ [$+12$, $+50$] \\
+Transformer & $-200$ [$-257$, $-142$] & $+3$ [$-16$, $+22$] \\
+\bottomrule
+\end{tabular}
+\caption{Chênh lệch sai số 72 h (âm = tốt hơn mốc tham chiếu)}
+\end{table}
+Mọi phương pháp học tốt hơn persistence 170--200 km có ý nghĩa thống kê. Giữa
+LSTM, Transformer, k-NN và gradient boosting \textbf{không có khác biệt có ý nghĩa};
+Attention-LSTM kém hơn LSTM có ý nghĩa.
+
+\subsection{Nón bất định}
+Bán kính nón lấy phân vị 80\% sai số trên validation: 52 / 97 / 210 / 455 / 714 km
+tại 6 / 12 / 24 / 48 / 72 h. Độ phủ thực tế trên test đạt 82--86\%, sát mục tiêu 80\%.
+
+\subsection{Thí nghiệm loại bỏ: mục tiêu học độ dịch chuyển}\label{sec:ablation}
+Cùng kiến trúc LSTM, cùng dữ liệu, seed 0, chỉ đổi mục tiêu học:
+\begin{table}[H]\centering
+\begin{tabular}{lrrrrr}
+\toprule
+Mục tiêu của LSTM & 6h & 12h & 24h & 48h & 72h \\
+\midrule
+Tọa độ tuyệt đối & 115 & 121 & 164 & 305 & 473 \\
+Độ dịch chuyển (đang dùng) & \textbf{33} & \textbf{65} & \textbf{133} & \textbf{289} & \textbf{464} \\
+\bottomrule
+\end{tabular}
+\end{table}
+Học tọa độ tuyệt đối buộc mạng tự ``nhớ'' vị trí hiện tại từ đặc trưng đã chuẩn
+hóa: sai số 6 h tăng $\sim$3,5 lần (kém cả persistence) và cần nhiều epoch hơn
+(dừng ở epoch 42 thay vì 13--17).
+
+\subsection{Tối ưu huấn luyện}\label{sec:steering}
+\textbf{(a) Chỉ dùng thông tin quỹ đạo đã chạm trần.} Trên validation, so với LSTM
+gốc (TB 201 km), không thay đổi nào giúp ích: dữ liệu toàn lưu vực (212), lịch sử
+48 h (212), loss Haversine (203), mạng lớn/nhỏ hơn (206--207), Transformer (207).
+Ensemble trên test chỉ giảm 8 km, KTC 95\% [$-16$, $+2$], không có ý nghĩa.
+
+\textbf{(b) Thêm dòng dẫn đường khí quyển: cải thiện có ý nghĩa.}
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Test 2021--2024 (3 seed) & 6h & 12h & 24h & 48h & 72h & TB \\
+\midrule
+LSTM chỉ quỹ đạo (gốc) & 32 & 64 & 131 & 286 & 469 & 197 \\
+LSTM + dòng dẫn đường & 30 & 58 & 118 & 270 & 465 & 188 \\
+Transformer + dòng dẫn đường & 30 & 57 & 115 & 265 & 450 & 183 \\
+\textbf{Ensemble (LSTM + Transformer)} & \textbf{28} & \textbf{54} & \textbf{112} & \textbf{259} & \textbf{443} & \textbf{179} \\
+\bottomrule
+\end{tabular}
+\caption{Hiệu quả của đặc trưng dòng dẫn đường (bão vùng Việt Nam, đủ 48 h lịch sử)}
+\end{table}
+\begin{itemize}
+  \item Ensemble được chọn trên validation; so với mô hình gốc tại 72 h:
+        \textbf{$-35$ km, KTC 95\% [$-62$, $-9$]} (bootstrap 44 bão), có ý nghĩa thống kê;
+        tại 24 h giảm $\sim$15\%, trung bình các mốc giảm $\sim$9\%.
+  \item Gradient boosting + dòng dẫn đường đạt test tốt nhất (TB 176 km) nhưng kém
+        hơn trên validation nên \textbf{không được chọn}, giữ đúng quy trình.
+\end{itemize}
+
+\subsection{Sai số theo cường độ và nghiên cứu trường hợp}
+Áp thấp nhiệt đới khó nhất với persistence (800 km tại 72 h); bão rất mạnh cấp
+12--13 có sai số thấp nhất ($\sim$400 km với phương pháp học).
+
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrrrr}
+\toprule
+Bão (thời điểm phát) & k-NN & GBoost & LSTM & Transformer & Persistence \\
+\midrule
+YAGI 2024 (04/09 06Z) & 419 & \textbf{407} & 541 & 678 & 701 \\
+SAOLA 2023 (31/08 12Z) & \textbf{365} & 538 & 534 & 514 & 534 \\
+YINXING 2024 (09/11 06Z) & 575 & \textbf{269} & 700 & 550 & 958 \\
+CONSON 2021 (10/09 00Z) & 558 & 581 & 625 & 702 & 987 \\
+\bottomrule
+\end{tabular}
+\caption{Sai số 72 h (km) tại thời điểm bão sắp đổ bộ Việt Nam}
+\end{table}
+Với YAGI, phần lớn mô hình gợi ý bão chuyển hướng lên phía bắc (kiểu quỹ đạo phổ
+biến), trong khi YAGI đi thẳng về phía tây; k-NN dựa trên các bão tương tự WUKONG
+2000, DAMREY 2005. CONSON có CLIPER-proxy tốt nhất (101 km), một trường hợp đơn lẻ.
+
+\fig{figures/case_WP122024.png}{Nghiên cứu trường hợp YAGI 2024}
+
+\section{Đánh giá hiện trạng}
+\textbf{Đã đạt:} pipeline huấn luyện hoàn chỉnh trên dữ liệu thật; chia tập không rò
+rỉ; so sánh 7 phương pháp có nhiều seed và kiểm định bootstrap; nón bất định có
+độ phủ được kiểm chứng; thí nghiệm ablation và tối ưu huấn luyện có quy trình chọn
+mô hình chặt chẽ; mô hình được đóng gói và phục vụ qua API/demo.
+
+\textbf{Nhận xét chính:}
+\begin{enumerate}
+  \item Học từ dữ liệu giúp rõ ở hạn dài: giảm $\sim$14\% (24 h) đến $\sim$30\% (72 h)
+        so với persistence; ở 6 h persistence gần như tối ưu.
+  \item Mô hình sâu không vượt trội: với $\sim$7.800 cửa sổ và 4 bước đầu vào, k-NN và
+        gradient boosting ngang LSTM/Transformer; mạng nơ-ron overfit nhanh
+        (epoch tốt nhất 2--9).
+  \item Nút thắt là thông tin, không phải kiến trúc: chỉ khi thêm dòng dẫn đường
+        khí quyển mới có cải thiện có ý nghĩa.
+  \item k-NN analog có giá trị giải thích, phù hợp tinh thần ``gợi ý'' của đề tài.
+\end{enumerate}
+
+\section{Rủi ro và khuyến nghị}
+\begin{itemize}
+  \item \textbf{Mô hình vận hành chưa dùng dòng dẫn đường:} website/API vẫn phục vụ
+        LSTM chỉ quỹ đạo; cần nguồn khí quyển thời gian thực (phân tích GFS).
+  \item \textbf{Trường hợp khó:} YAGI 2024 vẫn sai 620--670 km tại 72 h với mọi mô
+        hình có dòng dẫn đường; lưới 2,5° chưa đủ nhận diện áp cao cận nhiệt mạnh.
+  \item \textbf{Nón bất định đẳng hướng:} sai số dọc/ngang quỹ đạo khác nhau; cần nón
+        bất đối xứng.
+  \item \textbf{Kiểm định:} kết quả chỉ trên một cách chia theo năm; cần kiểm định chéo
+        theo mùa bão.
+  \item \textbf{Dữ liệu:} IBTrACS ACTIVE trễ vài ngày; chưa có bản tin thời gian thực.
+  \item \textbf{Truyền thông:} giữ disclaimer, nguồn dữ liệu, phiên bản mô hình và
+        tham chiếu NCHMF trên mọi giao diện.
+\end{itemize}
+
+\section{Kế hoạch ưu tiên tiếp theo}
+\begin{enumerate}
+  \item Đưa ensemble LSTM + Transformer có dòng dẫn đường vào vận hành, lấy đặc trưng
+        từ phân tích GFS tại thời điểm dự báo.
+  \item Dùng ERA5 0,25° và đặc trưng dạng ảnh (CNN trên trường gió) để xử lý ca khó
+        như YAGI.
+  \item Nón bất định bất đối xứng theo dọc/ngang quỹ đạo, hiệu chỉnh theo mốc và cường độ.
+  \item Kiểm định chéo theo năm/mùa; chạy \texttt{typhoon-vn monitor} định kỳ để theo
+        dõi sai số và độ phủ nón trên bão mới 2025--2026.
+  \item Nối registry hiện có (cổng promote, rollback) với MLflow để lưu lịch sử thí
+        nghiệm tập trung.
+\end{enumerate}
+
+\section{Kết luận}
+Dự án đã xây dựng và huấn luyện thành công hệ thống AI gợi ý đường đi của cơn bão
+ảnh hưởng Việt Nam trên dữ liệu IBTrACS 1980--2024. Các phương pháp học giảm sai số
+72 h khoảng 200 km so với persistence (có ý nghĩa thống kê). Kết quả quan trọng nhất
+của phần huấn luyện là: với dữ liệu chỉ có quỹ đạo, LSTM, Transformer, k-NN và
+gradient boosting cho độ chính xác tương đương; bổ sung đặc trưng dòng dẫn đường khí
+quyển và ensemble giúp giảm thêm 35 km tại 72 h. k-NN analog đóng góp khả năng giải
+thích qua danh sách bão tương tự. Hệ thống phù hợp cho học tập và nghiên cứu; trong
+sử dụng thực tế, kết quả chỉ là gợi ý bổ sung, không thay thế bản tin của cơ quan
+khí tượng có thẩm quyền.
+
+\end{document}

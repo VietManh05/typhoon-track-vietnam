@@ -24,9 +24,13 @@ def load_ibtracs(data_root: Path, years: tuple[int, int]) -> pd.DataFrame:
     ]
 
 
-def load_ibtracs_tracks(data_root: Path, years: tuple[int, int]):
+def load_ibtracs_tracks(
+    data_root: Path,
+    years: tuple[int, int],
+    bounds: tuple[float, float, float, float] | None = None,
+):
     """Return ``(raw, cleaned, quality_report)`` for the benchmark scripts."""
 
     raw = load_ibtracs(data_root, years)
-    cleaned, quality = clean_tracks(to_canonical_frame(raw))
+    cleaned, quality = clean_tracks(to_canonical_frame(raw), bounds=bounds)
     return raw, cleaned, quality

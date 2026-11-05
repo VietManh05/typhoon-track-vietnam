@@ -289,3 +289,14 @@ def test_storage_leaves_no_partial_part_on_failure(workdir: Path, monkeypatch) -
     # No final part and no leftover staging file: the partition stays re-runnable.
     assert list(workdir.rglob("part-*.parquet")) == []
     assert list(workdir.rglob("*.tmp")) == []
+
+
+def test_clean_tracks_bounds_default_to_vietnam_box_and_can_widen() -> None:
+    from typhoon_vn.datasets.synthetic import generate_storm_track
+    from typhoon_vn.features.cleaning import clean_tracks
+
+    track = generate_storm_track("S", n_fixes=6).assign(lat=25.0, lon=150.0)
+    default, _ = clean_tracks(track)
+    assert default.empty  # outside 0-30N / 100-140E
+    wide, report = clean_tracks(track, bounds=(0.0, 50.0, 95.0, 180.0))
+    assert len(wide) == 6 and report.n_dropped_invalid_coords == 0

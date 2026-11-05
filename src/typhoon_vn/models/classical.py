@@ -46,11 +46,16 @@ def analog_features(x_raw: np.ndarray) -> dict[str, np.ndarray]:
     coslat = np.cos(np.radians(anchor[:, 0]))[:, None]
     relative = x_raw[:, :-1, :2].astype(float) - anchor[:, None, :]
     relative[..., 1] *= coslat  # degrees of longitude -> comparable distance
-    return {
+    groups = {
         "track": relative.reshape(len(x_raw), -1),
         "position": anchor,
         "season": x_raw[:, -1, [_COL["month_sin"], _COL["month_cos"]]].astype(float),
     }
+    if x_raw.shape[2] > len(FEATURE_COLUMNS):
+        # Optional environmental columns appended after FEATURE_COLUMNS
+        # (e.g. steering flow): match the situation at the issue time.
+        groups["steering"] = x_raw[:, -1, len(FEATURE_COLUMNS) :].astype(float)
+    return groups
 
 
 @dataclass
@@ -73,9 +78,11 @@ class AnalogForecaster:
             raise ValueError("analog library is smaller than k")
         groups = analog_features(x_raw)
         self._scale = {
-            name: values.std(axis=0) + 1e-6 for name, values in groups.items()
+            name: np.nanstd(values, axis=0) + 1e-6 for name, values in groups.items()
         }
-        self._mean = {name: values.mean(axis=0) for name, values in groups.items()}
+        self._mean = {
+            name: np.nanmean(values, axis=0) for name, values in groups.items()
+        }
         self._targets = displacement_targets(x_raw, y)
         self._storm_ids = np.asarray(storm_ids)
         self._issue_times = np.asarray(issue_times, dtype=object)
@@ -86,6 +93,8 @@ class AnalogForecaster:
         parts = []
         for name, values in groups.items():
             standardised = (values - self._mean[name]) / self._scale[name]
+            # Missing environmental values contribute no distance (mean).
+            standardised = np.nan_to_num(standardised, nan=0.0)
             # Normalise each group by its width so weights compare groups.
             width = np.sqrt(values.shape[1])
             parts.append(self.weights.get(name, 0.0) * standardised / width)

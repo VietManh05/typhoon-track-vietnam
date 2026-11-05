@@ -195,3 +195,9 @@
 - Xóa `mockData.ts` (bão giả gán NCHMF/JMA); bỏ giá trị bịa (35 m/s, 970 hPa, 285°, 20 km/h); bỏ nhãn chú giải "Dự báo chính thức NCHMF/JTWC" không có dữ liệu; thêm lớp/khung gợi ý bão tương tự.
 - Kiểm thử: pytest 160, node 29, `wrangler pages dev` + trình duyệt.
 - Tồn tại (có từ trước): `/api/ai/chat` rate limit theo isolate, Origin tùy chọn → nên thêm Cloudflare Rate Limiting/Turnstile.
+
+## 2026-11-05 — Nghiên cứu huấn luyện (chỉ quỹ đạo) và dòng dẫn đường
+
+- `scripts/run_training_study.py`: chọn trên validation, test một lần. Không thay đổi nào cải thiện LSTM baseline trên val: dữ liệu toàn lưu vực (212 vs 201 km), lịch sử 48h (212), loss km (203), mạng lớn/nhỏ (206–207), Transformer (207). Ensemble LSTM+Transformer trên test: −7,5 km, KTC95 [−16, +1,5] → không có ý nghĩa. Kết luận: mô hình chỉ dùng quỹ đạo đã chạm trần.
+- Ca YAGI: LSTM dự báo đổi hướng tây bắc (khí hậu học), thực tế đi tây do áp cao cận nhiệt → cần thông tin dòng dẫn đường.
+- `features/steering.py`: 11 đặc trưng NCEP/NCAR R1 (dòng dẫn đường lớp sâu vành khuyên 200–800 km, gió 500 hPa, đứt gió, z500 và chênh z500 bốn hướng); `scripts/download_ncep_steering.py` (miễn phí, không tài khoản); k-NN có nhóm tương đồng "steering"; `scripts/run_env_study.py`.

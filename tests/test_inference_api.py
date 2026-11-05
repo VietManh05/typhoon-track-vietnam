@@ -271,22 +271,25 @@ def test_keyed_edge_requests_are_limited_per_forwarded_viewer() -> None:
         forecaster=TyphoonForecaster(),
     )
     edge = {"X-API-Key": "secret"}
+
+    def get(ip=None):
+        headers = {**edge, "X-Client-IP": ip} if ip else edge
+        return client.get("/alerts", headers=headers).status_code
+
     with TestClient(app) as client:
         # One Cloudflare address, two viewers: separate buckets.
-        assert (
-            client.get("/alerts", headers={**edge, "X-Client-IP": "a"}).status_code
-            == 200
-        )
-        assert (
-            client.get("/alerts", headers={**edge, "X-Client-IP": "b"}).status_code
-            == 200
-        )
-        assert (
-            client.get("/alerts", headers={**edge, "X-Client-IP": "a"}).status_code
-            == 429
-        )
+        assert get("203.0.113.1") == 200
+        assert get("203.0.113.2") == 200
+        assert get("203.0.113.1") == 429
+        # One IPv6 /64 is one viewer.
+        assert get("2001:db8::1") == 200
+        assert get("2001:db8::2") == 429
+        # Viewer buckets never consume the operator's own (no header) bucket.
+        assert get() == 200
+        # Junk header values fall back to the operator bucket, now used up.
+        assert get("not-an-ip") == 429
         # Without the key the forwarded address is not trusted.
-        spoof = {"X-API-Key": "x", "X-Client-IP": "c"}
+        spoof = {"X-API-Key": "x", "X-Client-IP": "203.0.113.9"}
         assert client.get("/alerts", headers=spoof).status_code == 401
 
 

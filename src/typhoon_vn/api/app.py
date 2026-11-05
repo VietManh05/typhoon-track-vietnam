@@ -1,6 +1,7 @@
 """Forecast API and bilingual dashboard."""
 
 import hmac
+import ipaddress
 import logging
 import time
 from collections import defaultdict, deque
@@ -38,7 +39,13 @@ def create_app(
     lock = RLock()
     # Separate limiter state so unauthenticated public reads can never exhaust
     # the capacity used by key-holding operators and writers.
-    limiters = {"auth": defaultdict(deque), "public": defaultdict(deque)}
+    # Edge-forwarded viewers get their own state so a viewer surge can never fill
+    # the operator/writer limiter.
+    limiters = {
+        "auth": defaultdict(deque),
+        "public": defaultdict(deque),
+        "edge": defaultdict(deque),
+    }
     counters = {"requests": 0, "errors": 0, "forecast_cache_hits": 0}
 
     def initialize():
@@ -93,8 +100,21 @@ def create_app(
             raise HTTPException(401, "Valid X-API-Key required")
         # The edge proxies every viewer from a few Cloudflare IPs; trust its
         # forwarded viewer address only once the key has been verified.
-        viewer = request.headers.get("X-Client-IP") if settings.api_key else None
-        rate_limit(request, limiters["auth"], viewer)
+        viewer = viewer_address(request) if settings.api_key else None
+        if viewer:
+            rate_limit(request, limiters["edge"], viewer)
+        else:
+            rate_limit(request, limiters["auth"])
+
+    def viewer_address(request: Request) -> str | None:
+        """Valid X-Client-IP; IPv6 grouped by /64 so one host cannot fan out."""
+        try:
+            ip = ipaddress.ip_address(request.headers.get("X-Client-IP", "").strip())
+        except ValueError:
+            return None
+        if ip.version == 6:
+            return str(ipaddress.ip_network(f"{ip}/64", strict=False))
+        return str(ip)
 
     def authorize_read(request: Request):
         """Dashboard read routes: public when ``public_read``, always rate limited."""
@@ -107,9 +127,7 @@ def create_app(
         request: Request, requests: defaultdict, address: str | None = None
     ) -> None:
         now = time.monotonic()
-        address = (address or "")[:64] or (
-            request.client.host if request.client else "local"
-        )
+        address = address or (request.client.host if request.client else "local")
         with lock:
             # Bound cardinality and expire inactive clients (only when large,
             # so a normal request does not scan every client).

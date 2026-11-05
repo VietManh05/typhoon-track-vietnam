@@ -11,6 +11,7 @@ Vietnam-focused tropical-cyclone track forecasting research and decision-support
 | Báo cáo đánh giá (tiếng Việt) | [`docs/report/README.md`](docs/report/README.md) |
 | Hồ sơ nghiệm thu 28 tiêu chí | [`docs/acceptance/README.md`](docs/acceptance/README.md) |
 | Kiến trúc hệ thống | [`docs/architecture.md`](docs/architecture.md) |
+| Hướng dẫn trình bày / bảo vệ (demo 5 phút, số liệu, Q&A) | [`docs/acceptance/HUONG_DAN_BAO_VE.md`](docs/acceptance/HUONG_DAN_BAO_VE.md) |
 | Demo trực tuyến | <https://baoviet2026.pages.dev> (nút "Dự báo lại") |
 
 ```text

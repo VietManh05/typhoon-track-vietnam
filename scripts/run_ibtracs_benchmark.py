@@ -19,10 +19,7 @@ import json
 import time
 from pathlib import Path
 
-import pandas as pd
-
-from typhoon_vn.features.bridge import load_raw_observations, to_canonical_frame
-from typhoon_vn.features.cleaning import clean_tracks
+from typhoon_vn.datasets.ibtracs import load_ibtracs_tracks
 from typhoon_vn.training.config_loader import load_config
 from typhoon_vn.training.registry import PromotionPolicy, promotion_metrics
 from typhoon_vn.training.run import run_training
@@ -34,19 +31,6 @@ def _years(value: str) -> tuple[int, int]:
     if first > last:
         raise argparse.ArgumentTypeError("years must be START-END with START<=END")
     return first, last
-
-
-def load_ibtracs(data_root: Path, years: tuple[int, int]) -> pd.DataFrame:
-    raw = load_raw_observations(data_root)
-    raw = raw[
-        (raw["source"] == "ibtracs")
-        & ~raw["storm_id"].astype(str).str.contains("UNRESOLVED")
-    ].copy()
-    raw["timestamp"] = pd.to_datetime(raw["timestamp"], utc=True)
-    raw = raw[
-        raw["timestamp"].dt.year.between(*years) & (raw["timestamp"].dt.hour % 6 == 0)
-    ]
-    return raw
 
 
 def _markdown(summary: dict) -> str:
@@ -128,8 +112,7 @@ def main(argv: list[str] | None = None) -> int:
         if raw_csv.exists()
         else "unknown"
     )
-    raw = load_ibtracs(args.data_root, args.years)
-    cleaned, quality = clean_tracks(to_canonical_frame(raw))
+    raw, cleaned, quality = load_ibtracs_tracks(args.data_root, args.years)
     if cleaned.empty:
         raise SystemExit("no IBTrACS fixes left after cleaning")
 

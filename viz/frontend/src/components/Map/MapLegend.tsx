@@ -7,7 +7,8 @@ interface MapLegendProps {
 }
 
 export const MapLegend: React.FC<MapLegendProps> = ({ lang }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  // Collapsed by default so the legend never hides the storm on load.
+  const [collapsed, setCollapsed] = useState(true);
   const t = translations[lang];
 
   const intensityItems: Array<{ key: string; color: string; label: string }> = [
@@ -56,6 +57,12 @@ export const MapLegend: React.FC<MapLegendProps> = ({ lang }) => {
             <div className="flex items-center gap-2">
               <div className="w-4 h-3 rounded bg-cyan-500/20 border border-cyan-400/60" aria-hidden="true" />
               <span className="text-[11px] text-slate-300">{t.legend_cone}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 border-t-2 border-dotted border-purple-400" aria-hidden="true" />
+              <div className="w-2 h-2 rounded-full bg-purple-400" aria-hidden="true" />
+              <span className="text-[11px] text-slate-300">{t.legend_suggestion}</span>
             </div>
           </div>
 

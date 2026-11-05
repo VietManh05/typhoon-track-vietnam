@@ -68,6 +68,13 @@ export interface TranslationStrings {
   legend_forecast: string;
   legend_cone: string;
   legend_compare: string;
+  legend_suggestion: string;
+  suggestion_title: string;
+  suggestion_toggle: string;
+  suggestion_analogs: string;
+  suggestion_intro: string;
+  suggestion_rank: string;
+  suggestion_caveat: string;
   legend_vietnam: string;
   categories: Record<string, string>;
   hoang_sa: string;
@@ -217,6 +224,13 @@ export const translations: Record<Language, TranslationStrings> = {
     legend_actual: 'Quỹ đạo thực tế (Đã đi qua)',
     legend_forecast: 'Quỹ đạo dự báo (+6h...+72h)',
     legend_cone: 'Nón bất định (phương pháp: xem bảng dự báo)',
+    legend_suggestion: 'Gợi ý theo bão tương tự (k-NN)',
+    suggestion_title: 'Gợi ý theo bão tương tự',
+    suggestion_toggle: 'Bão tương tự',
+    suggestion_analogs: 'Bão tương tự',
+    suggestion_intro: 'Đường gợi ý là trung bình có trọng số hướng đi tiếp theo của các tình huống lịch sử giống nhất (quỹ đạo 24 giờ gần nhất, vị trí, mùa):',
+    suggestion_rank: 'Hạng',
+    suggestion_caveat: 'Trên các cơn bão kiểm thử 2021–2024, độ chính xác tương đương mô hình học sâu. Chỉ mang tính tham khảo.',
     legend_compare: 'Dự báo chính thức NCHMF/JTWC',
     legend_vietnam: 'Chủ quyền lãnh thổ & vùng biển VN',
     categories: {
@@ -373,6 +387,13 @@ export const translations: Record<Language, TranslationStrings> = {
     legend_actual: 'Observed track (Historical fixes)',
     legend_forecast: 'Predicted track (+6h...+72h)',
     legend_cone: 'Uncertainty cone (method: see forecast table)',
+    legend_suggestion: 'Similar-storm suggestion (k-NN)',
+    suggestion_title: 'Similar-storm suggestion',
+    suggestion_toggle: 'Similar storms',
+    suggestion_analogs: 'Similar storms',
+    suggestion_intro: 'The suggested track is a weighted average of what the most similar historical situations did next (last 24 h of track, position, season):',
+    suggestion_rank: 'Rank',
+    suggestion_caveat: 'On 2021–2024 test storms its accuracy matches the deep-learning model. For reference only.',
     legend_compare: 'Official NCHMF/JTWC Guidance',
     legend_vietnam: 'Sovereign Territory & Waters of Vietnam',
     categories: {

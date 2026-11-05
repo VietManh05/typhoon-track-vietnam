@@ -32,6 +32,29 @@ export interface ForecastPoint {
   pressure_hpa?: number;
 }
 
+export interface SuggestionPoint {
+  horizon_hours: number;
+  valid_time: string;
+  lat: number;
+  lon: number;
+}
+
+export interface AnalogStorm {
+  rank: number;
+  storm_id: string;
+  name: string;
+  year: number;
+  issue_time: string;
+}
+
+/** Explainable k-NN analog track: what similar historical storms did next. */
+export interface Suggestion {
+  method: string;
+  note: string;
+  points: SuggestionPoint[];
+  analogs: AnalogStorm[];
+}
+
 export interface ForecastResponse {
   forecast_id: string;
   storm_id: string;
@@ -45,6 +68,7 @@ export interface ForecastResponse {
   warnings: string[];
   disclaimer: string;
   points: ForecastPoint[];
+  suggestion?: Suggestion | null;
 }
 
 export interface ActiveTyphoonItem {

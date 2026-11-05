@@ -18,9 +18,19 @@ def circle(lat, lon, radius):
 
 
 class TyphoonForecaster:
-    def __init__(self, artifact: Path | None = None, allow_baseline=True):
+    def __init__(
+        self,
+        artifact: Path | None = None,
+        allow_baseline=True,
+        analog_artifact: Path | None = None,
+    ):
         self.lock = RLock()
         self.bundle = None
+        self.analog = None
+        if analog_artifact:
+            from typhoon_vn.inference.analog import AnalogService
+
+            self.analog = AnalogService(analog_artifact)
         if artifact:
             from typhoon_vn.training.pipeline import load_bundle
 
@@ -37,6 +47,8 @@ class TyphoonForecaster:
 
     def key(self, request):
         body = request.model_dump_json() + self.version
+        if self.analog:
+            body += self.analog.version
         return hashlib.sha256(body.encode()).hexdigest()
 
     def forecast(self, request: ForecastRequest) -> ForecastResponse:
@@ -98,7 +110,14 @@ class TyphoonForecaster:
                 request.horizons, coords, classes, radii
             )
         ]
+        suggestion = None
+        if self.analog:
+            try:
+                suggestion = self.analog.suggest(fixes, request.horizons)
+            except ValueError as exc:
+                warnings.append(f"No analog suggestion: {exc}")
         return ForecastResponse(
+            suggestion=suggestion,
             forecast_id=self.key(request),
             storm_id=request.storm_id,
             issue_time=last.timestamp,

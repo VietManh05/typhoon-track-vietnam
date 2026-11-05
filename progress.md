@@ -181,3 +181,9 @@
 - Bootstrap theo bão (72 h, 50 bão): mọi phương pháp học tốt hơn persistence có ý nghĩa; k-NN/GBM/Transformer không khác LSTM có ý nghĩa; Attention-LSTM kém hơn (+30 km).
 - Ablation thật: LSTM học tọa độ tuyệt đối 115/121/164/305/473 km (6h kém 3,5×).
 - Báo cáo nháp: `docs/report/README.md` (+ bảng, hình, case YAGI/SAOLA/YINXING/CONSON).
+
+## 2026-11-05 — Gợi ý theo bão tương tự trong hệ thống
+
+- `inference/analog.py` + `ANALOG_ARTIFACT`: artifact .npz không pickle (1005 bão 1980–2020, loại bão test); response có `suggestion` (đường k-NN + 5 bão tương tự có tên/năm); lỗi cửa sổ ngắn/không đều → cảnh báo, không lỗi.
+- Dashboard: đường gợi ý tím + nút bật/tắt, khung "Gợi ý theo bão tương tự", chú giải thu gọn mặc định, tự fitBounds theo bão.
+- Replay YAGI 2024 (06Z 04/09) ở chế độ production: LSTM 72h 580 km (trong nón), k-NN 656 km; analog PEIPAH 2007, DAN 1999, BETH 1996, ELLEN 1986, AERE 2016.

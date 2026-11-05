@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import L from 'leaflet';
 import { Fix, ForecastResponse } from '../../types';
 import { Language, translations } from '../../i18n';
-import { Eye } from 'lucide-react';
+import { Eye, History } from 'lucide-react';
 
 interface TyphoonMapProps {
   observations: Fix[];
@@ -39,6 +39,8 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
   // State for toggles
   const [basemapType, setBasemapType] = useState<'dark' | 'osm' | 'sat'>('dark');
   const [showCone, setShowCone] = useState(true);
+  const [showSuggestion, setShowSuggestion] = useState(true);
+  const fittedKeyRef = useRef<string>('');
   const [islandsData, setIslandsData] = useState<any[]>([]);
 
   const t = translations[lang];
@@ -312,8 +314,54 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
         }
       });
     }
+
+    // D. Explainable k-NN analog suggestion (what similar past storms did next)
+    const suggestion = forecast?.suggestion;
+    if (showSuggestion && suggestion && suggestion.points.length > 0) {
+      const lastObs = observations[observations.length - 1];
+      const analogNames = suggestion.analogs.map((a) => `${a.name} ${a.year}`).join(', ');
+      L.polyline(
+        [
+          [lastObs.lat, lastObs.lon] as L.LatLngExpression,
+          ...suggestion.points.map((p) => [p.lat, p.lon] as L.LatLngExpression),
+        ],
+        { color: '#a855f7', weight: 3, dashArray: '2, 7', opacity: 0.95 }
+      ).addTo(trackGroup);
+      suggestion.points.forEach((p) => {
+        L.circleMarker([p.lat, p.lon], {
+          radius: 4.5,
+          color: '#7e22ce',
+          weight: 1.5,
+          fillColor: '#c084fc',
+          fillOpacity: 0.95,
+        })
+          .bindPopup(`
+            <div class="text-xs font-mono p-1">
+              <div class="font-bold text-purple-400 font-display text-sm">${t.suggestion_title} +${p.horizon_hours} ${t.eta_hours_suffix}</div>
+              <div><strong>${t.popup_coords}:</strong> ${p.lat.toFixed(1)}°${lang === 'vi' ? 'B' : 'N'}, ${p.lon.toFixed(1)}°${lang === 'vi' ? 'Đ' : 'E'}</div>
+              <div><strong>${t.suggestion_analogs}:</strong> ${analogNames}</div>
+            </div>
+          `)
+          .addTo(trackGroup);
+      });
+    }
+
+    // E. Fit the view to the recent track and forecasts once per storm/forecast
+    const fitKey = `${observations[0].timestamp}|${forecastKey}`;
+    if (mapInstanceRef.current && fittedKeyRef.current !== fitKey) {
+      fittedKeyRef.current = fitKey;
+      const focus: L.LatLngExpression[] = [
+        ...observations.slice(-8).map((o) => [o.lat, o.lon] as L.LatLngExpression),
+        ...(forecast?.points ?? []).map((p) => [p.lat, p.lon] as L.LatLngExpression),
+        ...(forecast?.suggestion?.points ?? []).map((p) => [p.lat, p.lon] as L.LatLngExpression),
+      ];
+      mapInstanceRef.current.fitBounds(L.latLngBounds(focus), {
+        padding: [40, 40],
+        maxZoom: 7,
+      });
+    }
   // WS6: Only rebuild when data/toggles change — NOT on currentFixIndex
-  }, [observationsKey, forecastKey, showCone, lang]);
+  }, [observationsKey, forecastKey, showCone, showSuggestion, lang]);
 
   // 7. WS6 OPTIMIZED: Update ONLY the active cyclone marker position on scrub
   useEffect(() => {
@@ -427,6 +475,21 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
           <Eye className="w-3 h-3" aria-hidden="true" />
           <span className="hidden sm:inline">{lang === 'vi' ? 'Nón bất định' : 'Cone'}</span>
         </button>
+        {forecast?.suggestion && (
+          <button
+            onClick={() => setShowSuggestion(!showSuggestion)}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono border transition focus-ring ${
+              showSuggestion
+                ? 'bg-purple-950 text-purple-300 border-purple-500/50'
+                : 'bg-slate-800/80 text-slate-400 border-slate-700'
+            }`}
+            aria-pressed={showSuggestion}
+            aria-label={t.suggestion_title}
+          >
+            <History className="w-3 h-3" aria-hidden="true" />
+            <span className="hidden sm:inline">{t.suggestion_toggle}</span>
+          </button>
+        )}
 
       </div>
     </div>

@@ -47,7 +47,9 @@ def create_app(
                 services["store"] = Store(settings.operational_database_url)
             if services["forecaster"] is None:
                 services["forecaster"] = TyphoonForecaster(
-                    settings.model_artifact, settings.allow_baseline
+                    settings.model_artifact,
+                    settings.allow_baseline,
+                    analog_artifact=settings.analog_artifact,
                 )
         return services
 

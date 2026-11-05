@@ -8,6 +8,7 @@ import { StormOverviewCard } from './components/StormOverviewCard';
 import { TimelinePlayer } from './components/TimelinePlayer';
 import { ForecastTable } from './components/ForecastTable';
 import { ProvinceImpactPanel } from './components/ProvinceImpactPanel';
+import { SuggestionPanel } from './components/SuggestionPanel';
 import { AlertModal } from './components/AlertModal';
 import { DashboardSkeleton, EmptyState, ErrorBanner, TrackLoadingIndicator } from './components/LoadingStates';
 import { CollapsibleSection } from './components/CollapsibleSection';
@@ -346,6 +347,18 @@ export const App: React.FC = () => {
                   forecast={stormTrack?.forecast || null}
                   lang={lang}
                 />
+              </CollapsibleSection>
+            )}
+
+            {/* A2. Explainable similar-storm suggestion (k-NN analogs) */}
+            {!isTrackLoading && stormTrack?.forecast?.suggestion && (
+              <CollapsibleSection
+                id="similar-storms"
+                title={t.suggestion_title}
+                defaultOpen={true}
+                lang={lang}
+              >
+                <SuggestionPanel suggestion={stormTrack.forecast.suggestion} lang={lang} />
               </CollapsibleSection>
             )}
 

@@ -162,6 +162,15 @@ gần bờ biển Việt Nam nhất (trường hợp khó: bão sắp đổ bộ
 
 - API FastAPI: `/typhoons/active`, `/typhoons/{id}/track` (dự báo + nón),
   dashboard bản đồ Leaflet, worker lấy dữ liệu NOAA IBTrACS ACTIVE.
+- **Gợi ý theo bão tương tự:** mỗi dự báo kèm đường đi gợi ý của k-NN analog và
+  danh sách 5 cơn bão lịch sử giống nhất (tên, năm), hiển thị trên bản đồ (đường
+  tím) và trong khung "Gợi ý theo bão tương tự". Thư viện analog gồm bão
+  1980–2020 (train + validation), không chứa bão kiểm thử 2021–2024.
+- Kiểm thử qua hệ thống (phát lại YAGI 2024 tới 06Z 04/09, bão chưa từng thấy):
+  LSTM sai 12 / 28 / 82 / 313 / 580 km tại 6–72 h, vị trí thực luôn nằm trong
+  nón; k-NN sai 12 / 62 / 119 / 357 / 656 km với bão tương tự PEIPAH 2007,
+  DAN 1999, BETH 1996, … (một trường hợp đơn lẻ; trên toàn tập test hai phương
+  pháp không khác biệt có ý nghĩa).
 - Gói mô hình (bundle) có checksum, kiểm tra schema đặc trưng và scaler khi nạp.
 - Chạy: xem [README](../../README.md) và [frontend](../frontend.md).
 
@@ -182,4 +191,5 @@ gần bờ biển Việt Nam nhất (trường hợp khó: bão sắp đổ bộ
 python scripts/run_ibtracs_benchmark.py --data-root data --output-dir runs/ibtracs-benchmark
 python scripts/run_model_comparison.py --data-root data --output-dir runs/model-comparison --seeds 0 1 2
 python scripts/plot_error_analysis.py --run runs/model-comparison --data-root data
+python scripts/build_analog_artifact.py --data-root data --output runs/analog/analog-wp.npz
 ```

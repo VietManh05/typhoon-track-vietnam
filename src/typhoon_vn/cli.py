@@ -66,7 +66,9 @@ def _worker(args: argparse.Namespace) -> int:
     settings = Settings()
     store = Store(args.db or settings.operational_database_url)
     forecaster = TyphoonForecaster(
-        settings.model_artifact, allow_baseline=settings.allow_baseline
+        settings.model_artifact,
+        allow_baseline=settings.allow_baseline,
+        analog_artifact=settings.analog_artifact,
     )
     if args.snapshot:
         source = snapshot_source(args.snapshot)

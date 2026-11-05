@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     operational_database_url: str = "sqlite:///data/operational/typhoon.db"
     model_artifact: Path | None = None
+    # Optional k-NN analog library (.npz) for explainable track suggestions.
+    analog_artifact: Path | None = None
     allow_baseline: bool = True
     api_key: str = ""
     # Let the public dashboard read active storms/tracks without the key; writes

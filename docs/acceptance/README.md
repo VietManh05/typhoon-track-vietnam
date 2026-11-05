@@ -3,6 +3,8 @@
 Ngày nghiệm thu: 2026-11-05 · Nhánh `VietManh05/review-project-next-steps` (PR #1)
 · Website: <https://baoviet2026.pages.dev>
 
+Hướng dẫn trình bày và bảo vệ: [HUONG_DAN_BAO_VE.md](HUONG_DAN_BAO_VE.md).
+
 Quy ước: **Đạt** = có kết quả chạy thật kiểm chứng; **Đạt một phần** = có nhưng
 còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt" chỉ vì file tồn tại.
 

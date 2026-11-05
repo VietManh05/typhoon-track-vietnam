@@ -283,6 +283,23 @@ def create_app(
     def active():
         return {"typhoons": db().active(), "disclaimer": DISCLAIMER}
 
+    @app.get("/typhoons/near", dependencies=[Depends(authorize_read)])
+    def near(lat: float, lon: float, radius_km: float = 500.0):
+        """Active storms whose latest fix is within ``radius_km`` of a point."""
+
+        if not -90 <= lat <= 90 or not -180 <= lon <= 180:
+            raise HTTPException(422, "Invalid location coordinates")
+        if not 0 < radius_km <= 2000:
+            raise HTTPException(422, "radius_km must be in (0, 2000]")
+        store = db()
+        return {
+            "location": {"lat": lat, "lon": lon},
+            "radius_km": radius_km,
+            "spatial_backend": store.spatial_backend,
+            "typhoons": store.storms_near(lat, lon, radius_km),
+            "disclaimer": DISCLAIMER,
+        }
+
     @app.get("/typhoons/{storm_id}/track", dependencies=[Depends(authorize_read)])
     def track(storm_id: str):
         fixes = db().track(storm_id)

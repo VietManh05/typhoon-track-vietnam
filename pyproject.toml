@@ -85,4 +85,8 @@ extend-ignore = ["E203", "E402"]
 exclude = [".git", ".venv", "build", "dist"]
 
 [tool.setuptools.package-data]
-typhoon_vn = ["dashboard/*"]
+typhoon_vn = [
+    "dashboard/**/*",
+    "operations/migrations/alembic.ini",
+    "operations/migrations/script.py.mako",
+]

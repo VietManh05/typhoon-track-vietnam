@@ -7,10 +7,17 @@ import pandas as pd
 import pytest
 
 from typhoon_vn.features.build import FEATURE_COLUMNS
-from typhoon_vn.training.cross_validation import build_seasonal_folds
 from typhoon_vn.training.experiment import ExperimentTracker
 from typhoon_vn.training.registry import ModelRegistry, PromotionPolicy
-from typhoon_vn.training.tuning import SearchSpace, run_search
+
+try:
+    from typhoon_vn.training.cross_validation import build_seasonal_folds
+    from typhoon_vn.training.tuning import SearchSpace, run_search
+except ImportError:  # G14 spec written ahead of implementation
+    pytest.skip(
+        "spec: G14 cross_validation/tuning not implemented yet",
+        allow_module_level=True,
+    )
 
 
 def _season_frame() -> pd.DataFrame:

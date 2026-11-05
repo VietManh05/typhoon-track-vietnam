@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: setup clean-data train serve test lint format hooks dvc-init mlflow-ui
+.PHONY: setup clean-data train serve test lint format hooks dvc-init mlflow-ui dashboard
 
 setup:
 	$(PYTHON) -m pip install --upgrade pip
@@ -20,9 +20,9 @@ test:
 	$(PYTHON) -m pytest
 
 lint:
-	$(PYTHON) -m flake8 src tests
-	$(PYTHON) -m isort --check-only src tests
-	$(PYTHON) -m black --check src tests
+	$(PYTHON) -m flake8 src tests scripts
+	$(PYTHON) -m isort --check-only src tests scripts
+	$(PYTHON) -m black --check src tests scripts
 
 format:
 	$(PYTHON) -m isort src tests
@@ -36,3 +36,8 @@ dvc-init:
 
 mlflow-ui:
 	$(PYTHON) -m mlflow ui --backend-store-uri ./mlruns
+
+dashboard:
+	cd viz/frontend && npm ci && npx tsc --noEmit && npx vite build
+	$(PYTHON) -c "import shutil; shutil.rmtree('src/typhoon_vn/dashboard', ignore_errors=True); shutil.copytree('viz/frontend/dist', 'src/typhoon_vn/dashboard')"
+	$(PYTHON) scripts/check_dashboard_sync.py

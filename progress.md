@@ -156,3 +156,11 @@
 - Tailwind chưa từng được cài (bản build không có style) → thêm tailwindcss 3.4 + PostCSS. Basemap mặc định đổi sang Esri Dark Gray (CARTO cần key).
 - E2E: API + bundle IBTrACS + replay Yagi 2024 (time-shifted, `synthetic-demo`) → dự báo ở toạ độ thật, cone 52–714 km, cảnh báo hiển thị; luồng rỗng và demo kiểm bằng Playwright.
 - Còn lại: phân loại tác động tỉnh theo khoảng cách (≤60 km = "rất nguy hiểm") bất kể cường độ; API key header chưa được frontend gửi (production bắt buộc).
+
+## 2026-11-05 — CI và dọn tồn tại frontend
+
+- Nhãn tác động tỉnh đổi thành mức khoảng cách (≤60/150/300/500 km); bỏ khẳng định "đổ bộ/vùng gió bão" vì hệ thống không có mô hình trường gió.
+- Spec chưa có implementation (`test_environment_forecast`, `test_phase3_management`) tự skip kèm lý do; `pytest` trơn: 136 passed, 2 skipped.
+- `.github/workflows/ci.yml`: job Python (pip check, flake8/isort/black, pytest, torch CPU) và frontend (npm ci, tsc, build, `scripts/check_dashboard_sync.py`).
+- `make dashboard` build + đồng bộ + kiểm tra; `make lint` gồm `scripts/`.
+- Chờ quyết định: cách dashboard xác thực với API ở production (không nhúng key vào JS).

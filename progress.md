@@ -201,3 +201,10 @@
 - `scripts/run_training_study.py`: chọn trên validation, test một lần. Không thay đổi nào cải thiện LSTM baseline trên val: dữ liệu toàn lưu vực (212 vs 201 km), lịch sử 48h (212), loss km (203), mạng lớn/nhỏ (206–207), Transformer (207). Ensemble LSTM+Transformer trên test: −7,5 km, KTC95 [−16, +1,5] → không có ý nghĩa. Kết luận: mô hình chỉ dùng quỹ đạo đã chạm trần.
 - Ca YAGI: LSTM dự báo đổi hướng tây bắc (khí hậu học), thực tế đi tây do áp cao cận nhiệt → cần thông tin dòng dẫn đường.
 - `features/steering.py`: 11 đặc trưng NCEP/NCAR R1 (dòng dẫn đường lớp sâu vành khuyên 200–800 km, gió 500 hPa, đứt gió, z500 và chênh z500 bốn hướng); `scripts/download_ncep_steering.py` (miễn phí, không tài khoản); k-NN có nhóm tương đồng "steering"; `scripts/run_env_study.py`.
+
+## 2026-11-05 — Dòng dẫn đường và nghiệm thu
+
+- NCEP/NCAR R1 1980–2024 (135 file, lưới 62.5N–10S, 92.5–182.5E) tải xong; độ phủ đặc trưng 100% (box) / 99.5% (toàn lưu vực).
+- `run_env_study.py`: ensemble LSTM+Transformer có dòng dẫn đường (chọn trên val) — test TB 179 vs 197 km; 72 h −35 km, KTC95 [−62, −9] (có ý nghĩa). YAGI chưa giải được.
+- Bảo mật: torch cài riêng từ index PyTorch (Dockerfile + CI), không còn extra index.
+- Kiến trúc cập nhật; hồ sơ nghiệm thu `docs/acceptance/README.md`: 21 Đạt, 7 Đạt một phần.

@@ -96,6 +96,16 @@ def create_app(
             request.headers.get("X-API-Key", ""), settings.api_key
         ):
             raise HTTPException(401, "Valid X-API-Key required")
+        rate_limit(request)
+
+    def authorize_read(request: Request):
+        """Dashboard read routes: public when ``public_read``, always rate limited."""
+        if settings.public_read:
+            rate_limit(request)
+        else:
+            authorize(request)
+
+    def rate_limit(request: Request):
         now = time.monotonic()
         address = request.client.host if request.client else "local"
         with lock:
@@ -200,11 +210,11 @@ def create_app(
     def forecast(body: ForecastRequest):
         return compute(body)
 
-    @app.get("/typhoons/active", dependencies=[Depends(authorize)])
+    @app.get("/typhoons/active", dependencies=[Depends(authorize_read)])
     def active():
         return {"typhoons": db().active(), "disclaimer": DISCLAIMER}
 
-    @app.get("/typhoons/{storm_id}/track", dependencies=[Depends(authorize)])
+    @app.get("/typhoons/{storm_id}/track", dependencies=[Depends(authorize_read)])
     def track(storm_id: str):
         fixes = db().track(storm_id)
         if not fixes:

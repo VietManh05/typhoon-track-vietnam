@@ -1,6 +1,9 @@
 default_language_version:
   python: python3.11
 
+# docs/planning is an archived process log (WBS, evidence, generators); keep it verbatim.
+exclude: ^docs/planning/
+
 repos:
   - repo: local
     hooks:

@@ -1,2 +1,0 @@
-# The package metadata in pyproject.toml is the source of truth.
--e ".[api]"

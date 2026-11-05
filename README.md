@@ -4,11 +4,31 @@ Vietnam-focused tropical-cyclone track forecasting research and decision-support
 
 > **Safety:** forecasts are decision support only, not official weather warnings. Follow NCHMF and competent authorities for operational decisions.
 
+## Đồ án: đọc gì trước / What to read first
+
+| Mục | Vị trí |
+|---|---|
+| Báo cáo đánh giá (tiếng Việt) | [`docs/report/README.md`](docs/report/README.md) |
+| Hồ sơ nghiệm thu 28 tiêu chí | [`docs/acceptance/README.md`](docs/acceptance/README.md) |
+| Kiến trúc hệ thống | [`docs/architecture.md`](docs/architecture.md) |
+| Demo trực tuyến | <https://baoviet2026.pages.dev> (nút "Dự báo lại") |
+
+```text
+src/typhoon_vn/   Python package: ingestion, features, models, training, inference, API
+tests/            pytest suite (unit, API, migrations, models)
+scripts/          benchmarks, studies, exports, data downloads (reproduce the report)
+configs/          training configurations
+viz/frontend/     React dashboard + Cloudflare Pages Functions (node tests in tests/)
+infra/            Dockerfile, scheduler example
+docs/             report/, acceptance/, architecture, contracts; planning/ = process log
+data/ checkpoints/ notebooks/   empty placeholders; data and models are not committed
+```
+
 ## Verified status
 
 The local test path currently covers ingestion, feature contracts, storm-safe splitting, train-only scaling, deterministic checkpoint/resume, model-bundle integrity, synthetic training smoke, trained/baseline inference, and API validation/auth/rate limiting.
 
-This repository is **not production-ready**. Redis read/invalidation, subscription ownership, and alert delivery remain backlog items. Synthetic smoke results and the constant-motion baseline are not evidence of real-storm forecast skill; the real-data benchmark is in [B01](docs/planning/evidence/B01-ibtracs-benchmark.md).
+This repository is **not production-ready**. Subscription ownership is a backlog item, and outbound alert delivery (signed webhook) is implemented but disabled until approved. Synthetic smoke results and the constant-motion baseline are not evidence of real-storm forecast skill; the real-data benchmark is in [B01](docs/planning/evidence/B01-ibtracs-benchmark.md).
 
 Implemented since 2026-11-05: Alembic migrations for the operational store (tested on SQLite and PostGIS), and a worker fed by the keyless NOAA IBTrACS ACTIVE file:
 

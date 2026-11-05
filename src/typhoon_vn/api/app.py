@@ -10,7 +10,9 @@ from pathlib import Path
 from threading import RLock
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Path as PathParam
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
@@ -31,6 +33,22 @@ from typhoon_vn.operations.worker import evaluate_alerts, update
 from typhoon_vn.settings import Settings, get_settings
 
 logger = logging.getLogger(__name__)
+
+# Same rule as ForecastRequest.storm_id, enforced on the URL so bad IDs are a
+# 422 up front instead of a validation error deep inside the handler (500).
+StormId = PathParam(min_length=1, max_length=80, pattern=r"^[\w.-]+$")
+
+# Dashboard needs: own assets, Leaflet/Windy scripts, map tiles and APIs over https.
+CONTENT_SECURITY_POLICY = (
+    "default-src 'self'; "
+    "script-src 'self' https://api.windy.com https://*.windy.com https://unpkg.com; "
+    "style-src 'self' 'unsafe-inline' https://unpkg.com https://*.windy.com; "
+    "img-src 'self' data: blob: https:; "
+    "font-src 'self' data:; "
+    "connect-src 'self' https:; "
+    "worker-src 'self' blob:; "
+    "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+)
 
 
 def create_app(
@@ -120,6 +138,7 @@ def create_app(
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY
         return response
 
     def authorize(request: Request):
@@ -301,7 +320,7 @@ def create_app(
         }
 
     @app.get("/typhoons/{storm_id}/track", dependencies=[Depends(authorize_read)])
-    def track(storm_id: str):
+    def track(storm_id: str = StormId):
         fixes = db().track(storm_id)
         if not fixes:
             raise HTTPException(404, "Storm not found")
@@ -320,7 +339,7 @@ def create_app(
         }
 
     @app.get("/typhoons/{storm_id}/impact", dependencies=[Depends(authorize)])
-    def impact(storm_id: str, lat: float, lon: float):
+    def impact(lat: float, lon: float, storm_id: str = StormId):
         if not -90 <= lat <= 90 or not -180 <= lon <= 180:
             raise HTTPException(422, "Invalid location coordinates")
         result = compute(ForecastRequest(storm_id=storm_id))

@@ -335,3 +335,24 @@ def test_track_still_returns_observations_when_forecast_fails() -> None:
     body = response.json()
     assert len(body["observations"]) == 6 and body["forecast"] is None
     assert "24 hours" in body["forecast_unavailable"]
+
+
+def test_bad_storm_id_in_url_is_rejected_not_a_server_error() -> None:
+    app = create_app(
+        settings=Settings(
+            _env_file=None,
+            api_key="secret",
+            operational_database_url="sqlite:///:memory:",
+        ),
+        store=Store("sqlite:///:memory:"),
+        forecaster=TyphoonForecaster(),
+    )
+    headers = {"X-API-Key": "secret"}
+    with TestClient(app, raise_server_exceptions=False) as client:
+        # HawkScan "Format String Error" payload: used to surface as a 500.
+        bad = "/typhoons/HSTE%25n%25s%25n%25s/impact?lat=10&lon=110"
+        assert client.get(bad, headers=headers).status_code == 422
+        assert client.get("/typhoons/a%25n/track").status_code == 422
+        response = client.get("/health")
+    csp = response.headers["Content-Security-Policy"]
+    assert "default-src 'self'" in csp and "frame-ancestors 'none'" in csp

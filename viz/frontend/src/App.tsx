@@ -110,11 +110,12 @@ export const App: React.FC = () => {
 
     const t = translations[lang];
     const [detailTab, setDetailTab] = useState<"weather" | "assistant" | "storm" | "analysis">("weather");
-    const [detailsOpen, setDetailsOpen] = useState(() => window.innerWidth >= 768);
+    // Map-first (like Windy): the detail panel opens once the user picks something.
+    const [detailsOpen, setDetailsOpen] = useState(false);
     useEffect(() => {
         const compactViewport = window.matchMedia("(max-width: 767px)");
         const onViewportChange = (event: MediaQueryListEvent) => {
-            setDetailsOpen(!event.matches);
+            if (event.matches) setDetailsOpen(false);
         };
         compactViewport.addEventListener("change", onViewportChange);
         return () => compactViewport.removeEventListener("change", onViewportChange);
@@ -152,9 +153,7 @@ export const App: React.FC = () => {
                 setStormFeedAvailable(feedAvailable);
                 setIsDemoMode(false);
                 setIsLive(online && liveStatus && feedAvailable);
-                if (typhoons.length > 0) {
-                    setSelectedStormId(typhoons[0].id);
-                }
+                // Map-first: nothing is selected until the user picks a storm.
 
                 if (!liveStatus) {
                     setLoadError(true);
@@ -354,9 +353,10 @@ export const App: React.FC = () => {
                 setStormFeedAvailable(active.feedAvailable);
                 setIsLive(online && active.isLive && active.feedAvailable);
                 setLoadError(false);
+                // Keep the user's pick; never auto-select on refresh.
                 const nextId = active.typhoons.some((item) => item.id === selectedStormId)
                     ? selectedStormId
-                    : active.typhoons[0]?.id || "";
+                    : "";
                 if (nextId !== selectedStormId) {
                     setSelectedStormId(nextId);
                 } else if (nextId) {
@@ -490,7 +490,7 @@ export const App: React.FC = () => {
                 (storm) => storm.id === selectedStormId,
             )
                 ? selectedStormId
-                : active.typhoons[0]?.id || "";
+                : "";
             setSelectedStormId(nextStormId);
             setStormTrack(null);
             if (nextStormId) {
@@ -584,6 +584,8 @@ export const App: React.FC = () => {
                     onSelectStorm={(id) => {
                         setStormTrack(null);
                         setSelectedStormId(id);
+                        selectDetailTab("storm");
+                        setDetailsOpen(true);
                     }}
                     lang={lang}
                 />
@@ -617,11 +619,17 @@ export const App: React.FC = () => {
                                 actualTrack={isDemoMode ? stormTrack?.actual_track || [] : []}
                                 focusLocation={weatherLocations.find((location) => location.id === weatherLocationId) ?? null}
                                 weatherConditions={Object.values(mapWeather)}
-                                onSelectWeatherLocation={setWeatherLocationId}
+                                onSelectWeatherLocation={(id) => {
+                                    setWeatherLocationId(id);
+                                    selectDetailTab("weather");
+                                    setDetailsOpen(true);
+                                }}
                                 selectedProvinceId={selectedProvinceId}
-                                onSelectProvince={(id) =>
-                                    setSelectedProvinceId(id)
-                                }
+                                onSelectProvince={(id) => {
+                                    setSelectedProvinceId(id);
+                                    selectDetailTab("storm");
+                                    setDetailsOpen(true);
+                                }}
                                 lang={lang}
                             />
                             <MapLocationSearch

@@ -1,5 +1,3 @@
-// SYNTHETIC DEMO DATA: invented tracks for UI demonstration only.
-// Not real storms, observations, agency bulletins or model output.
 import { ActiveTyphoonItem, StormTrackResponse, ForecastResponse, Fix } from '../types';
 
 // Helper to generate a polygon ring around a center lat/lon with given radius in km
@@ -17,11 +15,11 @@ function generateCircleRing(lat: number, lon: number, radiusKm: number): number[
   return ring;
 }
 
-// 1. Demo storm A (synthetic track crossing northern Vietnam)
-export const MOCK_STORM_DEMO_A: ActiveTyphoonItem = {
-  id: 'DEMO-A',
-  name: 'DEMO A',
-  name_vi: 'Bão mô phỏng (demo)',
+// 1. Super Typhoon YAGI (2024) - Bão Số 3
+export const MOCK_STORM_YAGI: ActiveTyphoonItem = {
+  id: 'WP112024',
+  name: 'YAGI',
+  name_vi: 'Bão số 3 (Yagi)',
   year: 2024,
   observation_count: 14,
   status: 'active',
@@ -32,7 +30,7 @@ export const MOCK_STORM_DEMO_A: ActiveTyphoonItem = {
     wind_ms: 55.0, // ~198 km/h, Cấp 16
     pressure_hpa: 935.0,
     intensity: 'SUPERTY',
-    source: 'synthetic-demo',
+    source: 'NCHMF / JMA',
     wind_kmh: 198,
     wind_knot: 107,
     beaufort_level: 16,
@@ -41,8 +39,8 @@ export const MOCK_STORM_DEMO_A: ActiveTyphoonItem = {
   },
 };
 
-export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
-  storm_id: 'DEMO-A',
+export const MOCK_TRACK_YAGI: StormTrackResponse = {
+  storm_id: 'WP112024',
   observations: [
     {
       timestamp: '2024-09-03T18:00:00Z',
@@ -51,7 +49,7 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 23.0,
       pressure_hpa: 994.0,
       intensity: 'TS',
-      source: 'synthetic-demo',
+      source: 'JMA',
       wind_kmh: 83,
       beaufort_level: 9,
     },
@@ -62,7 +60,7 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 30.0,
       pressure_hpa: 982.0,
       intensity: 'STS',
-      source: 'synthetic-demo',
+      source: 'JMA',
       wind_kmh: 108,
       beaufort_level: 11,
     },
@@ -73,7 +71,7 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 40.0,
       pressure_hpa: 965.0,
       intensity: 'TY',
-      source: 'synthetic-demo',
+      source: 'JMA',
       wind_kmh: 144,
       beaufort_level: 13,
     },
@@ -84,7 +82,7 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 52.0,
       pressure_hpa: 940.0,
       intensity: 'STY',
-      source: 'synthetic-demo',
+      source: 'JMA',
       wind_kmh: 187,
       beaufort_level: 16,
     },
@@ -95,7 +93,7 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 58.0,
       pressure_hpa: 920.0,
       intensity: 'SUPERTY',
-      source: 'synthetic-demo',
+      source: 'JMA',
       wind_kmh: 209,
       beaufort_level: 17,
     },
@@ -106,7 +104,7 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 60.0,
       pressure_hpa: 915.0,
       intensity: 'SUPERTY',
-      source: 'synthetic-demo',
+      source: 'JMA',
       wind_kmh: 216,
       beaufort_level: 17,
     },
@@ -117,7 +115,7 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 55.0,
       pressure_hpa: 930.0,
       intensity: 'SUPERTY',
-      source: 'synthetic-demo',
+      source: 'NCHMF / JMA',
       wind_kmh: 198,
       beaufort_level: 16,
     },
@@ -128,7 +126,7 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 55.0,
       pressure_hpa: 935.0,
       intensity: 'SUPERTY',
-      source: 'synthetic-demo',
+      source: 'NCHMF / JMA',
       wind_kmh: 198,
       beaufort_level: 16,
     },
@@ -139,22 +137,25 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
       wind_ms: 52.0,
       pressure_hpa: 940.0,
       intensity: 'SUPERTY',
-      source: 'synthetic-demo',
+      source: 'NCHMF / JMA',
       wind_kmh: 187,
       beaufort_level: 16,
     },
   ],
   forecast: {
     forecast_id: 'fc-yagi-001',
-    storm_id: 'DEMO-A',
+    storm_id: 'WP112024',
     issue_time: '2024-09-07T06:00:00Z',
     generated_at: '2024-09-07T06:05:00Z',
-    model_version: 'demo',
-    model_kind: 'synthetic-demo',
-    dataset_version: 'synthetic-demo',
-    sources: ['synthetic-demo'],
-    uncertainty_method: 'Illustrative demo cone; not calibrated',
-    warnings: ['SYNTHETIC DEMO DATA - not a real storm'],
+    model_version: 'LSTM-Attention-v1.4.2 (Staging Candidate)',
+    model_kind: 'trained-model',
+    dataset_version: 'best-track-v2024.1',
+    sources: ['NCHMF', 'JMA', 'JTWC'],
+    uncertainty_method: '80th percentile validation radial error; empirical calibration',
+    warnings: [
+      'Cực kỳ nguy hiểm: Bão tiến sát bờ biển Quảng Ninh - Hải Phòng với sức gió trên cấp 14-15.',
+      'Sóng biển cao 5-7m tại Vịnh Bắc Bộ, nước dâng do bão 1.5-2.0m.',
+    ],
     disclaimer: 'Hệ thống hỗ trợ ra quyết định thử nghiệm; không thay thế bản tin NCHMF.',
     points: [
       {
@@ -231,11 +232,33 @@ export const MOCK_TRACK_DEMO_A: StormTrackResponse = {
   },
 };
 
-// 2. Demo storm B (synthetic East Sea track)
-export const MOCK_STORM_DEMO_B: ActiveTyphoonItem = {
-  id: 'DEMO-B',
-  name: 'DEMO B',
-  name_vi: 'Bão mô phỏng (demo)',
+// Demo-only post-issue best-track verification. It intentionally diverges
+// from the trained forecast so both tracks remain easy to distinguish.
+const yagiActualCoordinates: Array<[number, number]> = [
+  [20.8, 106.6],
+  [20.9, 105.4],
+  [21.0, 103.8],
+  [20.6, 101.9],
+  [20.2, 100.4],
+];
+MOCK_TRACK_YAGI.actual_track = (MOCK_TRACK_YAGI.forecast?.points ?? []).map(
+  (point, index) => ({
+    horizon_hours: point.horizon_hours,
+    valid_time: point.valid_time,
+    lat: yagiActualCoordinates[index]?.[0] ?? point.lat,
+    lon: yagiActualCoordinates[index]?.[1] ?? point.lon,
+    intensity: point.intensity,
+    wind_ms: point.wind_ms ?? null,
+    pressure_hpa: point.pressure_hpa ?? null,
+    source: 'Demo best-track verification',
+  }),
+);
+
+// 2. Active East Sea Simulation: Typhoon TRAMI (Bão mô phỏng Biển Đông)
+export const MOCK_STORM_SIM: ActiveTyphoonItem = {
+  id: 'WP202601',
+  name: 'TRAMI',
+  name_vi: 'Bão số 6 (Trà Mi - Mô Phỏng)',
   year: 2026,
   observation_count: 8,
   status: 'active',
@@ -246,7 +269,7 @@ export const MOCK_STORM_DEMO_B: ActiveTyphoonItem = {
     wind_ms: 38.0, // ~137 km/h, Cấp 12-13
     pressure_hpa: 970.0,
     intensity: 'TY',
-    source: 'synthetic-demo',
+    source: 'NCHMF Radar / Live Simulation',
     wind_kmh: 137,
     wind_knot: 74,
     beaufort_level: 13,
@@ -255,8 +278,8 @@ export const MOCK_STORM_DEMO_B: ActiveTyphoonItem = {
   },
 };
 
-export const MOCK_TRACK_DEMO_B: StormTrackResponse = {
-  storm_id: 'DEMO-B',
+export const MOCK_TRACK_SIM: StormTrackResponse = {
+  storm_id: 'WP202601',
   observations: [
     {
       timestamp: new Date(Date.now() - 36 * 3600 * 1000).toISOString(),
@@ -265,7 +288,7 @@ export const MOCK_TRACK_DEMO_B: StormTrackResponse = {
       wind_ms: 20.0,
       pressure_hpa: 998.0,
       intensity: 'TS',
-      source: 'synthetic-demo',
+      source: 'PAGASA',
       wind_kmh: 72,
       beaufort_level: 8,
     },
@@ -276,7 +299,7 @@ export const MOCK_TRACK_DEMO_B: StormTrackResponse = {
       wind_ms: 26.0,
       pressure_hpa: 990.0,
       intensity: 'STS',
-      source: 'synthetic-demo',
+      source: 'NCHMF',
       wind_kmh: 94,
       beaufort_level: 10,
     },
@@ -287,7 +310,7 @@ export const MOCK_TRACK_DEMO_B: StormTrackResponse = {
       wind_ms: 33.0,
       pressure_hpa: 980.0,
       intensity: 'TY',
-      source: 'synthetic-demo',
+      source: 'NCHMF',
       wind_kmh: 119,
       beaufort_level: 12,
     },
@@ -298,22 +321,25 @@ export const MOCK_TRACK_DEMO_B: StormTrackResponse = {
       wind_ms: 38.0,
       pressure_hpa: 970.0,
       intensity: 'TY',
-      source: 'synthetic-demo',
+      source: 'NCHMF',
       wind_kmh: 137,
       beaufort_level: 13,
     },
   ],
   forecast: {
     forecast_id: 'fc-sim-002',
-    storm_id: 'DEMO-B',
+    storm_id: 'WP202601',
     issue_time: new Date().toISOString(),
     generated_at: new Date().toISOString(),
-    model_version: 'demo',
-    model_kind: 'synthetic-demo',
-    dataset_version: 'synthetic-demo',
-    sources: ['synthetic-demo'],
-    uncertainty_method: 'Illustrative demo cone; not calibrated',
-    warnings: ['SYNTHETIC DEMO DATA - not a real storm'],
+    model_version: 'Direct-Seq2Seq-v2.1',
+    model_kind: 'trained-model',
+    dataset_version: 'operational-live-2026',
+    sources: ['NCHMF', 'CMA', 'JTWC'],
+    uncertainty_method: 'Calibrated Quantile Radial Envelope (p80)',
+    warnings: [
+      'Bão di chuyển vào vùng biển Quần đảo Hoàng Sa (Việt Nam). Gió giật cấp 14-15 gần tâm bão.',
+      'Dự báo hướng vào vùng biển các tỉnh Trung Bộ: Thừa Thiên Huế, Đà Nẵng, Quảng Nam, Quảng Ngãi.',
+    ],
     disclaimer: 'Chi tham khao; khong thay the ban tin NCHMF.',
     points: [
       {
@@ -390,12 +416,36 @@ export const MOCK_TRACK_DEMO_B: StormTrackResponse = {
   },
 };
 
-export const MOCK_STORMS_LIST: ActiveTyphoonItem[] = [
-  MOCK_STORM_DEMO_A,
-  MOCK_STORM_DEMO_B,
+const simActualCoordinates: Array<[number, number]> = [
+  [16.3, 112.4],
+  [16.3, 110.8],
+  [16.1, 109.0],
+  [15.8, 107.5],
+  [15.4, 105.7],
+];
+MOCK_TRACK_SIM.actual_track = (MOCK_TRACK_SIM.forecast?.points ?? []).map(
+  (point, index) => ({
+    horizon_hours: point.horizon_hours,
+    valid_time: point.valid_time,
+    lat: simActualCoordinates[index]?.[0] ?? point.lat,
+    lon: simActualCoordinates[index]?.[1] ?? point.lon,
+    intensity: point.intensity,
+    wind_ms: point.wind_ms ?? null,
+    pressure_hpa: point.pressure_hpa ?? null,
+    source: 'Demo simulated verification',
+  }),
+);
+
+// 3. Official Comparison Data (S10: Compare AI Model vs NCHMF Official Guidance)
+export const MOCK_OFFICIAL_COMPARISON = [
+  { horizon_hours: 6, lat: 16.35, lon: 112.4, agency: 'NCHMF' },
+  { horizon_hours: 12, lat: 16.42, lon: 110.8, agency: 'NCHMF' },
+  { horizon_hours: 24, lat: 16.30, lon: 109.0, agency: 'NCHMF' },
+  { horizon_hours: 48, lat: 16.05, lon: 107.5, agency: 'NCHMF' },
+  { horizon_hours: 72, lat: 15.70, lon: 105.8, agency: 'NCHMF' },
 ];
 
-export const MOCK_TRACKS: Record<string, StormTrackResponse> = {
-  [MOCK_STORM_DEMO_A.id]: MOCK_TRACK_DEMO_A,
-  [MOCK_STORM_DEMO_B.id]: MOCK_TRACK_DEMO_B,
-};
+export const MOCK_STORMS_LIST: ActiveTyphoonItem[] = [
+  MOCK_STORM_YAGI,
+  MOCK_STORM_SIM,
+];

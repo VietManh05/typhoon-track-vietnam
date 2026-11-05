@@ -62,3 +62,4 @@ data/operational/*.db
 # Local experiment outputs
 runs/
 .playwright-mcp/
+.wrangler/

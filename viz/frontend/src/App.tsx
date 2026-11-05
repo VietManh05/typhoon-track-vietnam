@@ -1,405 +1,767 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Header } from './components/Header';
-import { DisclaimerBanner } from './components/DisclaimerBanner';
-import { ActiveStormSelector } from './components/ActiveStormSelector';
-import { TyphoonMap } from './components/Map/TyphoonMap';
-import { MapLegend } from './components/Map/MapLegend';
-import { StormOverviewCard } from './components/StormOverviewCard';
-import { TimelinePlayer } from './components/TimelinePlayer';
-import { ForecastTable } from './components/ForecastTable';
-import { ProvinceImpactPanel } from './components/ProvinceImpactPanel';
-import { SuggestionPanel } from './components/SuggestionPanel';
-import { AlertModal } from './components/AlertModal';
-import { DashboardSkeleton, EmptyState, ErrorBanner, TrackLoadingIndicator } from './components/LoadingStates';
-import { CollapsibleSection } from './components/CollapsibleSection';
-import { Language, translations } from './i18n';
-import { ActiveTyphoonItem, Fix, StormTrackResponse, ProvinceImpact } from './types';
+import React, {
+    lazy,
+    Suspense,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
+import { Header } from "./components/Header";
+import { DisclaimerBanner } from "./components/DisclaimerBanner";
+import { ActiveStormSelector } from "./components/ActiveStormSelector";
+import { TyphoonMap } from "./components/Map/TyphoonMap";
+import { MapLegend } from "./components/Map/MapLegend";
+import { MapLocationSearch } from "./components/Map/MapLocationSearch";
+import { StormOverviewCard } from "./components/StormOverviewCard";
+import { TimelinePlayer } from "./components/TimelinePlayer";
+import { ForecastTable } from "./components/ForecastTable";
+import { ProvinceImpactPanel } from "./components/ProvinceImpactPanel";
+import { AlertModal } from "./components/AlertModal";
+import { WeatherPanel } from "./components/WeatherPanel";
+import { DEMO_WEATHER_LOCATIONS, getDemoWeather } from "./services/demoWeather";
+import { OllamaAssistant } from "./components/OllamaAssistant";
 import {
-  fetchActiveTyphoons,
-  fetchStormTrack,
-  calculateProvinceImpacts,
-  bearingDeg,
-  haversineKm,
-} from './services/api';
-import { MOCK_STORMS_LIST, MOCK_TRACKS } from './services/mockData';
+    DashboardSkeleton,
+    ErrorBanner,
+    TrackLoadingIndicator,
+} from "./components/LoadingStates";
+import { CollapsibleSection } from "./components/CollapsibleSection";
+import { Language, translations } from "./i18n";
+import {
+    ActiveTyphoonItem,
+    Fix,
+    ProvinceImpact,
+    ProvinceGeoFeature,
+    StormTrackResponse,
+    WeatherLocation,
+    CurrentWeather,
+    HourlyWeather,
+    DailyWeather,
+} from "./types";
+import {
+    checkBackendHealth,
+    fetchActiveTyphoons,
+    fetchStormTrack,
+    calculateProvinceImpacts,
+    fetchLocalWeather,
+    fetchCurrentWeather,
+    fetchWeatherLocations,
+} from "./services/api";
+import {
+    MOCK_STORMS_LIST,
+    MOCK_TRACK_SIM,
+    MOCK_TRACK_YAGI,
+} from "./services/mockData";
+import "./styles/explorer.css";
+import "./styles/fullscreen-map.css";
+import { Bot, CloudSun, Radar, ChartNoAxesCombined, PanelRightClose, PanelRightOpen, MapPin, CloudOff } from "lucide-react";
+
+const WindPressureChart = lazy(() =>
+    import("./components/WindPressureChart").then((module) => ({
+        default: module.WindPressureChart,
+    })),
+);
 
 export const App: React.FC = () => {
-  const [lang, setLang] = useState<Language>('vi');
-  const [isDark, setIsDark] = useState<boolean>(true);
-  const [isLive, setIsLive] = useState<boolean>(false);
-  // Demo data is shown only after an explicit user action, and always labelled.
-  const [isDemo, setIsDemo] = useState<boolean>(false);
-  const [trackError, setTrackError] = useState<string | null>(null);
-  const [isAlertModalOpen, setIsAlertModalOpen] = useState<boolean>(false);
-
-  // WS1: Loading & Error states
-  const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
-  const [isTrackLoading, setIsTrackLoading] = useState<boolean>(false);
-  const [loadError, setLoadError] = useState<boolean>(false);
-
-  // Data states
-  const [storms, setStorms] = useState<ActiveTyphoonItem[]>([]);
-  const [selectedStormId, setSelectedStormId] = useState<string>('');
-  const [stormTrack, setStormTrack] = useState<StormTrackResponse | null>(null);
-  const [currentFixIndex, setCurrentFixIndex] = useState<number>(0);
-
-  // Geographic provinces data
-  const [provincesGeoJson, setProvincesGeoJson] = useState<any[]>([]);
-  const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(null);
-
-  const t = translations[lang];
-
-  // 1. Initial Load: Check Health & Fetch Active Typhoons & Provinces GeoJSON
-  useEffect(() => {
-    const loadInitialData = async () => {
-      setIsInitialLoading(true);
-      setLoadError(false);
-
-      try {
-        // Load active storms; an empty list from a reachable backend is valid.
-        const { typhoons, online } = await fetchActiveTyphoons();
-        setStorms(typhoons);
-        setIsLive(online);
-        if (typhoons.length > 0) {
-          setSelectedStormId(typhoons[0].id);
-        }
-
-        if (!online) {
-          setLoadError(true);
-        }
-      } catch (err) {
-        console.warn('Initial load error:', err);
-        setLoadError(true);
-      } finally {
-        setIsInitialLoading(false);
-      }
-
-      // Load provinces GeoJSON for impact calculation
-      try {
-        const res = await fetch('/data/vietnam_provinces.geojson');
-        const data = await res.json();
-        if (data.features) {
-          setProvincesGeoJson(data.features);
-        }
-      } catch (err) {
-        console.warn('Could not load provinces:', err);
-      }
-    };
-
-    loadInitialData();
-  }, []);
-
-  // 2. Load Track when selectedStormId changes
-  useEffect(() => {
-    if (!selectedStormId) return;
-
-    let cancelled = false;
-    setIsTrackLoading(true);
-    setTrackError(null);
-    const load = isDemo
-      ? Promise.resolve(MOCK_TRACKS[selectedStormId])
-      : fetchStormTrack(selectedStormId);
-    load
-      .then((data) => {
-        if (cancelled) return;
-        setStormTrack(data);
-        // Set initial index to latest observation
-        if (data.observations && data.observations.length > 0) {
-          setCurrentFixIndex(data.observations.length - 1);
-        }
-      })
-      .catch((err: unknown) => {
-        if (cancelled) return;
-        console.warn('Track load failed:', err);
-        setStormTrack(null);
-        setTrackError(err instanceof Error ? err.message : String(err));
-      })
-      .finally(() => {
-        if (!cancelled) setIsTrackLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedStormId, isDemo]);
-
-  // 3. Sync Theme Class with <html> tag
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.add('light');
-      root.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  // Selected storm object
-  const currentStorm = useMemo(() => {
-    return storms.find((s) => s.id === selectedStormId) || storms[0];
-  }, [storms, selectedStormId]);
-
-  // Active observation / forecast point according to scrubber
-  const rawFix = useMemo((): Fix | undefined => {
-    if (!stormTrack || !stormTrack.observations || stormTrack.observations.length === 0) {
-      return currentStorm?.latest;
-    }
-    if (currentFixIndex < stormTrack.observations.length) {
-      return stormTrack.observations[currentFixIndex];
-    }
-    // If in forecast frame
-    const forecastIdx = currentFixIndex - stormTrack.observations.length;
-    if (stormTrack.forecast && stormTrack.forecast.points[forecastIdx]) {
-      const p = stormTrack.forecast.points[forecastIdx];
-      // The model forecasts position and class only; never invent wind/pressure.
-      return {
-        timestamp: p.valid_time,
-        lat: p.lat,
-        lon: p.lon,
-        wind_ms: p.wind_ms ?? null,
-        pressure_hpa: p.pressure_hpa ?? null,
-        intensity: (p.intensity as any) || 'UNK',
-        source: stormTrack.forecast.model_kind,
-        wind_kmh: p.wind_ms ? Math.round(p.wind_ms * 3.6) : undefined,
-      };
-    }
-    return stormTrack.observations[stormTrack.observations.length - 1];
-  }, [stormTrack, currentFixIndex, currentStorm]);
-
-  // Movement (bearing/speed) from the previous point on the same timeline.
-  const currentFix = useMemo(() => {
-    if (!rawFix || !stormTrack) return rawFix;
-    if (rawFix.bearing_deg != null && rawFix.speed_kmh != null) return rawFix;
-    const timeline = [
-      ...stormTrack.observations.map((o) => ({ t: o.timestamp, lat: o.lat, lon: o.lon })),
-      ...(stormTrack.forecast?.points ?? []).map((p) => ({ t: p.valid_time, lat: p.lat, lon: p.lon })),
-    ];
-    const index = timeline.findIndex((p) => p.t === rawFix.timestamp);
-    if (index < 1) return rawFix;
-    const prev = timeline[index - 1];
-    const hours = (Date.parse(rawFix.timestamp) - Date.parse(prev.t)) / 3.6e6;
-    if (!(hours > 0)) return rawFix;
-    return {
-      ...rawFix,
-      bearing_deg: rawFix.bearing_deg ?? bearingDeg(prev.lat, prev.lon, rawFix.lat, rawFix.lon),
-      speed_kmh:
-        rawFix.speed_kmh ??
-        Math.round(haversineKm(prev.lat, prev.lon, rawFix.lat, rawFix.lon) / hours),
-    };
-  }, [rawFix, stormTrack]);
-
-  // Calculate real-time province impacts
-  const provinceImpacts: ProvinceImpact[] = useMemo(() => {
-    if (!currentFix || provincesGeoJson.length === 0) return [];
-    return calculateProvinceImpacts(
-      provincesGeoJson,
-      currentFix,
-      stormTrack?.forecast?.points || []
+    const [lang, setLang] = useState<Language>(() =>
+        localStorage.getItem("typhoon-language") === "en" ? "en" : "vi",
     );
-  }, [provincesGeoJson, currentFix, stormTrack]);
+    const [isDark, setIsDark] = useState<boolean>(
+        () => localStorage.getItem("typhoon-theme") !== "light",
+    );
+    const [isLive, setIsLive] = useState<boolean>(false);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState<boolean>(false);
+    const [alertsAvailable, setAlertsAvailable] = useState<boolean | null>(null);
+    const [alertUnavailableReason, setAlertUnavailableReason] = useState<string | null>(null);
+    const [weatherLocations, setWeatherLocations] = useState<WeatherLocation[]>([]);
+    const [weatherLocationId, setWeatherLocationId] = useState("da-nang");
+    const [currentWeather, setCurrentWeather] = useState<CurrentWeather | null>(null);
+    const [hourlyWeather, setHourlyWeather] = useState<HourlyWeather[]>([]);
+    const [dailyWeather, setDailyWeather] = useState<DailyWeather[]>([]);
+    const [weatherLoading, setWeatherLoading] = useState(false);
+    const [weatherError, setWeatherError] = useState<string | null>(null);
+    const [mapWeather, setMapWeather] = useState<Record<string, CurrentWeather>>({});
 
-  const handleRefresh = useCallback(async () => {
-    setLoadError(false);
-    setTrackError(null);
-    const { typhoons, online } = await fetchActiveTyphoons();
-    setIsLive(online);
-    setLoadError(!online);
-    if (!online) return;
-    setIsDemo(false);
-    setStorms(typhoons);
-    const keep = typhoons.some((s) => s.id === selectedStormId);
-    const nextId = keep ? selectedStormId : typhoons[0]?.id ?? '';
-    if (keep && nextId) {
-      setIsTrackLoading(true);
-      try {
-        setStormTrack(await fetchStormTrack(nextId));
-      } catch (err) {
+    // WS1: Loading & Error states
+    const [isInitialLoading, setIsInitialLoading] = useState<boolean>(true);
+    const [isTrackLoading, setIsTrackLoading] = useState<boolean>(false);
+    const [loadError, setLoadError] = useState<boolean>(false);
+
+    // Data states
+    const [storms, setStorms] = useState<ActiveTyphoonItem[]>([]);
+    const [selectedStormId, setSelectedStormId] = useState<string>("");
+    const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+    const [stormFeedAvailable, setStormFeedAvailable] = useState<boolean>(true);
+    const [stormTrack, setStormTrack] = useState<StormTrackResponse | null>(
+        null,
+    );
+    const [currentFixIndex, setCurrentFixIndex] = useState<number>(0);
+
+    // Geographic provinces data
+    const [provincesGeoJson, setProvincesGeoJson] = useState<
+        ProvinceGeoFeature[]
+    >([]);
+    const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(
+        null,
+    );
+
+    const t = translations[lang];
+    const [detailTab, setDetailTab] = useState<"weather" | "assistant" | "storm" | "analysis">("weather");
+    const [detailsOpen, setDetailsOpen] = useState(() => window.innerWidth >= 768);
+    useEffect(() => {
+        const compactViewport = window.matchMedia("(max-width: 767px)");
+        const onViewportChange = (event: MediaQueryListEvent) => {
+            setDetailsOpen(!event.matches);
+        };
+        compactViewport.addEventListener("change", onViewportChange);
+        return () => compactViewport.removeEventListener("change", onViewportChange);
+    }, []);
+    const chromeRef = useRef<HTMLDivElement>(null);
+    const detailsRef = useRef<HTMLElement>(null);
+    const selectDetailTab = (tab: "weather" | "assistant" | "storm" | "analysis") => {
+        setDetailTab(tab);
+        detailsRef.current?.scrollTo({ top: 0 });
+    };
+    useEffect(() => {
+        if (!chromeRef.current) return;
+        const observer = new ResizeObserver(([entry]) => {
+            document.documentElement.style.setProperty("--map-chrome-height", entry.contentRect.height + "px");
+        });
+        observer.observe(chromeRef.current);
+        return () => observer.disconnect();
+    }, [isInitialLoading]);
+
+    // 1. Initial Load: Check Health & Fetch Active Typhoons & Provinces GeoJSON
+    useEffect(() => {
+        const loadInitialData = async () => {
+            setIsInitialLoading(true);
+            setLoadError(false);
+
+            try {
+                // Check backend health
+                const { online } = await checkBackendHealth();
+                setIsLive(online);
+
+                // Load active storms
+                const { typhoons, isLive: liveStatus, feedAvailable } =
+                    await fetchActiveTyphoons();
+                setStorms(typhoons);
+                setStormFeedAvailable(feedAvailable);
+                setIsDemoMode(false);
+                setIsLive(online && liveStatus && feedAvailable);
+                if (typhoons.length > 0) {
+                    setSelectedStormId(typhoons[0].id);
+                }
+
+                if (!liveStatus) {
+                    setLoadError(true);
+                }
+            } catch (err) {
+                console.warn("Initial load error:", err);
+                setStorms([]);
+                setSelectedStormId("");
+                setStormTrack(null);
+                setIsLive(false);
+                setStormFeedAvailable(false);
+                setLoadError(true);
+            } finally {
+                setIsInitialLoading(false);
+            }
+
+            // Load provinces GeoJSON for impact calculation
+            try {
+                const res = await fetch("/data/vietnam_provinces.geojson");
+                const data = await res.json();
+                if (data.features) {
+                    setProvincesGeoJson(data.features);
+                }
+            } catch (err) {
+                console.warn("Could not load provinces:", err);
+            }
+        };
+
+        loadInitialData();
+    }, []);
+
+    useEffect(() => {
+        if (isDemoMode) {
+            setWeatherLocations(DEMO_WEATHER_LOCATIONS);
+            setMapWeather(Object.fromEntries(
+                DEMO_WEATHER_LOCATIONS.map((location) => [location.id, getDemoWeather(location.id).current]),
+            ));
+            if (!DEMO_WEATHER_LOCATIONS.some((location) => location.id === weatherLocationId)) {
+                setWeatherLocationId(DEMO_WEATHER_LOCATIONS[0].id);
+            }
+            return;
+        }
+        let cancelled = false;
+        setMapWeather({});
+        fetchWeatherLocations()
+            .then((locations) => {
+                if (cancelled) return;
+                setWeatherLocations(locations);
+                // Selected-location weather is loaded by the effect below.
+                // Avoid one provider call per province during initial loading.
+            })
+            .catch(() => {
+                if (!cancelled) setWeatherLocations(DEMO_WEATHER_LOCATIONS);
+            });
+        return () => { cancelled = true; };
+    }, [isDemoMode]);
+
+    useEffect(() => {
+        let cancelled = false;
+        fetch("/subscriptions", { headers: { Accept: "application/json" } })
+            .then(async (response) => {
+                const payload = await response.json().catch(() => ({}));
+                if (cancelled) return;
+                if (response.ok && payload.available === true && payload.delivery === "active") {
+                    setAlertsAvailable(true);
+                    setAlertUnavailableReason(null);
+                } else {
+                    setAlertsAvailable(false);
+                    setAlertUnavailableReason(payload.error?.message || null);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setAlertsAvailable(false);
+                    setAlertUnavailableReason(null);
+                }
+            });
+        return () => { cancelled = true; };
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        if (isDemoMode) {
+            const demo = getDemoWeather(weatherLocationId);
+            setCurrentWeather(demo.current);
+            setHourlyWeather(demo.hourly);
+            setDailyWeather(demo.daily);
+            setWeatherLoading(false);
+            setWeatherError(null);
+            return;
+        }
+        setWeatherLoading(true);
+        setWeatherError(null);
+        fetchLocalWeather(weatherLocationId)
+            .then((data) => {
+                if (cancelled) return;
+                setCurrentWeather(data.current);
+                setMapWeather((previous) => ({
+                    ...previous,
+                    [data.current.location.id]: data.current,
+                }));
+                setHourlyWeather(data.hourly);
+                setDailyWeather(data.daily);
+            })
+            .catch((error: unknown) => {
+                if (!cancelled) {
+                    if (DEMO_WEATHER_LOCATIONS.some((location) => location.id === weatherLocationId)) {
+                        const demo = getDemoWeather(weatherLocationId);
+                        setCurrentWeather(demo.current);
+                        setHourlyWeather(demo.hourly);
+                        setDailyWeather(demo.daily);
+                        setWeatherError(null);
+                    } else {
+                        setCurrentWeather(null);
+                        setHourlyWeather([]);
+                        setDailyWeather([]);
+                        setWeatherError(
+                            error instanceof Error
+                                ? error.message
+                                : "Dữ liệu thời tiết tạm thời không khả dụng",
+                        );
+                    }
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setWeatherLoading(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [isDemoMode, weatherLocationId]);
+
+    // 2. Load the selected track. Demo tracks are never an API fallback.
+    useEffect(() => {
+        if (!selectedStormId) {
+            setStormTrack(null);
+            return;
+        }
+        if (isDemoMode) {
+            const data =
+                selectedStormId === MOCK_TRACK_YAGI.storm_id
+                    ? MOCK_TRACK_YAGI
+                    : MOCK_TRACK_SIM;
+            setStormTrack(data);
+            setCurrentFixIndex(Math.max(0, data.observations.length - 1));
+            setIsTrackLoading(false);
+            return;
+        }
+
+        let cancelled = false;
         setStormTrack(null);
-        setTrackError(err instanceof Error ? err.message : String(err));
-      } finally {
-        setIsTrackLoading(false);
-      }
-    } else {
-      setStormTrack(null);
-      setSelectedStormId(nextId);
+        setIsTrackLoading(true);
+        fetchStormTrack(selectedStormId)
+            .then((data) => {
+                if (cancelled) return;
+                setStormTrack(data);
+                setLoadError(false);
+                setCurrentFixIndex(Math.max(0, data.observations.length - 1));
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setStormTrack(null);
+                    setLoadError(true);
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setIsTrackLoading(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [isDemoMode, selectedStormId]);
+
+    // Keep the live bulletin and selected track current while the page is open.
+    useEffect(() => {
+        if (isDemoMode || isInitialLoading) return;
+        let cancelled = false;
+        let running = false;
+        const refreshLive = async () => {
+            if (cancelled || running || document.visibilityState === "hidden") return;
+            running = true;
+            try {
+                const { online } = await checkBackendHealth();
+                const active = await fetchActiveTyphoons();
+                if (cancelled) return;
+                setStorms(active.typhoons);
+                setStormFeedAvailable(active.feedAvailable);
+                setIsLive(online && active.isLive && active.feedAvailable);
+                setLoadError(false);
+                const nextId = active.typhoons.some((item) => item.id === selectedStormId)
+                    ? selectedStormId
+                    : active.typhoons[0]?.id || "";
+                if (nextId !== selectedStormId) {
+                    setSelectedStormId(nextId);
+                } else if (nextId) {
+                    const track = await fetchStormTrack(nextId);
+                    if (!cancelled) {
+                        setStormTrack(track);
+                        setCurrentFixIndex(Math.max(0, track.observations.length - 1));
+                    }
+                } else {
+                    setStormTrack(null);
+                }
+            } catch {
+                if (!cancelled) {
+                    setIsLive(false);
+                    setStormFeedAvailable(false);
+                    setStorms([]);
+                    setStormTrack(null);
+                    setLoadError(true);
+                }
+            } finally {
+                running = false;
+            }
+        };
+        const timer = window.setInterval(() => { void refreshLive(); }, 300_000);
+        const onVisible = () => {
+            if (document.visibilityState === "visible") void refreshLive();
+        };
+        document.addEventListener("visibilitychange", onVisible);
+        return () => {
+            cancelled = true;
+            window.clearInterval(timer);
+            document.removeEventListener("visibilitychange", onVisible);
+        };
+    }, [isDemoMode, isInitialLoading, selectedStormId]);
+
+    useEffect(() => {
+        localStorage.setItem("typhoon-language", lang);
+        document.documentElement.lang = lang;
+    }, [lang]);
+
+    // 3. Sync Theme Class with <html> tag
+    useEffect(() => {
+        const root = document.documentElement;
+        localStorage.setItem("typhoon-theme", isDark ? "dark" : "light");
+        if (isDark) {
+            root.classList.add("dark");
+            root.classList.remove("light");
+        } else {
+            root.classList.add("light");
+            root.classList.remove("dark");
+        }
+    }, [isDark]);
+
+    // Selected storm object
+    const currentStorm = useMemo(() => {
+        return storms.find((s) => s.id === selectedStormId) || storms[0];
+    }, [storms, selectedStormId]);
+
+    // Active observation / forecast point according to scrubber
+    const currentFix = useMemo(() => {
+        if (
+            !stormTrack ||
+            !stormTrack.observations ||
+            stormTrack.observations.length === 0
+        ) {
+            return currentStorm?.latest;
+        }
+        if (currentFixIndex < stormTrack.observations.length) {
+            return stormTrack.observations[currentFixIndex];
+        }
+        // If in forecast frame
+        const forecastIdx = currentFixIndex - stormTrack.observations.length;
+        if (stormTrack.forecast && stormTrack.forecast.points[forecastIdx]) {
+            const p = stormTrack.forecast.points[forecastIdx];
+            return {
+                timestamp: p.valid_time,
+                lat: p.lat,
+                lon: p.lon,
+                wind_ms: p.wind_ms ?? 35,
+                pressure_hpa: p.pressure_hpa ?? 970,
+                intensity: (p.intensity as Fix["intensity"]) || "TY",
+                source: "Forecast Model",
+                wind_kmh: p.wind_ms ? Math.round(p.wind_ms * 3.6) : 126,
+            };
+        }
+        return stormTrack.observations[stormTrack.observations.length - 1];
+    }, [stormTrack, currentFixIndex, currentStorm]);
+
+    // Calculate real-time province impacts
+    const provinceImpacts: ProvinceImpact[] = useMemo(() => {
+        if (!currentFix || provincesGeoJson.length === 0) return [];
+        return calculateProvinceImpacts(
+            provincesGeoJson,
+            currentFix,
+            stormTrack?.forecast?.points || [],
+        );
+    }, [provincesGeoJson, currentFix, stormTrack]);
+
+    const handleRefresh = useCallback(async () => {
+        setLoadError(false);
+        setIsDemoMode(false);
+        try {
+            const { online } = await checkBackendHealth();
+            setIsLive(online);
+            const active = await fetchActiveTyphoons();
+            setStorms(active.typhoons);
+            setStormFeedAvailable(active.feedAvailable);
+            setIsLive(online && active.isLive && active.feedAvailable);
+            const nextStormId = active.typhoons.some(
+                (storm) => storm.id === selectedStormId,
+            )
+                ? selectedStormId
+                : active.typhoons[0]?.id || "";
+            setSelectedStormId(nextStormId);
+            setStormTrack(null);
+            if (nextStormId) {
+                setIsTrackLoading(true);
+                const track = await fetchStormTrack(nextStormId);
+                setStormTrack(track);
+                setCurrentFixIndex(
+                    Math.max(0, track.observations.length - 1),
+                );
+            }
+        } catch {
+            setStorms([]);
+            setSelectedStormId("");
+            setStormTrack(null);
+            setIsLive(false);
+            setStormFeedAvailable(false);
+            setLoadError(true);
+        } finally {
+            setIsTrackLoading(false);
+        }
+    }, [selectedStormId]);
+
+    // Demo data is opt-in and remains visibly offline.
+    const handleLoadDemo = useCallback(() => {
+        setIsDemoMode(true);
+        setLoadError(false);
+        setStorms(MOCK_STORMS_LIST);
+        setSelectedStormId(MOCK_STORMS_LIST[0].id);
+        setStormTrack(MOCK_TRACK_YAGI);
+        setCurrentFixIndex(MOCK_TRACK_YAGI.observations.length - 1);
+        setIsLive(false);
+    }, []);
+
+    // WS1: Show full-page skeleton during initial load
+    if (isInitialLoading) {
+        return <DashboardSkeleton lang={lang} />;
     }
-  }, [selectedStormId]);
 
-  // WS1: Load clearly-labelled synthetic demo data on explicit user request
-  const handleLoadDemo = useCallback(() => {
-    setIsDemo(true);
-    setStorms(MOCK_STORMS_LIST);
-    setSelectedStormId(MOCK_STORMS_LIST[0].id);
-  }, []);
-
-  // WS1: Show full-page skeleton during initial load
-  if (isInitialLoading) {
-    return <DashboardSkeleton lang={lang} />;
-  }
-
-  return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100">
-      {/* 1. Top Navigation Bar */}
-      <Header
-        lang={lang}
-        onToggleLang={() => setLang(lang === 'vi' ? 'en' : 'vi')}
-        isDark={isDark}
-        onToggleTheme={() => setIsDark(!isDark)}
-        isLive={isLive}
-        onRefresh={handleRefresh}
-        onOpenAlerts={() => setIsAlertModalOpen(true)}
-      />
-
-      {/* 2. Permanent Legal & Meteorological Disclaimer Banner */}
-      <DisclaimerBanner lang={lang} />
-
-      {isDemo && (
-        <div className="px-3 md:px-4 pt-2" role="status">
-          <div className="rounded-lg border border-amber-500/60 bg-amber-950/60 px-3 py-2 text-xs font-mono text-amber-200">
-            {lang === 'vi'
-              ? 'DỮ LIỆU DEMO MÔ PHỎNG — không phải cơn bão thật, quan trắc hay dự báo thật.'
-              : 'SYNTHETIC DEMO DATA — not a real storm, observation or forecast.'}
-          </div>
-        </div>
-      )}
-
-      {trackError && !isTrackLoading && (
-        <div className="px-3 md:px-4 pt-2" role="alert">
-          <div className="rounded-lg border border-red-500/60 bg-red-950/60 px-3 py-2 text-xs font-mono text-red-200">
-            {lang === 'vi' ? 'Không tải được quỹ đạo/dự báo: ' : 'Could not load track/forecast: '}
-            {trackError}
-          </div>
-        </div>
-      )}
-
-      {/* WS1: Error Banner when API is offline */}
-      {loadError && (
-        <div className="px-3 md:px-4 pt-2">
-          <ErrorBanner lang={lang} onRetry={handleRefresh} />
-        </div>
-      )}
-
-      {/* 3. Tracked Cyclones Strip */}
-      {storms.length > 0 && (
-        <ActiveStormSelector
-          storms={storms}
-          selectedStormId={selectedStormId}
-          onSelectStorm={(id) => {
-            setSelectedStormId(id);
-          }}
-          lang={lang}
-        />
-      )}
-
-      {/* WS1: Empty State when no storms */}
-      {storms.length === 0 && !isInitialLoading && (
-        <div className="flex-1 flex items-center justify-center p-6">
-          <EmptyState lang={lang} onLoadDemo={handleLoadDemo} />
-        </div>
-      )}
-
-      {/* 4. Main Dashboard Layout */}
-      {storms.length > 0 && (
-        <main className="flex-1 p-3 md:p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-[1800px] w-full mx-auto">
-          {/* Left Column (7 cols): Map & Timeline Player */}
-          <section className="lg:col-span-7 flex flex-col gap-3 min-h-[400px] lg:min-h-[750px]" aria-label={t.aria_map_container}>
-            <div className="relative flex-1 rounded-xl overflow-hidden shadow-2xl border border-slate-800">
-              <TyphoonMap
-                observations={stormTrack?.observations || []}
-                currentFixIndex={currentFixIndex}
-                forecast={stormTrack?.forecast || null}
-                selectedProvinceId={selectedProvinceId}
-                onSelectProvince={(id) => setSelectedProvinceId(id)}
+    return (
+        <div className={`weather-app immersive-map ${detailsOpen ? "details-is-open" : ""} flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden text-fg`}>
+            <a
+                href="#dashboard-main"
+                className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-toast focus:rounded-control focus:bg-primary focus:px-4 focus:py-2 focus:font-semibold focus:text-page"
+            >
+                {lang === "vi"
+                    ? "Đi đến nội dung chính"
+                    : "Skip to main content"}
+            </a>
+            {/* 1. Top Navigation Bar */}
+            <div className="map-top-chrome" ref={chromeRef}>
+            <Header
                 lang={lang}
-              />
-              {/* Interactive Map Legend */}
-              <MapLegend lang={lang} />
+                onToggleLang={() => setLang(lang === "vi" ? "en" : "vi")}
+                isDark={isDark}
+                onToggleTheme={() => setIsDark(!isDark)}
+                isLive={isLive}
+                isDemoMode={isDemoMode}
+                onToggleDemo={isDemoMode ? handleRefresh : handleLoadDemo}
+                onRefresh={handleRefresh}
+                onOpenAlerts={() => setIsAlertModalOpen(true)}
+            />
+
+            {isDemoMode && (
+                <div className="map-connection-row">
+                    <div role="status" className="rounded-control border border-warning/35 bg-warning/10 px-3 py-2 text-xs font-semibold text-warning">
+                        {lang === "vi" ? "DEMO · Dữ liệu bão và thời tiết mẫu, chỉ để minh họa." : "DEMO · Sample storm and weather data for illustration only."}
+                    </div>
+                </div>
+            )}
+
+            {/* WS1: Error Banner when API is offline */}
+            {loadError && !isDemoMode && (
+                <div className="map-connection-row">
+                    <ErrorBanner lang={lang} onRetry={handleRefresh} />
+                </div>
+            )}
+
+            {/* 3. Tracked Cyclones Strip */}
+            {storms.length > 0 && (
+                <ActiveStormSelector
+                    storms={storms}
+                    selectedStormId={selectedStormId}
+                    onSelectStorm={(id) => {
+                        setStormTrack(null);
+                        setSelectedStormId(id);
+                    }}
+                    lang={lang}
+                />
+            )}
+
+            </div>
+            {/* 2. Permanent Legal & Meteorological Disclaimer Banner */}
+            <DisclaimerBanner lang={lang} />
+
+            <div className="workspace-heading">
+                <div><h2>{lang === "vi" ? "Việt Nam & Biển Đông" : "Vietnam & the East Sea"}<span className="region-badge">GMT+7</span></h2></div>
+                <button className="btn-ghost" onClick={() => setDetailsOpen(!detailsOpen)} aria-label={lang === "vi" ? (detailsOpen ? "Ẩn chi tiết" : "Xem chi tiết") : (detailsOpen ? "Hide details" : "Show details")} title={lang === "vi" ? (detailsOpen ? "Ẩn bảng chi tiết" : "Mở bảng chi tiết") : (detailsOpen ? "Hide detail panel" : "Open detail panel")} aria-expanded={detailsOpen} aria-controls="weather-details">{detailsOpen ? <PanelRightClose size={18} aria-hidden="true" /> : <PanelRightOpen size={18} aria-hidden="true" />}<span>{lang === "vi" ? (detailsOpen ? "Ẩn chi tiết" : "Xem chi tiết") : (detailsOpen ? "Hide details" : "Show details")}</span></button>
             </div>
 
-            {/* Interactive Scrubbing Timeline Player */}
-            {stormTrack && stormTrack.observations && (
-              <TimelinePlayer
-                observations={stormTrack.observations}
-                forecastPoints={stormTrack.forecast?.points || []}
-                currentIndex={currentFixIndex}
-                onSelectIndex={(idx) => setCurrentFixIndex(idx)}
-                lang={lang}
-              />
+            {/* 4. Main Dashboard Layout */}
+            {(
+                <main
+                    id="dashboard-main"
+                    tabIndex={-1}
+                    className={`weather-workspace ${detailsOpen ? "" : "details-closed"}`}
+                >
+                    <section
+                        className="map-column"
+                        aria-label={t.aria_map_container}
+                    >
+                        <div className="map-stage">
+                            <TyphoonMap
+                                observations={stormTrack?.observations || []}
+                                currentFixIndex={currentFixIndex}
+                                forecast={stormTrack?.forecast || null}
+                                actualTrack={isDemoMode ? stormTrack?.actual_track || [] : []}
+                                focusLocation={weatherLocations.find((location) => location.id === weatherLocationId) ?? null}
+                                weatherConditions={Object.values(mapWeather)}
+                                onSelectWeatherLocation={setWeatherLocationId}
+                                selectedProvinceId={selectedProvinceId}
+                                onSelectProvince={(id) =>
+                                    setSelectedProvinceId(id)
+                                }
+                                lang={lang}
+                            />
+                            <MapLocationSearch
+                                lang={lang}
+                                locations={weatherLocations}
+                                onSelect={(id) => {
+                                    setWeatherLocationId(id);
+                                    selectDetailTab("weather");
+                                    setDetailsOpen(true);
+                                }}
+                            />
+                            {/* Interactive Map Legend */}
+                            <MapLegend
+                                lang={lang}
+                                showActualComparison={
+                                    isDemoMode && Boolean(stormTrack?.actual_track?.length)
+                                }
+                            />
+                        </div>
+
+                        {!stormTrack && <div className="map-caption"><MapPin size={16} aria-hidden="true" /><span>{lang === "vi" ? "Khám phá bản đồ · Chọn địa điểm để xem thời tiết" : "Explore the map · Choose a location for local weather"}</span></div>}
+                        {/* Interactive Scrubbing Timeline Player */}
+                        {stormTrack && stormTrack.observations && (
+                            <TimelinePlayer
+                                observations={stormTrack.observations}
+                                forecastPoints={
+                                    stormTrack.forecast?.points || []
+                                }
+                                currentIndex={currentFixIndex}
+                                onSelectIndex={(idx) => setCurrentFixIndex(idx)}
+                                lang={lang}
+                            />
+                        )}
+                    </section>
+
+                    {/* Right Column (5 cols): Metrics, Province Impact, and Forecast Table */}
+                    <aside
+                        id="weather-details"
+                        ref={detailsRef}
+                        hidden={!detailsOpen}
+                        className="details-panel scroll-area"
+                        data-tab={detailTab}
+                        aria-label={
+                            lang === "vi"
+                                ? "Bảng điều khiển thông số bão"
+                                : "Storm parameters panel"
+                        }
+                    >
+                        <div className="detail-tabs" role="group" aria-label={lang === "vi" ? "Nội dung chi tiết" : "Detail views"}>
+                            {([
+                                ["weather", CloudSun, lang === "vi" ? "Thời tiết" : "Weather", lang === "vi" ? "Thời tiết" : "Weather"],
+                                ["assistant", Bot, "AI", "AI"],
+                                ["storm", Radar, lang === "vi" ? "Theo dõi bão" : "Storms", lang === "vi" ? "Bão" : "Storms"],
+                                ["analysis", ChartNoAxesCombined, lang === "vi" ? "Phân tích" : "Analysis", lang === "vi" ? "Biểu đồ" : "Charts"],
+                            ] as const).map(([id, Icon, label, compactLabel]) => <button key={id} type="button" aria-label={label} aria-pressed={detailTab === id} onClick={() => selectDetailTab(id)}>{detailTab === id && <Icon size={17} aria-hidden="true" />}<span className="detail-tab-label">{label}</span><span className="detail-tab-label-compact" aria-hidden="true">{compactLabel}</span></button>)}
+                        </div>
+                        {/* WS1: Track loading indicator */}
+                        {isTrackLoading && (
+                            <TrackLoadingIndicator lang={lang} />
+                        )}
+
+                        <WeatherPanel
+                            lang={lang}
+                            locations={weatherLocations}
+                            locationId={weatherLocationId}
+                            onLocationChange={setWeatherLocationId}
+                            current={currentWeather}
+                            hourly={hourlyWeather}
+                            daily={dailyWeather}
+                            loading={weatherLoading}
+                            error={weatherError}
+                            dataMode={isDemoMode ? "demo" : "live"}
+                            stormFeedAvailable={stormFeedAvailable}
+                            onLoadDemo={isDemoMode ? undefined : handleLoadDemo}
+                        />
+
+                        {detailTab === "assistant" && <OllamaAssistant lang={lang} />}
+                        {detailTab === "storm" && storms.length === 0 && <div className="storm-empty-note" role="status"><CloudOff size={18} aria-hidden="true"/><span>{lang === "vi" ? (stormFeedAvailable ? "Hiện không có bão đang hoạt động." : "Chưa kết nối dữ liệu bão trực tuyến.") : (stormFeedAvailable ? "No active storms right now." : "Live storm data is not connected.")}</span><button type="button" onClick={handleLoadDemo}>{lang === "vi" ? "Xem demo" : "View demo"}</button></div>}
+                        {detailTab === "analysis" && !stormTrack && <p className="storm-empty-note" role="status">{lang === "vi" ? "Chọn một cơn bão hoặc xem demo để khám phá biểu đồ phân tích." : "Select a storm or view the demo to explore analysis charts."}</p>}
+
+                        {/* A. Storm Core Metrics Overview Card */}
+                        {detailTab === "storm" && !isTrackLoading && currentStorm && currentFix && (
+                            <CollapsibleSection
+                                id="storm-overview"
+                                title={t.storm_overview}
+                                defaultOpen={true}
+                                lang={lang}
+                            >
+                                <StormOverviewCard
+                                    storm={currentStorm}
+                                    currentFix={currentFix}
+                                    forecast={stormTrack?.forecast || null}
+                                    lang={lang}
+                                />
+                            </CollapsibleSection>
+                        )}
+
+                        {/* Wind & Pressure Chart */}
+                        {detailTab === "analysis" && !isTrackLoading &&
+                            stormTrack &&
+                            stormTrack.observations && (
+                                <CollapsibleSection
+                                    id="wind-chart"
+                                    title={
+                                        lang === "vi"
+                                            ? "Biểu đồ Gió & Áp suất"
+                                            : "Wind & Pressure Chart"
+                                    }
+                                    defaultOpen={true}
+                                    lang={lang}
+                                >
+                                    <Suspense
+                                        fallback={
+                                            <div className="panel h-72 p-4">
+                                                <div className="skeleton h-full w-full" />
+                                            </div>
+                                        }
+                                    >
+                                        <WindPressureChart
+                                            observations={
+                                                stormTrack.observations
+                                            }
+                                            forecastPoints={
+                                                stormTrack.forecast?.points ||
+                                                []
+                                            }
+                                            currentIndex={currentFixIndex}
+                                            lang={lang}
+                                        />
+                                    </Suspense>
+                                </CollapsibleSection>
+                            )}
+
+                        {/* B. Province Impact & Proximity Vulnerability Assessment */}
+                        {detailTab === "storm" && !isTrackLoading && provinceImpacts.length > 0 && (
+                            <CollapsibleSection
+                                id="province-impact"
+                                title={t.province_impact_title}
+                                defaultOpen={true}
+                                lang={lang}
+                            >
+                                <ProvinceImpactPanel
+                                    impacts={provinceImpacts}
+                                    selectedProvinceId={selectedProvinceId}
+                                    onSelectProvince={(id) =>
+                                        setSelectedProvinceId(id)
+                                    }
+                                    lang={lang}
+                                />
+                            </CollapsibleSection>
+                        )}
+
+                        {/* C. Multi-Horizon Numerical Forecast Table */}
+                        {detailTab === "analysis" && !isTrackLoading &&
+                            stormTrack &&
+                            stormTrack.forecast && (
+                                <CollapsibleSection
+                                    id="forecast-table"
+                                    title={t.forecast_table}
+                                    defaultOpen={false}
+                                    lang={lang}
+                                >
+                                    <ForecastTable
+                                        forecast={stormTrack.forecast}
+                                        lang={lang}
+                                    />
+                                </CollapsibleSection>
+                            )}
+                    </aside>
+                </main>
             )}
-          </section>
 
-          {/* Right Column (5 cols): Metrics, Province Impact, and Forecast Table */}
-          <aside className="lg:col-span-5 flex flex-col gap-4 overflow-y-auto lg:max-h-[calc(100vh-10rem)] pr-1" aria-label={lang === 'vi' ? 'Bảng điều khiển thông số bão' : 'Storm parameters panel'}>
-            {/* WS1: Track loading indicator */}
-            {isTrackLoading && <TrackLoadingIndicator lang={lang} />}
-
-            {/* A. Storm Core Metrics Overview Card */}
-            {!isTrackLoading && currentStorm && currentFix && (
-              <CollapsibleSection
-                id="storm-overview"
-                title={t.storm_overview}
-                defaultOpen={true}
+            {/* 5. Alert & Webhook Subscription Modal */}
+            <AlertModal
+                isOpen={isAlertModalOpen}
+                onClose={() => setIsAlertModalOpen(false)}
                 lang={lang}
-              >
-                <StormOverviewCard
-                  storm={currentStorm}
-                  currentFix={currentFix}
-                  forecast={stormTrack?.forecast || null}
-                  lang={lang}
-                />
-              </CollapsibleSection>
-            )}
-
-            {/* A2. Explainable similar-storm suggestion (k-NN analogs) */}
-            {!isTrackLoading && stormTrack?.forecast?.suggestion && (
-              <CollapsibleSection
-                id="similar-storms"
-                title={t.suggestion_title}
-                defaultOpen={true}
-                lang={lang}
-              >
-                <SuggestionPanel suggestion={stormTrack.forecast.suggestion} lang={lang} />
-              </CollapsibleSection>
-            )}
-
-            {/* B. Province Impact & Proximity Vulnerability Assessment */}
-            {!isTrackLoading && provinceImpacts.length > 0 && (
-              <CollapsibleSection
-                id="province-impact"
-                title={t.province_impact_title}
-                defaultOpen={true}
-                lang={lang}
-              >
-                <ProvinceImpactPanel
-                  impacts={provinceImpacts}
-                  selectedProvinceId={selectedProvinceId}
-                  onSelectProvince={(id) => setSelectedProvinceId(id)}
-                  lang={lang}
-                />
-              </CollapsibleSection>
-            )}
-
-            {/* C. Multi-Horizon Numerical Forecast Table */}
-            {!isTrackLoading && stormTrack && stormTrack.forecast && (
-              <CollapsibleSection
-                id="forecast-table"
-                title={t.forecast_table}
-                defaultOpen={false}
-                lang={lang}
-              >
-                <ForecastTable forecast={stormTrack.forecast} lang={lang} />
-              </CollapsibleSection>
-            )}
-          </aside>
-        </main>
-      )}
-
-      {/* 5. Alert & Webhook Subscription Modal */}
-      <AlertModal
-        isOpen={isAlertModalOpen}
-        onClose={() => setIsAlertModalOpen(false)}
-        lang={lang}
-      />
-    </div>
-  );
+                available={alertsAvailable === true}
+                loadingCapability={alertsAvailable === null}
+                unavailableReason={alertUnavailableReason}
+            />
+        </div>
+    );
 };

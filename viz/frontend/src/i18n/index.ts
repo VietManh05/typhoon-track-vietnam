@@ -68,13 +68,6 @@ export interface TranslationStrings {
   legend_forecast: string;
   legend_cone: string;
   legend_compare: string;
-  legend_suggestion: string;
-  suggestion_title: string;
-  suggestion_toggle: string;
-  suggestion_analogs: string;
-  suggestion_intro: string;
-  suggestion_rank: string;
-  suggestion_caveat: string;
   legend_vietnam: string;
   categories: Record<string, string>;
   hoang_sa: string;
@@ -102,6 +95,11 @@ export interface TranslationStrings {
   eta_hours_suffix: string;
   top_provinces_label: string;
   in_cone: string;
+  risk_severe: string;
+  risk_very_high: string;
+  risk_high: string;
+  risk_moderate: string;
+  risk_low: string;
   // WS3: Compass bearings (16 directions)
   bearing_N: string;
   bearing_NNE: string;
@@ -197,18 +195,18 @@ export const translations: Record<Language, TranslationStrings> = {
     timeline_pause: 'Tạm dừng',
     timeline_prev: 'Mốc trước',
     timeline_next: 'Mốc sau',
-    province_impact_title: 'Khoảng Cách Tới Tâm Bão Theo Tỉnh/Thành',
+    province_impact_title: 'Đánh Giá Rủi Ro 63 Tỉnh/Thành Phố',
     select_province: 'Chọn tỉnh/thành phố để tra cứu...',
     distance_to_center: 'Khoảng cách tới tâm bão',
     closest_forecast_dist: 'Khoảng cách gần nhất trong dự báo',
     eta_label: 'Thời gian tiếp cận gần nhất (ETA)',
-    impact_level_label: 'Mức độ gần tâm (chỉ theo khoảng cách)',
-    impact_critical: 'RẤT GẦN TÂM (≤60 km)',
-    impact_high: 'GẦN TÂM (≤150 km)',
-    impact_moderate: 'TRUNG BÌNH (≤300 km)',
-    impact_low: 'XA (≤500 km)',
-    impact_none: 'NGOÀI 500 km',
-    impact_note: 'Chỉ là khoảng cách hình học từ tâm bão/điểm dự báo tới trọng tâm tỉnh; không phải đánh giá gió, mưa, lũ hay đổ bộ. Theo dõi bản tin NCHMF.',
+    impact_level_label: 'Cấp độ ảnh hưởng dự kiến',
+    impact_critical: 'RẤT NGUY HIỂM (Bão đổ bộ/sát tâm)',
+    impact_high: 'ẢNH HƯỞNG MẠNH (Trong vùng gió bão)',
+    impact_moderate: 'ẢNH HƯỞNG TRUNG BÌNH (Vùng rìa hoàn lưu)',
+    impact_low: 'ẢNH HƯỞNG XA (Mưa rào/sóng lớn ven biển)',
+    impact_none: 'NGOÀI VÙNG NGUY CẤP TỨC THỜI',
+    impact_note: 'Lưu ý: Khoảng cách hình học tâm bão & nón dự báo không phản ánh toàn bộ vùng mưa lũ diện rộng và gió giật thực tế.',
     layers: 'Lớp Bản Đồ',
     layer_provinces: 'Ranh giới tỉnh thành',
     layer_islands: 'Quần đảo Hoàng Sa & Trường Sa',
@@ -217,20 +215,13 @@ export const translations: Record<Language, TranslationStrings> = {
     layer_cone: 'Nón bất định (Cone of Uncertainty)',
     layer_official_compare: 'So sánh dự báo NCHMF / JTWC',
     basemap: 'Nền bản đồ',
-    basemap_dark: 'Nền tối',
+    basemap_dark: 'Dark Matter (Khí tượng)',
     basemap_osm: 'OpenStreetMap chuẩn',
     basemap_satellite: 'Ảnh vệ tinh ESRI',
     legend_title: 'Chú Giải Khí Tượng',
     legend_actual: 'Quỹ đạo thực tế (Đã đi qua)',
     legend_forecast: 'Quỹ đạo dự báo (+6h...+72h)',
-    legend_cone: 'Nón bất định (phương pháp: xem bảng dự báo)',
-    legend_suggestion: 'Gợi ý theo bão tương tự (k-NN)',
-    suggestion_title: 'Gợi ý theo bão tương tự',
-    suggestion_toggle: 'Bão tương tự',
-    suggestion_analogs: 'Bão tương tự',
-    suggestion_intro: 'Đường gợi ý là trung bình có trọng số hướng đi tiếp theo của các tình huống lịch sử giống nhất (quỹ đạo 24 giờ gần nhất, vị trí, mùa):',
-    suggestion_rank: 'Hạng',
-    suggestion_caveat: 'Trên các cơn bão kiểm thử 2021–2024, độ chính xác tương đương mô hình học sâu. Chỉ mang tính tham khảo.',
+    legend_cone: 'Vùng nón xác suất 70-80%',
     legend_compare: 'Dự báo chính thức NCHMF/JTWC',
     legend_vietnam: 'Chủ quyền lãnh thổ & vùng biển VN',
     categories: {
@@ -267,6 +258,11 @@ export const translations: Record<Language, TranslationStrings> = {
     eta_hours_suffix: 'giờ',
     top_provinces_label: 'Top 5 Tỉnh thành gần tâm bão nhất:',
     in_cone: 'Trong nón',
+    risk_severe: 'Nguy hiểm',
+    risk_very_high: 'Rất cao',
+    risk_high: 'Cao',
+    risk_moderate: 'Trung bình',
+    risk_low: 'Thấp',
     // WS3: Compass bearings (16 directions)
     bearing_N: 'Bắc (N)',
     bearing_NNE: 'Bắc Đông Bắc (NNE)',
@@ -360,18 +356,18 @@ export const translations: Record<Language, TranslationStrings> = {
     timeline_pause: 'Pause',
     timeline_prev: 'Previous Fix',
     timeline_next: 'Next Fix',
-    province_impact_title: 'Province Distance to Storm Center',
+    province_impact_title: '63 Provinces Vulnerability & Impact Assessment',
     select_province: 'Select province to calculate impact...',
     distance_to_center: 'Distance to current center',
     closest_forecast_dist: 'Closest forecast approach distance',
     eta_label: 'Estimated Time of Arrival (ETA)',
-    impact_level_label: 'Proximity (distance only)',
-    impact_critical: 'VERY CLOSE (≤60 km)',
-    impact_high: 'CLOSE (≤150 km)',
-    impact_moderate: 'MODERATE (≤300 km)',
-    impact_low: 'FAR (≤500 km)',
-    impact_none: 'BEYOND 500 km',
-    impact_note: 'Geometric distance from the storm center/forecast points to province centroids only; not a wind, rain, flood or landfall assessment. Follow NCHMF bulletins.',
+    impact_level_label: 'Projected Impact Level',
+    impact_critical: 'CRITICAL (Direct Landfall / Inner Core)',
+    impact_high: 'HIGH (Gale/Storm Wind Radius)',
+    impact_moderate: 'MODERATE (Outer Rainband / Swell)',
+    impact_low: 'LOW (Peripheral Showers / Coastal Surge)',
+    impact_none: 'NONE (Outside immediate threat zone)',
+    impact_note: 'Note: Geometric center distance & cone do not reflect broad gale wind field and flood hazards.',
     layers: 'Map Layers',
     layer_provinces: 'Province Boundaries',
     layer_islands: 'Paracel & Spratly Islands',
@@ -380,20 +376,13 @@ export const translations: Record<Language, TranslationStrings> = {
     layer_cone: 'Cone of Uncertainty',
     layer_official_compare: 'Compare NCHMF / JTWC Official',
     basemap: 'Base Map',
-    basemap_dark: 'Dark Gray',
+    basemap_dark: 'Dark Matter (Meteorological)',
     basemap_osm: 'Standard OpenStreetMap',
     basemap_satellite: 'ESRI World Satellite',
     legend_title: 'Meteorological Legend',
     legend_actual: 'Observed track (Historical fixes)',
     legend_forecast: 'Predicted track (+6h...+72h)',
-    legend_cone: 'Uncertainty cone (method: see forecast table)',
-    legend_suggestion: 'Similar-storm suggestion (k-NN)',
-    suggestion_title: 'Similar-storm suggestion',
-    suggestion_toggle: 'Similar storms',
-    suggestion_analogs: 'Similar storms',
-    suggestion_intro: 'The suggested track is a weighted average of what the most similar historical situations did next (last 24 h of track, position, season):',
-    suggestion_rank: 'Rank',
-    suggestion_caveat: 'On 2021–2024 test storms its accuracy matches the deep-learning model. For reference only.',
+    legend_cone: '70-80% Probability Cone',
     legend_compare: 'Official NCHMF/JTWC Guidance',
     legend_vietnam: 'Sovereign Territory & Waters of Vietnam',
     categories: {
@@ -430,6 +419,11 @@ export const translations: Record<Language, TranslationStrings> = {
     eta_hours_suffix: 'hours',
     top_provinces_label: 'Top 5 Closest Provinces:',
     in_cone: 'In Cone',
+    risk_severe: 'Severe',
+    risk_very_high: 'Very high',
+    risk_high: 'High',
+    risk_moderate: 'Moderate',
+    risk_low: 'Low',
     // WS3: Compass bearings (16 directions)
     bearing_N: 'North (N)',
     bearing_NNE: 'North-Northeast (NNE)',

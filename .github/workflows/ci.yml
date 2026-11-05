@@ -17,8 +17,23 @@ jobs:
     name: Python lint + tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: typhoon
+          POSTGRES_PASSWORD: typhoon
+          POSTGRES_DB: typhoon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U typhoon -d typhoon"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     env:
       PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+      TEST_POSTGRES_URL: postgresql+psycopg://typhoon:typhoon@localhost:5432/typhoon
     steps:
       - uses: actions/checkout@v4
 

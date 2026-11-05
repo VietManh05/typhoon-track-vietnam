@@ -19,8 +19,12 @@ def _revision(engine) -> str | None:
 
 
 def _diff(engine) -> list:
+    def own_tables(name, type_, parent_names) -> bool:
+        return type_ != "table" or name in metadata.tables
+
     with engine.connect() as conn:
-        return compare_metadata(MigrationContext.configure(conn), metadata)
+        context = MigrationContext.configure(conn, opts={"include_name": own_tables})
+        return compare_metadata(context, metadata)
 
 
 def test_fresh_database_is_migrated_to_head(tmp_path) -> None:

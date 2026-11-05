@@ -50,3 +50,11 @@ _pip.log
 .DS_Store
 Thumbs.db
 %USERPROFILE%/
+
+# Frontend / test scratch
+node_modules/
+viz/frontend/dist/
+.pytest_tmp*/
+
+# Local operational store
+data/operational/*.db

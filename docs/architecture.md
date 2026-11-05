@@ -2,46 +2,71 @@
 
 ## Purpose and boundary
 
-The system provides data-driven track-forecast decision support for tropical
-cyclones that can affect Vietnam. It is not an official warning authority.
-Every consumer-facing result must carry provenance, issue time, model version,
-uncertainty, and a disclaimer.
+Data-driven decision support that suggests the track of tropical cyclones that
+can affect Vietnam. It is not an official warning authority: every result
+carries provenance, issue time, model version, uncertainty and a disclaimer,
+and points users to NCHMF.
 
-## Logical flow
+## As-built flow
 
 ```text
-Raw sources
-  CMA | JTWC | JMA | IBTrACS | NCHMF | ERA5 | NOAA OISST
-    -> ingestion
-    -> validation, de-duplication, normalisation
-    -> feature builder and versioned feature store
-    -> train / evaluate / model registry
-    -> inference API
-    -> dashboard, impact assessment, and alert channels
+NOAA IBTrACS (best track, archive + ACTIVE)      NCEP/NCAR R1 reanalysis
+        |                                                |
+  ingestion (provenance, checksums)          steering features (research)
+        |                                                |
+  cleaning (units, dedupe, 6-hourly, domain box) --------+
+        |
+  FeatureBuilder (47 track/position/time/coast features, train = serve)
+        |
+  year split by whole storm: train 1980-2016 | val 2017-2020 | test 2021-2024
+        |
+  models: persistence, CLIPER-proxy, k-NN analog, gradient boosting,
+          LSTM / Attention-LSTM / Transformer (displacement head)
+        |
+  selection on validation only  ->  test once  ->  model bundle (checksums)
+        |                                         + k-NN analog library (.npz)
+        |
+  inference service: forecast + calibrated cone (80% validation quantile)
+                     + similar-storm suggestion (named analog storms)
+        |
+  FastAPI (+ Alembic store, worker)        offline hindcast export (JSON)
+        |                                         |
+  dashboard served by FastAPI          Cloudflare Pages edge app
+                                        (JMA live bulletins, hindcasts)
 ```
 
-## Module ownership
+## Components
 
-| Area | Responsibility | Phase introduced |
-| --- | --- | --- |
-| `src/typhoon_vn/ingestion` | Download, parse, and preserve source provenance | 1 |
-| `src/typhoon_vn/features` | Validated, train/serve-consistent features | 2 |
-| `src/typhoon_vn/models`, `training` | Baselines, models, and evaluation | 3–4 |
-| `src/typhoon_vn/inference` | Load approved artefacts and forecast safely | 6 |
-| `src/typhoon_vn/api` | Typed external HTTP interface | 6–7 |
-| `viz/frontend` | Map and dashboard experience | 7 |
-| `infra` | Container and deployment definitions | 0, then 10+ |
+| Area | Responsibility |
+| --- | --- |
+| `src/typhoon_vn/ingestion` | Download/parse sources, keep URL, checksum, time (lineage) |
+| `src/typhoon_vn/features` | Cleaning, `FeatureBuilder`, scaler, steering features |
+| `src/typhoon_vn/datasets` | Windows, whole-storm/year splits, IBTrACS loader |
+| `src/typhoon_vn/models` | Baselines, k-NN analog, boosting, neural models, residual wrapper, cone |
+| `src/typhoon_vn/training` | Trainer (best-epoch weights), bundle export/load, registry + promotion gate |
+| `src/typhoon_vn/evaluation` | Track error (km), backtest, shared comparison windows, Vietnam subset |
+| `src/typhoon_vn/inference` | Load approved bundle/analog library; forecast safely |
+| `src/typhoon_vn/api` | Typed HTTP API (public rate-limited reads; keyed writes/operator routes) |
+| `src/typhoon_vn/operations` | Alembic-managed store, worker (IBTrACS ACTIVE or snapshot) |
+| `viz/frontend` | React/Leaflet dashboard and Cloudflare Pages Functions (JMA, AI, NCHMF) |
+| `scripts/` | Benchmarks, comparison/training/steering studies, exports, data downloads |
+| `infra/docker` | Container serving the trained model (non-root, healthcheck) |
 
-## Local development dependencies
+## Deployments
 
-`docker-compose.yml` supplies PostGIS for future spatial persistence, Redis for
-future caching/jobs, and MinIO for future checkpoint artefacts. The Phase 0 API
-does not make network calls to these services: they are started now to make
-later integrations explicit and reproducible.
+* **Cloudflare Pages** (`baoviet2026.pages.dev`): static dashboard + Functions.
+  Live storms come from JMA bulletins; the trained model is shown on hindcasts
+  of real 2021-2024 storms (static JSON produced by `scripts/export_hindcast.py`).
+  JMA past positions carry no timestamps, so the model is not run on live storms
+  there.
+* **Container / docker compose**: FastAPI with the trained bundle mounted
+  read-only, PostGIS/PostgreSQL store via Alembic, worker, MinIO for artefacts.
 
 ## Configuration
 
-`typhoon_vn.settings.Settings` is the only configuration entry point. It reads
-environment variables and an uncommitted `.env` file. Defaults are deliberately
-local-only. Production secrets must be injected by the deployment environment,
-not committed in a repository or placed in image layers.
+`typhoon_vn.settings.Settings` is the only configuration entry point (environment
+variables / uncommitted `.env`). Key settings: `MODEL_ARTIFACT`,
+`ANALOG_ARTIFACT`, `ALLOW_BASELINE`, `API_KEY`, `PUBLIC_READ`,
+`OPERATIONAL_DATABASE_URL`. Production requires an API key and disables the
+baseline fallback. Secrets are injected by the deployment environment, never
+committed or baked into images.

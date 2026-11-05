@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
                             <h1 className="truncate text-base font-bold tracking-[0.04em] text-fg sm:text-lg">
                                 TYPHOON <span className="text-primary">VN</span>
                             </h1>
-                            <span className="hidden rounded-badge border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] font-medium text-fg-faint sm:inline">
+                            <span className="hidden rounded-badge border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-2xs font-medium text-fg-faint sm:inline">
                                 WEATHER
                             </span>
                         </div>
@@ -87,26 +87,26 @@ export const Header: React.FC<HeaderProps> = ({
                             aria-hidden="true"
                         />
                         <div>
-                            <div className="text-[9px] font-semibold uppercase tracking-wider text-fg-faint">
+                            <div className="text-2xs font-semibold text-fg-faint">
                                 UTC
                             </div>
-                            <time className="clock-full font-mono text-[11px] text-fg-muted">
+                            <time className="clock-full font-mono text-xs text-fg-muted">
                                 {formatUtcStamp(time)}
                             </time>
-                            <time className="clock-short hidden font-mono text-[11px] text-fg-muted">
+                            <time className="clock-short hidden font-mono text-xs text-fg-muted">
                                 {time.toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-GB", { timeZone: "UTC", hour: "2-digit", minute: "2-digit" })}
                             </time>
                         </div>
                     </div>
                     <div className="header-clock-divider h-7 w-px bg-line" aria-hidden="true" />
                     <div>
-                        <div className="text-[9px] font-semibold uppercase tracking-wider text-fg-faint">
+                        <div className="text-2xs font-semibold text-fg-faint">
                             Việt Nam
                         </div>
-                        <time className="clock-full font-mono text-[11px] font-medium text-primary">
+                        <time className="clock-full font-mono text-xs font-medium text-primary">
                             {formatClock(time, "Asia/Ho_Chi_Minh", lang)} GMT+7
                         </time>
-                        <time className="clock-short hidden font-mono text-[11px] font-medium text-primary">
+                        <time className="clock-short hidden font-mono text-xs font-medium text-primary">
                             {time.toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-GB", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" })} GMT+7
                         </time>
                     </div>
@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
                     }
                 >
                     <div
-                        className={`desktop-control hidden min-h-9 items-center gap-2 rounded-control border px-2.5 text-[11px] font-semibold sm:flex ${isLive ? "border-success/35 bg-success/10 text-success" : isDemoMode ? "border-warning/35 bg-warning/10 text-warning" : "border-line bg-surface-2 text-fg-muted"}`}
+                        className={`desktop-control hidden min-h-9 items-center gap-2 rounded-control border px-2.5 text-xs font-semibold sm:flex ${isLive ? "border-success/35 bg-success/10 text-success" : isDemoMode ? "border-warning/35 bg-warning/10 text-warning" : "border-line bg-surface-2 text-fg-muted"}`}
                         role="status"
                         aria-live="polite"
                         title={
@@ -134,11 +134,11 @@ export const Header: React.FC<HeaderProps> = ({
                             className={`h-1.5 w-1.5 rounded-full ${isLive ? "bg-success" : isDemoMode ? "bg-warning" : "bg-fg-muted"}`}
                             aria-hidden="true"
                         />
-                        {isLive ? (lang === "vi" ? "BÃO LIVE" : "STORM LIVE") : isDemoMode ? (lang === "vi" ? "DỰ BÁO LẠI" : "HINDCAST") : (lang === "vi" ? "CHƯA KẾT NỐI" : "OFFLINE")}
+                        {isLive ? (lang === "vi" ? "Trực tiếp" : "Live") : isDemoMode ? (lang === "vi" ? "Xem lại bão cũ" : "Past storms") : (lang === "vi" ? "Chưa có dữ liệu" : "Offline")}
                     </div>
                     <button
                         type="button"
-                        className="inline-flex min-h-11 w-11 items-center justify-center gap-1.5 rounded-control border border-transparent bg-transparent text-[11px] font-semibold text-fg hover:border-primary hover:bg-white/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary sm:min-h-9 sm:w-auto sm:px-2.5"
+                        className="inline-flex min-h-11 w-11 items-center justify-center gap-1.5 rounded-control border border-transparent bg-transparent text-xs font-semibold text-fg hover:border-primary hover:bg-white/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary sm:min-h-9 sm:w-auto sm:px-2.5"
                         onClick={() => { void onToggleDemo(); }}
                         aria-pressed={isDemoMode}
                         title={isDemoMode ? (lang === "vi" ? "Tải lại dữ liệu trực tuyến" : "Reload live data") : (lang === "vi" ? "Xem dự báo lại các bão 2021–2024" : "View hindcasts of 2021–2024 storms")}

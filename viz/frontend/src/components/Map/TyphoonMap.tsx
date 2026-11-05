@@ -113,7 +113,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
         ? ({ wind: lang === "vi" ? "Gió" : "Wind", temp: lang === "vi" ? "Nhiệt độ" : "Temperature", pressure: lang === "vi" ? "Áp suất" : "Pressure" }[windyOverlay])
         : mapProvider === "loading"
             ? (lang === "vi" ? "Đang tải" : "Loading")
-            : ({ dark: lang === "vi" ? "Bản đồ tối" : "Dark map", osm: lang === "vi" ? "Địa hình" : "Terrain", sat: lang === "vi" ? "Vệ tinh" : "Satellite" }[basemapType]);
+            : ({ dark: lang === "vi" ? "Bản đồ" : "Map", osm: lang === "vi" ? "Địa hình" : "Terrain", sat: lang === "vi" ? "Vệ tinh" : "Satellite" }[basemapType]);
 
     // Memoize observation/forecast identity to avoid unnecessary rebuilds
     const observationsKey = useMemo(() => {
@@ -170,11 +170,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
 
             provincesLayerRef.current = leaflet.geoJSON(undefined, {
                 style: {
-                    color: "#d52d68",
-                    weight: 1.5,
+                    color: "#7c8ea3",
+                    weight: 0.8,
                     opacity: 0.86,
-                    fillColor: "#efa45b",
-                    fillOpacity: 0.34,
+                    fillColor: "#ffffff",
+                    fillOpacity: 0.06,
                 },
             }).addTo(map);
             islandsLayerRef.current = leaflet.layerGroup().addTo(map);
@@ -425,7 +425,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
             <div class="${isArchipelago ? "sovereign-island-label" : "ordinary-island-label"}">
               ${lang === "vi" ? island.name_vi : island.name_en}
             </div>
-            <div class="text-[9px] text-slate-300 font-mono bg-slate-900/80 px-1 rounded">
+            <div class="island-owner-label">
               ${island.sovereignty}
             </div>
           </div>
@@ -450,11 +450,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
         provincesLayerRef.current.setStyle((feature: any) => {
             const isSelected = feature.properties.id === selectedProvinceId;
             return {
-                color: isSelected ? "#b91c5c" : "#d52d68",
-                weight: isSelected ? 2.5 : 1.2,
+                color: isSelected ? "#0063cc" : "#7c8ea3",
+                weight: isSelected ? 3 : 0.8,
                 opacity: isSelected ? 0.9 : 0.6,
-                fillColor: isSelected ? "#f97316" : "#efa45b",
-                fillOpacity: isSelected ? 0.52 : 0.34,
+                fillColor: isSelected ? "#3b8fe8" : "#ffffff",
+                fillOpacity: isSelected ? 0.22 : 0.06,
             };
         });
     }, [selectedProvinceId, mapReady]);
@@ -786,7 +786,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                             aria-checked={basemapType === "dark"}
                             className={`segmented-item focus-ring ${basemapType === "dark" ? "segmented-item-active" : ""}`}
                         >
-                            {lang === "vi" ? "Bản đồ tối" : "Dark map"}
+                            {lang === "vi" ? "Bản đồ" : "Map"}
                         </button>
                         <button
                             onClick={() => {

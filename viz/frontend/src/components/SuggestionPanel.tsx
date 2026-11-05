@@ -75,7 +75,7 @@ export const SuggestionPanel: React.FC<SuggestionPanelProps> = ({ suggestion, hi
                             )}
                         </tbody>
                     </table>
-                    <p className="pt-1 text-[11px] text-fg-muted">
+                    <p className="pt-1 text-xs text-fg-muted">
                         {vi
                             ? "* vị trí thực tế nằm ngoài nón bất định của mô hình."
                             : "* actual position outside the model's uncertainty cone."}
@@ -83,7 +83,7 @@ export const SuggestionPanel: React.FC<SuggestionPanelProps> = ({ suggestion, hi
                 </div>
             )}
 
-            <p className="text-[11px] italic text-fg-muted">
+            <p className="text-xs italic text-fg-muted">
                 {t.suggestion_caveat} <span className="not-italic">{suggestion.method}</span>
             </p>
         </section>

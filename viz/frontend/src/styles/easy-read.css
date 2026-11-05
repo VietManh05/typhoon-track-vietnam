@@ -1,0 +1,121 @@
+/*
+ * Easy-read layer (loaded last). Goal: anyone, including older people who
+ * rarely use apps, can read and tap everything on the first try.
+ * Patterns borrowed from mainstream weather apps: white cards on a soft sky
+ * background, one strong accent colour, big numbers, sentence-case labels,
+ * 48px touch targets, no glowing/neon effects.
+ */
+
+/* ---------- Daylight look (default theme) ---------- */
+html.light body {
+  background:
+    linear-gradient(180deg, rgb(214 233 252) 0%, rgb(var(--c-bg)) 38%, rgb(var(--c-bg)) 100%);
+}
+
+/* Floating chrome becomes solid white cards with a soft shadow, like weather apps. */
+html.light .immersive-map {
+  --map-glass: rgb(255 255 255 / .96);
+  --map-glass-inner: rgb(var(--c-surface-2));
+  --map-glass-border: rgb(var(--c-line) / .16);
+}
+html.light .immersive-map :is(.map-top-chrome.map-top-chrome, .workspace-heading, .detail-tabs,
+  .map-layer-toolbar, .map-legend, .map-zoom-group, .map-navigation .btn-icon, .map-location-field,
+  .weather-card, .details-panel .panel, .ai-assistant, .storm-strip, .map-column > .timeline-player, .map-caption) {
+  background: rgb(255 255 255 / .97);
+  border-color: rgb(var(--c-line) / .14);
+  box-shadow: 0 6px 24px -10px rgb(30 60 100 / .28);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html.light .immersive-map .details-panel { background: transparent; }
+
+/* Header title/clock were white-on-dark only; make them readable on white. */
+html.light .immersive-map .map-top-chrome header h1,
+html.light .immersive-map .header-clocks :is(div, time) {
+  color: rgb(var(--c-fg));
+  text-shadow: none;
+}
+html.light .immersive-map .map-top-chrome header h1 .text-primary,
+html.light .immersive-map .header-clocks time.text-primary { color: rgb(var(--c-primary)); }
+html.light .immersive-map .brand-mark { filter: none; }
+html.light .immersive-map .header-clock-divider { background: rgb(var(--c-line) / .3); }
+
+/* Selected tab / primary buttons: solid sky blue with white text. */
+html.light .detail-tabs [aria-pressed="true"],
+html.light .btn-primary {
+  background: rgb(var(--c-primary));
+  color: #fff;
+}
+
+/* Sovereignty labels: light card instead of black box. */
+html.light .island-label-marker :is(.sovereign-island-label, .ordinary-island-label) {
+  background: rgb(255 255 255 / .96);
+  box-shadow: 0 2px 8px rgb(30 60 100 / .25);
+}
+html.light .island-label-marker .sovereign-island-label { color: rgb(var(--c-danger)); }
+html.light .island-label-marker .ordinary-island-label { color: rgb(var(--c-warning)); }
+
+/* ---------- Readability for everyone ---------- */
+/* Sentence case instead of small, letter-spaced capitals. */
+.eyebrow,
+.section-label,
+.immersive-map .eyebrow,
+.immersive-map .section-label {
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.disclaimer-strip,
+.immersive-map .disclaimer-strip { font-size: 14px; }
+.immersive-map .weather-metrics span,
+.immersive-map .weather-updated,
+.weather-alert p,
+.connection-banner { font-size: 14px; }
+.immersive-map .weather-metrics strong { font-size: 18px; }
+.data-badge { font-size: 12px; letter-spacing: .02em; }
+.island-label-marker :is(.sovereign-island-label, .ordinary-island-label) { font-size: 13px; }
+.ai-message > span { font-size: 12px; text-transform: none; letter-spacing: 0; }
+.immersive-map .ai-message-body { font-size: 16px; }
+
+/* Big, easy targets (WCAG 2.5.5 AAA: 44px; we use 48px). */
+.btn-icon,
+.leaflet-bar a,
+.leaflet-bar a:hover,
+.map-zoom-button,
+.timeline-player button {
+  min-width: 48px;
+  min-height: 48px;
+}
+.leaflet-bar a,
+.leaflet-bar a:hover { width: 48px; height: 48px; line-height: 48px; }
+.detail-tabs button,
+.chip,
+.immersive-map .storm-strip .chip { min-height: 48px; font-size: 15px; }
+
+/* Clear, thick focus ring for keyboard and switch users. */
+:focus-visible {
+  outline: 3px solid rgb(var(--c-primary));
+  outline-offset: 3px;
+}
+
+/* "Việt Nam (TP. Đà Nẵng)" under island names: theme surface, not a black box. */
+.island-owner-label {
+  margin-top: 2px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgb(var(--c-surface-1) / .92);
+  color: rgb(var(--c-fg-2));
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Phone status ribbon (hindcast / offline notice): light card in daylight theme. */
+@media (max-width: 767px) {
+  html.light .immersive-map .map-connection-row [role="status"] {
+    background: rgb(255 247 237 / .97);
+    color: rgb(var(--c-warning));
+  }
+  html.light .immersive-map .map-connection-row [role="status"] > div span { color: rgb(var(--c-fg)); }
+}

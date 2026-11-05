@@ -83,7 +83,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                                 className="h-2 w-2 rounded-full bg-success"
                                 aria-hidden="true"
                             />
-                            <span className="text-[11px] text-fg-muted">
+                            <span className="text-xs text-fg-muted">
                                 {t.legend_actual}
                             </span>
                         </div>
@@ -97,7 +97,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                                 className="h-2 w-2 rounded-full bg-warning"
                                 aria-hidden="true"
                             />
-                            <span className="text-[11px] text-fg-muted">
+                            <span className="text-xs text-fg-muted">
                                 {showActualComparison
                                     ? lang === "vi"
                                         ? "Dự đoán từ mô hình training"
@@ -111,7 +111,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                                 className="h-3 w-4 rounded-badge border border-primary/60 bg-primary/20"
                                 aria-hidden="true"
                             />
-                            <span className="text-[11px] text-fg-muted">
+                            <span className="text-xs text-fg-muted">
                                 {t.legend_cone}
                             </span>
                         </div>
@@ -126,7 +126,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                                     className="h-2 w-2 rounded-full bg-secondary"
                                     aria-hidden="true"
                                 />
-                                <span className="text-[11px] text-fg-muted">
+                                <span className="text-xs text-fg-muted">
                                     {t.legend_compare}
                                 </span>
                             </div>
@@ -142,7 +142,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                                     className="h-2 w-2 rounded-full bg-pink-400"
                                     aria-hidden="true"
                                 />
-                                <span className="text-[11px] text-fg-muted">
+                                <span className="text-xs text-fg-muted">
                                     {t.legend_suggestion}
                                 </span>
                             </div>
@@ -151,10 +151,10 @@ export const MapLegend: React.FC<MapLegendProps> = ({
 
                     {/* Intensity Colors */}
                     <div className="flex flex-col gap-1 border-t border-line pt-2">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-fg-faint">
+                        <span className="text-2xs font-semibold text-fg-faint">
                             {t.legend_intensity_scale}
                         </span>
-                        <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px]">
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-2xs">
                             {intensityItems.map((item) => (
                                 <div
                                     key={item.key}
@@ -171,7 +171,7 @@ export const MapLegend: React.FC<MapLegendProps> = ({
                     </div>
 
                     {/* Vietnam Sovereignty Note */}
-                    <div className="flex items-center gap-1.5 border-t border-line pt-1.5 text-[10px] text-primary">
+                    <div className="flex items-center gap-1.5 border-t border-line pt-1.5 text-2xs text-primary">
                         <span
                             className="h-1.5 w-1.5 rounded-full bg-primary"
                             aria-hidden="true"

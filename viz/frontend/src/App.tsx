@@ -55,6 +55,7 @@ import {
 import { SuggestionPanel } from "./components/SuggestionPanel";
 import "./styles/explorer.css";
 import "./styles/fullscreen-map.css";
+import "./styles/easy-read.css";
 import { Bot, CloudSun, Radar, ChartNoAxesCombined, PanelRightClose, PanelRightOpen, MapPin, CloudOff } from "lucide-react";
 
 const WindPressureChart = lazy(() =>
@@ -68,7 +69,8 @@ export const App: React.FC = () => {
         localStorage.getItem("typhoon-language") === "en" ? "en" : "vi",
     );
     const [isDark, setIsDark] = useState<boolean>(
-        () => localStorage.getItem("typhoon-theme") !== "light",
+        // Bright daylight theme by default (easiest to read for everyone); dark is opt-in.
+        () => localStorage.getItem("typhoon-theme") === "dark",
     );
     const [isLive, setIsLive] = useState<boolean>(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState<boolean>(false);
@@ -671,11 +673,11 @@ export const App: React.FC = () => {
                     >
                         <div className="detail-tabs" role="group" aria-label={lang === "vi" ? "Nội dung chi tiết" : "Detail views"}>
                             {([
+                                ["storm", Radar, lang === "vi" ? "Cơn bão" : "Storm", lang === "vi" ? "Bão" : "Storm"],
                                 ["weather", CloudSun, lang === "vi" ? "Thời tiết" : "Weather", lang === "vi" ? "Thời tiết" : "Weather"],
-                                ["assistant", Bot, "AI", "AI"],
-                                ["storm", Radar, lang === "vi" ? "Theo dõi bão" : "Storms", lang === "vi" ? "Bão" : "Storms"],
-                                ["analysis", ChartNoAxesCombined, lang === "vi" ? "Phân tích" : "Analysis", lang === "vi" ? "Biểu đồ" : "Charts"],
-                            ] as const).map(([id, Icon, label, compactLabel]) => <button key={id} type="button" aria-label={label} aria-pressed={detailTab === id} onClick={() => selectDetailTab(id)}>{detailTab === id && <Icon size={17} aria-hidden="true" />}<span className="detail-tab-label">{label}</span><span className="detail-tab-label-compact" aria-hidden="true">{compactLabel}</span></button>)}
+                                ["analysis", ChartNoAxesCombined, lang === "vi" ? "Biểu đồ" : "Charts", lang === "vi" ? "Biểu đồ" : "Charts"],
+                                ["assistant", Bot, lang === "vi" ? "Hỏi đáp" : "Ask", lang === "vi" ? "Hỏi" : "Ask"],
+                            ] as const).map(([id, Icon, label, compactLabel]) => <button key={id} type="button" aria-label={label} aria-pressed={detailTab === id} onClick={() => selectDetailTab(id)}><Icon size={18} aria-hidden="true" /><span className="detail-tab-label">{label}</span><span className="detail-tab-label-compact" aria-hidden="true">{compactLabel}</span></button>)}
                         </div>
                         {/* WS1: Track loading indicator */}
                         {isTrackLoading && (

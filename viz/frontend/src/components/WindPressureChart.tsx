@@ -253,15 +253,15 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                                     x2={WIDTH - PLOT.right}
                                     y1={y}
                                     y2={y}
-                                    stroke="rgba(148,163,184,.14)"
+                                    style={{ stroke: "rgb(var(--c-line) / .18)" }}
                                     strokeWidth="1"
                                 />
                                 <text
                                     x={PLOT.left - 9}
                                     y={y + 3}
                                     textAnchor="end"
-                                    fill="#22d3ee"
-                                    fontSize="9"
+                                    style={{ fill: "rgb(var(--c-primary))" }}
+                                    fontSize="11"
                                     fontFamily="JetBrains Mono, monospace"
                                 >
                                     {windTick}
@@ -269,8 +269,8 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                                 <text
                                     x={WIDTH - PLOT.right + 9}
                                     y={y + 3}
-                                    fill="#f59e0b"
-                                    fontSize="9"
+                                    style={{ fill: "rgb(var(--c-warning))" }}
+                                    fontSize="11"
                                     fontFamily="JetBrains Mono, monospace"
                                 >
                                     {pressureTick}
@@ -279,15 +279,15 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                         );
                     })}
 
-                    <text x={PLOT.left} y="13" fill="#22d3ee" fontSize="9" fontWeight="600">
+                    <text x={PLOT.left} y="13" style={{ fill: "rgb(var(--c-primary))" }} fontSize="11" fontWeight="600">
                         km/h
                     </text>
                     <text
                         x={WIDTH - PLOT.right}
                         y="13"
                         textAnchor="end"
-                        fill="#f59e0b"
-                        fontSize="9"
+                        style={{ fill: "rgb(var(--c-warning))" }}
+                        fontSize="11"
                         fontWeight="600"
                     >
                         hPa
@@ -296,7 +296,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                     <path
                         d={pathFor(points, "wind", windY, 0, Math.max(0, observations.length - 1))}
                         fill="none"
-                        stroke="#22d3ee"
+                        style={{ stroke: "rgb(var(--c-primary))" }}
                         strokeWidth="2.75"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -304,7 +304,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                     <path
                         d={pathFor(points, "wind", windY, forecastStart, points.length - 1)}
                         fill="none"
-                        stroke="#22d3ee"
+                        style={{ stroke: "rgb(var(--c-primary))" }}
                         strokeWidth="2.75"
                         strokeDasharray="7 6"
                         strokeLinecap="round"
@@ -313,7 +313,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                     <path
                         d={pathFor(points, "pressure", pressureY, 0, Math.max(0, observations.length - 1))}
                         fill="none"
-                        stroke="#f59e0b"
+                        style={{ stroke: "rgb(var(--c-warning))" }}
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -321,7 +321,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                     <path
                         d={pathFor(points, "pressure", pressureY, forecastStart, points.length - 1)}
                         fill="none"
-                        stroke="#f59e0b"
+                        style={{ stroke: "rgb(var(--c-warning))" }}
                         strokeWidth="2"
                         strokeDasharray="7 6"
                         strokeLinecap="round"
@@ -369,7 +369,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                             cx={selectedX}
                             cy={windY(selected.wind)}
                             r="4.5"
-                            fill="#22d3ee"
+                            style={{ fill: "rgb(var(--c-primary))" }}
                             stroke="#07101f"
                             strokeWidth="2.5"
                         />
@@ -379,7 +379,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                             cx={selectedX}
                             cy={pressureY(selected.pressure)}
                             r="4.5"
-                            fill="#f59e0b"
+                            style={{ fill: "rgb(var(--c-warning))" }}
                             stroke="#07101f"
                             strokeWidth="2.5"
                         />
@@ -398,7 +398,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                                       : "middle"
                             }
                             fill="#94a3b8"
-                            fontSize="9"
+                            fontSize="11"
                             fontFamily="JetBrains Mono, monospace"
                         >
                             {points[index].label}
@@ -414,7 +414,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                         <span className="font-mono text-xs text-fg-muted">
                             {selected.label}
                         </span>
-                        <span className="rounded-full bg-surface-3 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-fg-faint">
+                        <span className="rounded-full bg-surface-3 px-1.5 py-0.5 text-2xs font-semibold uppercase tracking-wide text-fg-faint">
                             {selected.forecast
                                 ? isVietnamese
                                     ? "Dự báo"
@@ -424,11 +424,11 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                                   : "Actual"}
                         </span>
                     </div>
-                    <div className="flex items-center justify-between gap-4 font-mono text-[10px]">
+                    <div className="flex items-center justify-between gap-4 font-mono text-2xs">
                         <span className="text-primary">{selected.wind ?? missingValue}</span>
                         <span className="text-fg-faint">km/h</span>
                     </div>
-                    <div className="flex items-center justify-between gap-4 font-mono text-[10px]">
+                    <div className="flex items-center justify-between gap-4 font-mono text-2xs">
                         <span className="text-warning">{selected.pressure ?? missingValue}</span>
                         <span className="text-fg-faint">hPa</span>
                     </div>
@@ -438,7 +438,7 @@ export const WindPressureChart: React.FC<WindPressureChartProps> = ({
                     {selectedDescription}
                 </p>
 
-                <div className="flex flex-wrap items-center justify-between gap-2 px-3 text-[10px] text-fg-faint">
+                <div className="flex flex-wrap items-center justify-between gap-2 px-3 text-2xs text-fg-faint">
                     <span className="flex items-center gap-1">
                         <Wind className="h-3 w-3 text-primary" aria-hidden="true" />
                         {isVietnamese ? "Gió · trục trái" : "Wind · left axis"}

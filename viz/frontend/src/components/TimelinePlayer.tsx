@@ -98,7 +98,7 @@ export const TimelinePlayer: React.FC<TimelinePlayerProps> = ({
                         <span className="sm:hidden">{lang === "vi" ? "Quỹ đạo bão" : "Storm track"}</span>
                     </h2>
                 </div>
-                <div className="flex items-center gap-2 text-[10px]">
+                <div className="flex items-center gap-2 text-2xs">
                     <span
                         className={`badge ${frame.forecast ? "border-secondary/40 bg-secondary/10 text-secondary" : "border-primary/40 bg-primary/10 text-primary"}`}
                     >
@@ -157,7 +157,7 @@ export const TimelinePlayer: React.FC<TimelinePlayerProps> = ({
                     aria-valuetext={`${frame.label} — ${formatted} — ${frame.category}`}
                 />
             </div>
-            <time className="mt-1 block text-center font-mono text-[10px] text-fg-faint sm:hidden">
+            <time className="mt-1 block text-center font-mono text-2xs text-fg-faint sm:hidden">
                 {formatted}
             </time>
         </section>

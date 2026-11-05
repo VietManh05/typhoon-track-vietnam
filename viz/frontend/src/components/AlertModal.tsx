@@ -361,7 +361,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
                             <span className="pointer-events-none absolute bottom-3 right-3 text-xs text-fg-faint">
                                 km
                             </span>
-                            <p className="mt-1.5 text-[11px] leading-4 text-fg-faint">
+                            <p className="mt-1.5 text-xs leading-4 text-fg-faint">
                                 {lang === "vi"
                                     ? "Phạm vi hợp lệ từ 10 đến 2.000 km."
                                     : "Valid range from 10 to 2,000 km."}

@@ -83,14 +83,15 @@ export const ActiveStormSelector: React.FC<ActiveStormSelectorProps> = ({
                                         ? storm.name_vi
                                         : storm.name}
                                 </span>
-                                <span className="font-mono text-xs text-fg-faint">
-                                    {storm.id}
-                                </span>
-                                <span
-                                    className={`badge ${token.bg} ${token.border} ${token.text}`}
-                                >
-                                    {storm.latest.intensity}
-                                </span>
+                                {/* Plain words ("Bão mạnh") instead of codes like STS/UNK or storm IDs. */}
+                                {storm.latest.intensity && storm.latest.intensity !== "UNK" && (
+                                    <span
+                                        className={`badge ${token.bg} ${token.border} ${token.text}`}
+                                        title={storm.latest.intensity}
+                                    >
+                                        {(t.categories as Record<string, string>)[storm.latest.intensity]?.split(" (")[0] ?? storm.latest.intensity}
+                                    </span>
+                                )}
                                 {speed !== null ? (
                                     <span className="flex items-center gap-1 font-mono text-xs text-fg-muted">
                                         <Wind

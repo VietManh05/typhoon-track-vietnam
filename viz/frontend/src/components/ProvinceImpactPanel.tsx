@@ -101,7 +101,7 @@ export const ProvinceImpactPanel: React.FC<ProvinceImpactPanelProps> = ({
                                           <div className="text-base font-semibold text-fg">
                                               {selected.name}
                                           </div>
-                                          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[10px] text-fg-muted">
+                                          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-2xs text-fg-muted">
                                               <span>
                                                   {formatKm(
                                                       selected.min_forecast_distance_km,
@@ -205,7 +205,7 @@ export const ProvinceImpactPanel: React.FC<ProvinceImpactPanelProps> = ({
                                     <span className="block truncate text-xs font-semibold text-fg">
                                         {impact.name}
                                     </span>
-                                    <span className="mt-0.5 flex items-center gap-3 font-mono text-[10px] text-fg-faint">
+                                    <span className="mt-0.5 flex items-center gap-3 font-mono text-2xs text-fg-faint">
                                         <span className="flex items-center gap-1">
                                             <Navigation
                                                 className="h-3 w-3"
@@ -242,7 +242,7 @@ export const ProvinceImpactPanel: React.FC<ProvinceImpactPanelProps> = ({
                     ) : null}
                 </div>
 
-                <p className="border-t border-line pt-2 text-[10px] leading-4 text-fg-faint">
+                <p className="border-t border-line pt-2 text-2xs leading-4 text-fg-faint">
                     {t.impact_note}
                 </p>
             </div>

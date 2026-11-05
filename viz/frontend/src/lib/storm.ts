@@ -28,12 +28,12 @@ const NEUTRAL: TokenClasses = {
 };
 
 export const INTENSITY_TOKENS: Record<string, TokenClasses> = {
-  TD: { hex: '#22d3ee', text: 'text-storm-td', bg: 'bg-storm-td/10', border: 'border-storm-td/40', dot: 'bg-storm-td' },
-  TS: { hex: '#10b981', text: 'text-storm-ts', bg: 'bg-storm-ts/10', border: 'border-storm-ts/40', dot: 'bg-storm-ts' },
-  STS: { hex: '#f59e0b', text: 'text-storm-sts', bg: 'bg-storm-sts/10', border: 'border-storm-sts/40', dot: 'bg-storm-sts' },
-  TY: { hex: '#fb923c', text: 'text-storm-ty', bg: 'bg-storm-ty/10', border: 'border-storm-ty/40', dot: 'bg-storm-ty' },
-  STY: { hex: '#f43f5e', text: 'text-storm-sty', bg: 'bg-storm-sty/10', border: 'border-storm-sty/40', dot: 'bg-storm-sty' },
-  SUPERTY: { hex: '#8b5cf6', text: 'text-storm-superty', bg: 'bg-storm-superty/10', border: 'border-storm-superty/40', dot: 'bg-storm-superty' },
+  TD: { hex: '#0891b2', text: 'text-storm-td', bg: 'bg-storm-td/10', border: 'border-storm-td/40', dot: 'bg-storm-td' },
+  TS: { hex: '#16a34a', text: 'text-storm-ts', bg: 'bg-storm-ts/10', border: 'border-storm-ts/40', dot: 'bg-storm-ts' },
+  STS: { hex: '#ca8a04', text: 'text-storm-sts', bg: 'bg-storm-sts/10', border: 'border-storm-sts/40', dot: 'bg-storm-sts' },
+  TY: { hex: '#ea580c', text: 'text-storm-ty', bg: 'bg-storm-ty/10', border: 'border-storm-ty/40', dot: 'bg-storm-ty' },
+  STY: { hex: '#dc2626', text: 'text-storm-sty', bg: 'bg-storm-sty/10', border: 'border-storm-sty/40', dot: 'bg-storm-sty' },
+  SUPERTY: { hex: '#7c3aed', text: 'text-storm-superty', bg: 'bg-storm-superty/10', border: 'border-storm-superty/40', dot: 'bg-storm-superty' },
   UNK: NEUTRAL,
 };
 

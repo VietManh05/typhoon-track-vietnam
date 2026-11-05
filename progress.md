@@ -208,3 +208,10 @@
 - `run_env_study.py`: ensemble LSTM+Transformer có dòng dẫn đường (chọn trên val) — test TB 179 vs 197 km; 72 h −35 km, KTC95 [−62, −9] (có ý nghĩa). YAGI chưa giải được.
 - Bảo mật: torch cài riêng từ index PyTorch (Dockerfile + CI), không còn extra index.
 - Kiến trúc cập nhật; hồ sơ nghiệm thu `docs/acceptance/README.md`: 21 Đạt, 7 Đạt một phần.
+
+## 2026-11-05 — Hoàn thiện nghiệm thu
+
+- A29-024: giám sát chất lượng thực tế (`operations/monitoring.py`, `typhoon-vn monitor`), Prometheus histogram, request id. Chạy trên 20 hindcast: độ phủ nón 80–95%, `ok`.
+- A29-020: webhook cảnh báo ký HMAC, retry, idempotent, tắt mặc định (`operations/delivery.py`).
+- A29-019 xếp lại Đạt (vùng ảnh hưởng hình học, phạm vi ghi rõ).
+- Nghiệm thu: 25 Đạt, 3 Đạt một phần (PostGIS không gian, Docker build lại — máy thiếu RAM, CI — GitHub billing). pytest 171 passed.

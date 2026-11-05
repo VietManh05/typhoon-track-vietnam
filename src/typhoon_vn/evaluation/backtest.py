@@ -27,6 +27,7 @@ from typhoon_vn.datasets.typhoon_dataset import (
     collate_fn,
 )
 from typhoon_vn.evaluation.metrics import along_cross_track_errors, track_error_km
+from typhoon_vn.features.scaling import FeatureScaler
 from typhoon_vn.features.schema import DEFAULT_SCHEMA, TrackSchema
 from typhoon_vn.models.base import TrackForecaster
 
@@ -38,6 +39,7 @@ def backtest_storm(
     schema: TrackSchema | None = None,
     device: str | torch.device = "cpu",
     batch_size: int = 64,
+    scaler: FeatureScaler | None = None,
 ) -> pd.DataFrame:
     """Run rolling-window inference over all valid anchor points of one storm.
 
@@ -49,6 +51,8 @@ def backtest_storm(
         schema: column name mapping.
         device: PyTorch device for inference.
         batch_size: mini-batch size (tune for GPU memory).
+        scaler: train-fitted scaler the model was trained with; ``None`` feeds
+            raw features (required by the physical-unit baselines).
 
     Returns:
         DataFrame with columns:
@@ -62,7 +66,7 @@ def backtest_storm(
     schema = schema or DEFAULT_SCHEMA
     device = torch.device(device) if isinstance(device, str) else device
 
-    ds = TyphoonDataset(storm_df, config=config, schema=schema)
+    ds = TyphoonDataset(storm_df, config=config, schema=schema, scaler=scaler)
     if len(ds) == 0:
         return pd.DataFrame()
 
@@ -131,6 +135,7 @@ def backtest_catalogue(
     schema: TrackSchema | None = None,
     device: str | torch.device = "cpu",
     batch_size: int = 64,
+    scaler: FeatureScaler | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Run backtest over all storms in ``df`` and aggregate metrics.
 
@@ -141,6 +146,7 @@ def backtest_catalogue(
         schema: column name mapping.
         device: PyTorch device.
         batch_size: inference batch size.
+        scaler: see :func:`backtest_storm`.
 
     Returns:
         Tuple of:
@@ -166,6 +172,7 @@ def backtest_catalogue(
             schema=schema,
             device=device,
             batch_size=batch_size,
+            scaler=scaler,
         )
         if not result.empty:
             all_frames.append(result)
@@ -194,8 +201,7 @@ def backtest_catalogue(
                 ),
                 "intensity_accuracy": float(
                     np.mean(
-                        group["pred_intensity_class"]
-                        == group["actual_intensity_class"]
+                        group["pred_intensity_class"] == group["actual_intensity_class"]
                     )
                 ),
                 "n_forecasts": len(errs),

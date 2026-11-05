@@ -25,6 +25,22 @@ services:
       minio:
         condition: service_healthy
 
+  worker:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile
+    # Keyless NOAA IBTrACS ACTIVE feed every 6 h; never sends messages.
+    command: python -m typhoon_vn.cli worker --ibtracs-active --interval 21600
+    env_file: .env
+    environment:
+      PYTHONPATH: /app/src
+      OPERATIONAL_DATABASE_URL: postgresql+psycopg://typhoon:typhoon@postgres:5432/typhoon
+    volumes:
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   postgres:
     image: postgis/postgis:16-3.4
     environment:

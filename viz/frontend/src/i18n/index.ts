@@ -68,6 +68,10 @@ export interface TranslationStrings {
   legend_forecast: string;
   legend_cone: string;
   legend_compare: string;
+  legend_suggestion: string;
+  suggestion_title: string;
+  suggestion_intro: string;
+  suggestion_caveat: string;
   legend_vietnam: string;
   categories: Record<string, string>;
   hoang_sa: string;
@@ -95,6 +99,11 @@ export interface TranslationStrings {
   eta_hours_suffix: string;
   top_provinces_label: string;
   in_cone: string;
+  risk_severe: string;
+  risk_very_high: string;
+  risk_high: string;
+  risk_moderate: string;
+  risk_low: string;
   // WS3: Compass bearings (16 directions)
   bearing_N: string;
   bearing_NNE: string;
@@ -155,7 +164,7 @@ export const translations: Record<Language, TranslationStrings> = {
     app_subtitle: 'Typhoon Track & Impact Decision Support System',
     disclaimer: 'CẢNH BÁO PHÁP LÝ & KHOA HỌC: Hệ thống hỗ trợ ra quyết định thử nghiệm; không thay thế bản tin cảnh báo chính thức của Trung tâm Dự báo Khí tượng Thủy văn Quốc gia (NCHMF).',
     system_status_live: 'Kết nối API Trực tiếp',
-    system_status_mock: 'Chế độ Demo / Dữ liệu Mẫu',
+    system_status_mock: 'Dự báo lại bão 2021–2024 (dữ liệu lưu trữ)',
     time_utc: 'Giờ Quốc tế (UTC)',
     time_vn: 'Giờ Việt Nam (GMT+7)',
     active_storms: 'Các Cơn Bão Đang Theo Dõi',
@@ -216,8 +225,12 @@ export const translations: Record<Language, TranslationStrings> = {
     legend_title: 'Chú Giải Khí Tượng',
     legend_actual: 'Quỹ đạo thực tế (Đã đi qua)',
     legend_forecast: 'Quỹ đạo dự báo (+6h...+72h)',
-    legend_cone: 'Vùng nón xác suất 70-80%',
-    legend_compare: 'Dự báo chính thức NCHMF/JTWC',
+    legend_cone: 'Nón bất định (phương pháp: xem bảng dự báo)',
+    legend_compare: 'Quỹ đạo thực tế sau thời điểm dự báo',
+    legend_suggestion: 'Gợi ý theo bão tương tự (k-NN)',
+    suggestion_title: 'Gợi ý theo bão tương tự',
+    suggestion_intro: 'Đường gợi ý (hồng) là trung bình có trọng số hướng đi tiếp theo của các tình huống bão lịch sử giống nhất (quỹ đạo 24 giờ gần nhất, vị trí, mùa):',
+    suggestion_caveat: 'Trên các bão kiểm thử 2021–2024, độ chính xác tương đương mô hình học sâu. Chỉ mang tính tham khảo.',
     legend_vietnam: 'Chủ quyền lãnh thổ & vùng biển VN',
     categories: {
       TD: 'Áp thấp nhiệt đới (Cấp 6-7)',
@@ -253,6 +266,11 @@ export const translations: Record<Language, TranslationStrings> = {
     eta_hours_suffix: 'giờ',
     top_provinces_label: 'Top 5 Tỉnh thành gần tâm bão nhất:',
     in_cone: 'Trong nón',
+    risk_severe: 'Nguy hiểm',
+    risk_very_high: 'Rất cao',
+    risk_high: 'Cao',
+    risk_moderate: 'Trung bình',
+    risk_low: 'Thấp',
     // WS3: Compass bearings (16 directions)
     bearing_N: 'Bắc (N)',
     bearing_NNE: 'Bắc Đông Bắc (NNE)',
@@ -311,7 +329,7 @@ export const translations: Record<Language, TranslationStrings> = {
     app_subtitle: 'Typhoon Track & Impact Decision Support System',
     disclaimer: 'LEGAL & SCIENTIFIC NOTICE: Experimental decision support system; does NOT substitute official warnings issued by the National Center for Hydro-Meteorological Forecasting (NCHMF).',
     system_status_live: 'Live Backend Connected',
-    system_status_mock: 'Demo / Synthetic Mock Mode',
+    system_status_mock: 'Hindcast of 2021–2024 storms (archive)',
     time_utc: 'Coordinated Universal Time (UTC)',
     time_vn: 'Vietnam Time (GMT+7)',
     active_storms: 'Tracked Tropical Cyclones',
@@ -372,8 +390,12 @@ export const translations: Record<Language, TranslationStrings> = {
     legend_title: 'Meteorological Legend',
     legend_actual: 'Observed track (Historical fixes)',
     legend_forecast: 'Predicted track (+6h...+72h)',
-    legend_cone: '70-80% Probability Cone',
-    legend_compare: 'Official NCHMF/JTWC Guidance',
+    legend_cone: 'Uncertainty cone (method: see forecast table)',
+    legend_compare: 'Actual track after the forecast time',
+    legend_suggestion: 'Similar-storm suggestion (k-NN)',
+    suggestion_title: 'Similar-storm suggestion',
+    suggestion_intro: 'The suggested track (pink) is a weighted average of what the most similar historical storm situations did next (last 24 h of track, position, season):',
+    suggestion_caveat: 'On 2021–2024 test storms its accuracy matches the deep-learning model. For reference only.',
     legend_vietnam: 'Sovereign Territory & Waters of Vietnam',
     categories: {
       TD: 'Tropical Depression (Force 6-7)',
@@ -409,6 +431,11 @@ export const translations: Record<Language, TranslationStrings> = {
     eta_hours_suffix: 'hours',
     top_provinces_label: 'Top 5 Closest Provinces:',
     in_cone: 'In Cone',
+    risk_severe: 'Severe',
+    risk_very_high: 'Very high',
+    risk_high: 'High',
+    risk_moderate: 'Moderate',
+    risk_low: 'Low',
     // WS3: Compass bearings (16 directions)
     bearing_N: 'North (N)',
     bearing_NNE: 'North-Northeast (NNE)',

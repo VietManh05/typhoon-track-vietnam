@@ -50,6 +50,9 @@ experiment = [
     "mlflow>=2.15,<4",
     "optuna>=4,<5",
 ]
+report = [
+    "matplotlib>=3.8,<4",
+]
 dev = [
     "black>=24.10,<25",
     "flake8>=7.1,<8",
@@ -85,4 +88,8 @@ extend-ignore = ["E203", "E402"]
 exclude = [".git", ".venv", "build", "dist"]
 
 [tool.setuptools.package-data]
-typhoon_vn = ["dashboard/*"]
+typhoon_vn = [
+    "dashboard/**/*",
+    "operations/migrations/alembic.ini",
+    "operations/migrations/script.py.mako",
+]

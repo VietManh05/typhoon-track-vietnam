@@ -36,7 +36,9 @@ def create_app(
     settings = get_settings() if settings is None else settings
     services = {"store": store, "forecaster": forecaster, "redis": None}
     lock = RLock()
-    requests = defaultdict(deque)
+    # Separate limiter state so unauthenticated public reads can never exhaust
+    # the capacity used by key-holding operators and writers.
+    limiters = {"auth": defaultdict(deque), "public": defaultdict(deque)}
     counters = {"requests": 0, "errors": 0, "forecast_cache_hits": 0}
 
     def initialize():
@@ -45,7 +47,9 @@ def create_app(
                 services["store"] = Store(settings.operational_database_url)
             if services["forecaster"] is None:
                 services["forecaster"] = TyphoonForecaster(
-                    settings.model_artifact, settings.allow_baseline
+                    settings.model_artifact,
+                    settings.allow_baseline,
+                    analog_artifact=settings.analog_artifact,
                 )
         return services
 
@@ -96,6 +100,16 @@ def create_app(
             request.headers.get("X-API-Key", ""), settings.api_key
         ):
             raise HTTPException(401, "Valid X-API-Key required")
+        rate_limit(request, limiters["auth"])
+
+    def authorize_read(request: Request):
+        """Dashboard read routes: public when ``public_read``, always rate limited."""
+        if settings.public_read and "X-API-Key" not in request.headers:
+            rate_limit(request, limiters["public"])
+        else:
+            authorize(request)
+
+    def rate_limit(request: Request, requests: defaultdict) -> None:
         now = time.monotonic()
         address = request.client.host if request.client else "local"
         with lock:
@@ -200,11 +214,11 @@ def create_app(
     def forecast(body: ForecastRequest):
         return compute(body)
 
-    @app.get("/typhoons/active", dependencies=[Depends(authorize)])
+    @app.get("/typhoons/active", dependencies=[Depends(authorize_read)])
     def active():
         return {"typhoons": db().active(), "disclaimer": DISCLAIMER}
 
-    @app.get("/typhoons/{storm_id}/track", dependencies=[Depends(authorize)])
+    @app.get("/typhoons/{storm_id}/track", dependencies=[Depends(authorize_read)])
     def track(storm_id: str):
         fixes = db().track(storm_id)
         if not fixes:

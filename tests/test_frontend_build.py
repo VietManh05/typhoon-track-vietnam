@@ -1,12 +1,8 @@
 """Acceptance and integration tests for Gate G21: Frontend and Dashboard."""
 
-import json
-from pathlib import Path
-
 from fastapi.testclient import TestClient
 
 from typhoon_vn.api.app import create_app
-from typhoon_vn.settings import Settings
 
 
 def test_dashboard_static_files_served_by_fastapi():

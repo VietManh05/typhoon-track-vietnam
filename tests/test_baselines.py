@@ -12,7 +12,6 @@ from typhoon_vn.models.baselines import (
     PersistenceForecaster,
 )
 
-
 HORIZONS = [1, 2, 4, 8, 12]
 
 
@@ -22,7 +21,9 @@ def test_persistence_uses_short_dateline_motion_and_wraps_outputs() -> None:
     output = model(x)["reg"][0]
 
     assert output[:, 0].tolist() == pytest.approx([12.0, 13.0, 15.0, 19.0, 23.0])
-    assert output[:, 1].tolist() == pytest.approx([-177.0, -175.0, -171.0, -163.0, -155.0])
+    assert output[:, 1].tolist() == pytest.approx(
+        [-177.0, -175.0, -171.0, -163.0, -155.0]
+    )
     assert torch.all((output[:, 1] >= -180.0) & (output[:, 1] <= 180.0))
 
 
@@ -36,14 +37,19 @@ def test_persistence_uses_last_two_valid_masked_positions() -> None:
         model(x, torch.tensor([[1.0, 0.0, 0.0]]))
 
 
-def test_climatology_baseline_is_train_only_serializable_and_dateline_safe(tmp_path) -> None:
+def test_climatology_baseline_is_train_only_serializable_and_dateline_safe(
+    tmp_path,
+) -> None:
     timestamps = pd.date_range("2025-01-01", periods=14, freq="6h", tz="UTC")
     frame = pd.DataFrame(
         {
             "storm_id": ["A"] * len(timestamps),
             "timestamp": timestamps,
             "lat": np.arange(len(timestamps), dtype=float),
-            "lon": [((179.0 + 2 * index + 180) % 360) - 180 for index in range(len(timestamps))],
+            "lon": [
+                ((179.0 + 2 * index + 180) % 360) - 180
+                for index in range(len(timestamps))
+            ],
         }
     )
     baseline = ClimatologyPersistenceBaseline.fit(frame)

@@ -1,394 +1,685 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
-import L from 'leaflet';
-import { Fix, ForecastResponse } from '../../types';
-import { Language, translations } from '../../i18n';
-import { MOCK_OFFICIAL_COMPARISON } from '../../services/mockData';
-import { Eye, Compass } from 'lucide-react';
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import L from "leaflet";
+import leafletStylesheetUrl from "leaflet/dist/leaflet.css?url";
+import {
+    CurrentWeather,
+    Fix,
+    ForecastResponse,
+    VerificationPoint,
+    WeatherLocation,
+} from "../../types";
+import { Language, translations } from "../../i18n";
+import {
+    ChevronDown,
+    Eye,
+    Layers3,
+    LocateFixed,
+    Maximize2,
+    Minus,
+    Plus,
+} from "lucide-react";
+import {
+    initializeWindyMap,
+    WindyApi,
+    WindyOverlay,
+} from "../../services/windyMap";
 
-interface TyphoonMapProps {
-  observations: Fix[];
-  currentFixIndex: number;
-  forecast: ForecastResponse | null;
-  selectedProvinceId: string | null;
-  onSelectProvince: (id: string) => void;
-  lang: Language;
+const WINDY_API_KEY = import.meta.env.VITE_WINDY_MAP_API_KEY?.trim() ?? "";
+const LEAFLET_STYLESHEET_ID = "leaflet-fallback-stylesheet";
+
+function ensureLeafletStylesheet() {
+    if (document.getElementById(LEAFLET_STYLESHEET_ID)) return;
+    const link = document.createElement("link");
+    link.id = LEAFLET_STYLESHEET_ID;
+    link.rel = "stylesheet";
+    link.href = leafletStylesheetUrl;
+    document.head.appendChild(link);
 }
 
-export const TyphoonMap: React.FC<TyphoonMapProps> = ({
-  observations,
-  currentFixIndex,
-  forecast,
-  selectedProvinceId,
-  onSelectProvince,
-  lang,
-}) => {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
+interface TyphoonMapProps {
+    observations: Fix[];
+    currentFixIndex: number;
+    forecast: ForecastResponse | null;
+    actualTrack?: VerificationPoint[];
+    selectedProvinceId: string | null;
+    onSelectProvince: (id: string) => void;
+    lang: Language;
+    focusLocation?: WeatherLocation | null;
+    weatherConditions?: CurrentWeather[];
+    onSelectWeatherLocation?: (id: string) => void;
+}
 
-  // Layer groups refs
-  const baseTileRef = useRef<L.TileLayer | null>(null);
-  const provincesLayerRef = useRef<L.GeoJSON | null>(null);
-  const islandsLayerRef = useRef<L.LayerGroup | null>(null);
-  const trackLayerRef = useRef<L.LayerGroup | null>(null);
-  const coneLayerRef = useRef<L.LayerGroup | null>(null);
-  const compareLayerRef = useRef<L.LayerGroup | null>(null);
-
-  // WS6: Separate ref for the active cyclone marker — avoids full layer rebuild on scrub
-  const cycloneMarkerRef = useRef<L.Marker | null>(null);
-  const currentFixMarkerRef = useRef<L.CircleMarker | null>(null);
-  const prevFixIndexRef = useRef<number>(-1);
-
-  // State for toggles
-  const [basemapType, setBasemapType] = useState<'dark' | 'osm' | 'sat'>('dark');
-  const [showCone, setShowCone] = useState(true);
-  const [showCompare, setShowCompare] = useState(true);
-  const [islandsData, setIslandsData] = useState<any[]>([]);
-
-  const t = translations[lang];
-
-  // Memoize observation/forecast identity to avoid unnecessary rebuilds
-  const observationsKey = useMemo(() => {
-    if (!observations || observations.length === 0) return '';
-    return observations.map((o) => `${o.lat},${o.lon}`).join('|');
-  }, [observations]);
-
-  const forecastKey = useMemo(() => {
-    if (!forecast || !forecast.points) return '';
-    return forecast.forecast_id + forecast.points.length;
-  }, [forecast]);
-
-  // 1. Load Islands metadata
-  useEffect(() => {
-    fetch('/data/vietnam_islands.json')
-      .then((res) => res.json())
-      .then((data) => setIslandsData(data))
-      .catch((err) => console.warn('Failed to load islands data:', err));
-  }, []);
-
-  // 2. Initialize Leaflet Map
-  useEffect(() => {
-    if (!mapContainerRef.current || mapInstanceRef.current) return;
-
-    // Center on Vietnam and East Sea (Biển Đông)
-    const map = L.map(mapContainerRef.current, {
-      center: [16.5, 110.0],
-      zoom: 6,
-      minZoom: 4,
-      maxZoom: 15,
-      zoomControl: false,
-    });
-
-    L.control.zoom({ position: 'topright' }).addTo(map);
-
-    // Default tile: CartoDB Dark Matter
-    baseTileRef.current = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19,
-      }
-    ).addTo(map);
-
-    // Create layer groups
-    provincesLayerRef.current = L.geoJSON(undefined, {
-      style: {
-        color: '#0284c7',
-        weight: 1.2,
-        opacity: 0.6,
-        fillColor: '#0369a1',
-        fillOpacity: 0.08,
-      },
-    }).addTo(map);
-
-    islandsLayerRef.current = L.layerGroup().addTo(map);
-    coneLayerRef.current = L.layerGroup().addTo(map);
-    compareLayerRef.current = L.layerGroup().addTo(map);
-    trackLayerRef.current = L.layerGroup().addTo(map);
-
-    mapInstanceRef.current = map;
-
-    // Load Vietnam provinces GeoJSON
-    fetch('/data/vietnam_provinces.geojson')
-      .then((r) => r.json())
-      .then((geojson) => {
-        if (!mapInstanceRef.current) return;
-        provincesLayerRef.current?.clearLayers();
-        provincesLayerRef.current?.addData(geojson);
-
-        provincesLayerRef.current?.eachLayer((layer: any) => {
-          const props = layer.feature?.properties;
-          if (props) {
-            layer.bindTooltip(props.name, {
-              permanent: false,
-              direction: 'center',
-              className: 'bg-slate-900/90 text-cyan-200 text-xs px-2 py-1 rounded border border-cyan-500/40 font-mono',
-            });
-            layer.on('click', () => {
-              onSelectProvince(props.id);
-            });
-          }
-        });
-      })
-      .catch((e) => console.warn('Could not load provinces GeoJSON:', e));
-
-    return () => {
-      map.remove();
-      mapInstanceRef.current = null;
-    };
-  }, []);
-
-  // 3. Update Basemap Tile
-  useEffect(() => {
-    if (!mapInstanceRef.current || !baseTileRef.current) return;
-
-    mapInstanceRef.current.removeLayer(baseTileRef.current);
-
-    let url = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-    let attr = '&copy; OpenStreetMap &copy; CARTO';
-
-    if (basemapType === 'osm') {
-      url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-      attr = '&copy; OpenStreetMap contributors';
-    } else if (basemapType === 'sat') {
-      url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-      attr = '&copy; Esri World Imagery';
+const weatherMarkerSvg = (icon: string) => {
+    if (icon.includes("rain") || icon.includes("shower")) {
+        return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 21h14a6 6 0 0 0 0-12 8 8 0 0 0-15-1A6.5 6.5 0 0 0 9 21Z" fill="#e8f4ff" stroke="#5b7896" stroke-width="1.5"/><path d="m11 24-2 4m8-4-2 4m8-4-2 4" stroke="#2296d2" stroke-width="2" stroke-linecap="round"/></svg>';
     }
+    if (icon.includes("cloud") || icon.includes("overcast")) {
+        return '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="11" cy="10" r="6" fill="#ffc64b"/><path d="M8 24h16a6 6 0 0 0-1-12 8 8 0 0 0-15 2A5 5 0 0 0 8 24Z" fill="#eef6fb" stroke="#6b8297" stroke-width="1.5"/></svg>';
+    }
+    if (icon.includes("storm") || icon.includes("thunder")) {
+        return '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 20h16a6 6 0 0 0-1-12 8 8 0 0 0-15 2A5 5 0 0 0 8 20Z" fill="#dfeaf2" stroke="#60778c" stroke-width="1.5"/><path d="m17 19-5 8h5l-2 5 7-9h-5l2-4Z" fill="#ffb020"/></svg>';
+    }
+    return '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="7" fill="#ffc43d"/><g stroke="#e99b17" stroke-width="2" stroke-linecap="round"><path d="M16 3v4m0 18v4M3 16h4m18 0h4M7 7l3 3m12 12 3 3M25 7l-3 3M10 22l-3 3"/></g></svg>';
+};
 
-    baseTileRef.current = L.tileLayer(url, { attribution: attr, maxZoom: 18 }).addTo(mapInstanceRef.current);
-    baseTileRef.current.bringToBack();
-  }, [basemapType]);
+export const TyphoonMap: React.FC<TyphoonMapProps> = ({
+    observations,
+    currentFixIndex,
+    forecast,
+    actualTrack = [],
+    selectedProvinceId,
+    onSelectProvince,
+    lang,
+    focusLocation,
+    weatherConditions = [],
+    onSelectWeatherLocation,
+}) => {
+    const mapContainerRef = useRef<HTMLDivElement>(null);
+    const mapShellRef = useRef<HTMLDivElement>(null);
+    const mapInstanceRef = useRef<L.Map | null>(null);
+    const leafletApiRef = useRef<typeof L>(L);
+    const windyApiRef = useRef<WindyApi | null>(null);
 
-  // 4. Update Sovereign Islands (Hoàng Sa & Trường Sa)
-  useEffect(() => {
-    if (!mapInstanceRef.current || !islandsLayerRef.current) return;
-    const group = islandsLayerRef.current;
-    group.clearLayers();
+    // Layer groups refs
+    const baseTileRef = useRef<L.TileLayer | null>(null);
+    const provincesLayerRef = useRef<L.GeoJSON | null>(null);
+    const islandsLayerRef = useRef<L.LayerGroup | null>(null);
+    const trackLayerRef = useRef<L.LayerGroup | null>(null);
+    const coneLayerRef = useRef<L.LayerGroup | null>(null);
+    const compareLayerRef = useRef<L.LayerGroup | null>(null);
+    const weatherLayerRef = useRef<L.LayerGroup | null>(null);
 
-    islandsData.forEach((island) => {
-      // Create territorial zone circle
-      const circle = L.circle([island.lat, island.lon], {
-        radius: island.radius_km * 1000,
-        color: '#f59e0b',
-        weight: 1,
-        dashArray: '4, 4',
-        fillColor: '#f59e0b',
-        fillOpacity: 0.05,
-      });
+    // WS6: Separate ref for the active cyclone marker — avoids full layer rebuild on scrub
+    const cycloneMarkerRef = useRef<L.Marker | null>(null);
 
-      // Permanent island marker & label
-      const islandIcon = L.divIcon({
-        className: 'island-label-marker',
-        html: `
+    // State for toggles
+    const [basemapType, setBasemapType] = useState<"dark" | "osm" | "sat">(
+        "dark",
+    );
+    const [showCone, setShowCone] = useState(true);
+    const [controlsOpen, setControlsOpen] = useState(false);
+    const [zoomLevel, setZoomLevel] = useState(6);
+    const [islandsData, setIslandsData] = useState<any[]>([]);
+    const [mapReady, setMapReady] = useState(false);
+    const [mapProvider, setMapProvider] = useState<"loading" | "windy" | "leaflet">(
+        WINDY_API_KEY ? "loading" : "leaflet",
+    );
+    const [windyOverlay, setWindyOverlay] = useState<WindyOverlay>("wind");
+    const [windyError, setWindyError] = useState<string | null>(null);
+
+    const t = translations[lang];
+    const closeMapControls = () => setControlsOpen(false);
+    const activeLayerLabel = mapProvider === "windy"
+        ? ({ wind: lang === "vi" ? "Gió" : "Wind", temp: lang === "vi" ? "Nhiệt độ" : "Temperature", pressure: lang === "vi" ? "Áp suất" : "Pressure" }[windyOverlay])
+        : mapProvider === "loading"
+            ? (lang === "vi" ? "Đang tải" : "Loading")
+            : ({ dark: lang === "vi" ? "Bản đồ tối" : "Dark map", osm: lang === "vi" ? "Địa hình" : "Terrain", sat: lang === "vi" ? "Vệ tinh" : "Satellite" }[basemapType]);
+
+    // Memoize observation/forecast identity to avoid unnecessary rebuilds
+    const observationsKey = useMemo(() => {
+        if (!observations || observations.length === 0) return "";
+        return observations.map((o) => `${o.lat},${o.lon}`).join("|");
+    }, [observations]);
+
+    const forecastKey = useMemo(() => {
+        if (!forecast || !forecast.points) return "";
+        return forecast.forecast_id + forecast.points.length;
+    }, [forecast]);
+
+    const actualTrackKey = useMemo(
+        () => actualTrack.map((point) => `${point.lat},${point.lon},${point.valid_time}`).join("|"),
+        [actualTrack],
+    );
+
+    // 1. Load Islands metadata
+    useEffect(() => {
+        fetch("/data/vietnam_islands.json")
+            .then((res) => res.json())
+            .then((data) => setIslandsData(data))
+            .catch((err) => console.warn("Failed to load islands data:", err));
+    }, []);
+
+    useEffect(() => {
+        const desktop = window.matchMedia("(min-width: 768px)");
+        const syncControls = (event: MediaQueryListEvent) =>
+            setControlsOpen(event.matches);
+        desktop.addEventListener("change", syncControls);
+        return () => desktop.removeEventListener("change", syncControls);
+    }, []);
+
+    // 2. Initialize Windy Map Forecast when configured, with Leaflet fallback.
+    useEffect(() => {
+        if (!mapContainerRef.current || mapInstanceRef.current) return;
+        let cancelled = false;
+
+        const finishInitialization = (
+            map: L.Map,
+            leaflet: typeof L,
+            provider: "windy" | "leaflet",
+        ) => {
+            if (cancelled) {
+                map.remove();
+                return;
+            }
+
+            leafletApiRef.current = leaflet;
+            mapInstanceRef.current = map;
+            map.setMinZoom(4);
+            map.setMaxZoom(15);
+            map.on("zoomend", () => setZoomLevel(map.getZoom()));
+
+            provincesLayerRef.current = leaflet.geoJSON(undefined, {
+                style: {
+                    color: "#d52d68",
+                    weight: 1.5,
+                    opacity: 0.86,
+                    fillColor: "#efa45b",
+                    fillOpacity: 0.34,
+                },
+            }).addTo(map);
+            islandsLayerRef.current = leaflet.layerGroup().addTo(map);
+            coneLayerRef.current = leaflet.layerGroup().addTo(map);
+            compareLayerRef.current = leaflet.layerGroup().addTo(map);
+            trackLayerRef.current = leaflet.layerGroup().addTo(map);
+            weatherLayerRef.current = leaflet.layerGroup().addTo(map);
+
+            setMapProvider(provider);
+            setMapReady(true);
+
+            fetch("/data/vietnam_provinces.geojson")
+                .then((response) => response.json())
+                .then((geojson) => {
+                    if (cancelled || !mapInstanceRef.current) return;
+                    provincesLayerRef.current?.clearLayers();
+                    provincesLayerRef.current?.addData(geojson);
+                    provincesLayerRef.current?.eachLayer((layer: any) => {
+                        const props = layer.feature?.properties;
+                        if (!props) return;
+                        layer.bindTooltip(props.name, {
+                            permanent: false,
+                            direction: "center",
+                            className: "tvn-tooltip",
+                        });
+                        layer.on("click", () => onSelectProvince(props.id));
+                    });
+                })
+                .catch((error) =>
+                    console.warn("Could not load provinces GeoJSON:", error),
+                );
+        };
+
+        const initializeFallback = () => {
+            if (!mapContainerRef.current || cancelled) return;
+            ensureLeafletStylesheet();
+            mapContainerRef.current.replaceChildren();
+            delete (mapContainerRef.current as HTMLDivElement & { _leaflet_id?: number })
+                ._leaflet_id;
+            const map = L.map(mapContainerRef.current, {
+                center: [16.5, 110.0],
+                zoom: 6,
+                minZoom: 4,
+                maxZoom: 15,
+                zoomControl: false,
+            });
+            baseTileRef.current = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+                    attribution:
+                        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    subdomains: "abc",
+                    maxZoom: 19,
+                },
+            ).addTo(map);
+            finishInitialization(map, L, "leaflet");
+        };
+
+        const initialize = async () => {
+            if (!WINDY_API_KEY) {
+                initializeFallback();
+                return;
+            }
+
+            try {
+                const { api, leaflet } = await initializeWindyMap(WINDY_API_KEY, {
+                    lat: 16.5,
+                    lon: 110,
+                    zoom: 6,
+                    overlay: "wind",
+                    level: "surface",
+                    particlesAnim: "on",
+                    hourFormat: "24h",
+                    lang,
+                    verbose: false,
+                });
+                if (cancelled) {
+                    api.map.remove();
+                    return;
+                }
+                windyApiRef.current = api;
+                finishInitialization(api.map, leaflet, "windy");
+            } catch (error) {
+                console.warn("Windy Map Forecast unavailable; using Leaflet:", error);
+                setWindyError(error instanceof Error ? error.message : "Windy unavailable");
+                initializeFallback();
+            }
+        };
+
+        // Avoid a duplicate third-party initialization during StrictMode's
+        // development-only effect probe.
+        const timer = window.setTimeout(() => void initialize(), 0);
+
+        return () => {
+            cancelled = true;
+            window.clearTimeout(timer);
+            mapInstanceRef.current?.remove();
+            mapInstanceRef.current = null;
+            windyApiRef.current = null;
+            baseTileRef.current = null;
+            provincesLayerRef.current = null;
+            islandsLayerRef.current = null;
+            coneLayerRef.current = null;
+            compareLayerRef.current = null;
+            trackLayerRef.current = null;
+            weatherLayerRef.current = null;
+            cycloneMarkerRef.current = null;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!focusLocation || !mapInstanceRef.current) return;
+        const map = mapInstanceRef.current;
+        map.setView([focusLocation.latitude, focusLocation.longitude], 7, { animate: !window.matchMedia("(prefers-reduced-motion: reduce)").matches });
+    }, [focusLocation, mapReady]);
+
+    useEffect(() => {
+        if (!mapReady || !weatherLayerRef.current) return;
+        const leaflet = leafletApiRef.current;
+        const layer = weatherLayerRef.current;
+        const map = mapInstanceRef.current;
+        if (!map) return;
+        layer.clearLayers();
+
+        // Keep nearby weather chips from covering each other at regional zooms.
+        const placed: Array<{ x: number; y: number }> = [];
+        const prioritized = [...weatherConditions].sort((a, b) =>
+            Number(b.location.id === focusLocation?.id) - Number(a.location.id === focusLocation?.id),
+        );
+        prioritized.forEach((weather) => {
+            const selected = weather.location.id === focusLocation?.id;
+            const point = map.latLngToContainerPoint([weather.location.latitude, weather.location.longitude]);
+            if (!selected && placed.some((other) =>
+                Math.abs(other.x - point.x) < 70 && Math.abs(other.y - point.y) < 48,
+            )) return;
+            placed.push(point);
+            const label = `${weather.location.name}: ${Math.round(weather.temperatureC)}°, ${weather.condition.label}`;
+            const marker = leaflet.marker(
+                [weather.location.latitude, weather.location.longitude],
+                {
+                    title: label,
+                    alt: label,
+                    icon: leaflet.divIcon({
+                        className: "weather-map-marker",
+                        html: `<div class="weather-marker-card${selected ? " is-selected" : ""}">${weatherMarkerSvg(weather.condition.icon)}<strong>${Math.round(weather.temperatureC)}°</strong></div>`,
+                        iconSize: [58, 38],
+                        iconAnchor: [29, 19],
+                    }),
+                    keyboard: true,
+                },
+            ).addTo(layer);
+            marker.bindTooltip(label, {
+                direction: "top",
+                offset: [0, -18],
+                className: "tvn-tooltip weather-tooltip",
+            });
+            marker.on("click", () => onSelectWeatherLocation?.(weather.location.id));
+        });
+    }, [focusLocation?.id, mapReady, onSelectWeatherLocation, weatherConditions, zoomLevel]);
+
+    useEffect(() => {
+        if (!mapContainerRef.current) return;
+        const observer = new ResizeObserver(() => mapInstanceRef.current?.invalidateSize());
+        observer.observe(mapContainerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const resizeMap = () =>
+            window.setTimeout(
+                () => mapInstanceRef.current?.invalidateSize(),
+                80,
+            );
+        document.addEventListener("fullscreenchange", resizeMap);
+        window.addEventListener("resize", resizeMap, { passive: true });
+        return () => {
+            document.removeEventListener("fullscreenchange", resizeMap);
+            window.removeEventListener("resize", resizeMap);
+        };
+    }, []);
+
+    // 3. Update Basemap Tile
+    useEffect(() => {
+        if (mapProvider !== "leaflet" || !mapInstanceRef.current || !baseTileRef.current) return;
+
+        mapInstanceRef.current.removeLayer(baseTileRef.current);
+
+        let url =
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+        let attr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+        if (basemapType === "osm") {
+            url = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
+            attr = "Map data &copy; OpenStreetMap contributors, SRTM | Map style &copy; OpenTopoMap";
+        } else if (basemapType === "sat") {
+            url =
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+            attr = "&copy; Esri World Imagery";
+        }
+
+        baseTileRef.current = L.tileLayer(url, {
+            attribution: attr,
+            maxZoom: basemapType === "osm" ? 17 : 18,
+        }).addTo(mapInstanceRef.current);
+        baseTileRef.current.bringToBack();
+    }, [basemapType, mapProvider, mapReady]);
+
+    useEffect(() => {
+        if (mapProvider !== "windy" || !windyApiRef.current) return;
+        windyApiRef.current.store.set("overlay", windyOverlay);
+        windyApiRef.current.store.set(
+            "particlesAnim",
+            windyOverlay === "wind" ? "on" : "off",
+        );
+    }, [mapProvider, windyOverlay]);
+
+    useEffect(() => {
+        if (mapProvider !== "windy" || !windyApiRef.current) return;
+        windyApiRef.current.store.set("lang", lang);
+    }, [lang, mapProvider]);
+
+    // 4. Update Sovereign Islands (Hoàng Sa & Trường Sa)
+    useEffect(() => {
+        if (!mapInstanceRef.current || !islandsLayerRef.current) return;
+        const leaflet = leafletApiRef.current;
+        const group = islandsLayerRef.current;
+        group.clearLayers();
+
+        islandsData.forEach((island) => {
+            const isArchipelago = island.id === "hoang_sa" || island.id === "truong_sa";
+            const markerColor = isArchipelago ? "#f43f5e" : "#f59e0b";
+            // Create territorial zone circle
+            const circle = leaflet.circle([island.lat, island.lon], {
+                radius: island.radius_km * 1000,
+                color: markerColor,
+                weight: isArchipelago ? 2 : 1,
+                dashArray: "4, 4",
+                fillColor: markerColor,
+                fillOpacity: isArchipelago ? 0.08 : 0.05,
+            });
+
+            // Permanent island marker & label
+            const islandIcon = leaflet.divIcon({
+                className: "island-label-marker",
+                html: `
           <div class="flex flex-col items-center pointer-events-auto cursor-pointer">
-            <div class="w-3 h-3 rounded-full bg-amber-400 border-2 border-slate-900 shadow-md"></div>
-            <div class="bg-slate-950/90 text-amber-300 text-[11px] font-bold px-2 py-0.5 rounded border border-amber-500/50 shadow-lg whitespace-nowrap mt-1 font-display">
-              🇻🇳 ${lang === 'vi' ? island.name_vi : island.name_en}
+            <div class="${isArchipelago ? "sovereign-island-symbol" : "ordinary-island-symbol"}" aria-hidden="true">${isArchipelago ? "★" : ""}</div>
+            <div class="${isArchipelago ? "sovereign-island-label" : "ordinary-island-label"}">
+              ${lang === "vi" ? island.name_vi : island.name_en}
             </div>
             <div class="text-[9px] text-slate-300 font-mono bg-slate-900/80 px-1 rounded">
               ${island.sovereignty}
             </div>
           </div>
         `,
-        iconSize: [160, 45],
-        iconAnchor: [80, 10],
-      });
+                iconSize: [160, 45],
+                iconAnchor: [80, 10],
+            });
 
-      const marker = L.marker([island.lat, island.lon], { icon: islandIcon });
-      circle.addTo(group);
-      marker.addTo(group);
-    });
-  }, [islandsData, lang]);
+            const marker = leaflet.marker([island.lat, island.lon], {
+                icon: islandIcon,
+                title: lang === "vi" ? island.name_vi : island.name_en,
+            });
+            circle.addTo(group);
+            marker.addTo(group);
+        });
+    }, [islandsData, lang, mapReady]);
 
-  // 5. Update Province Selection Highlights
-  useEffect(() => {
-    if (!provincesLayerRef.current) return;
+    // 5. Update Province Selection Highlights
+    useEffect(() => {
+        if (!provincesLayerRef.current) return;
 
-    provincesLayerRef.current.setStyle((feature: any) => {
-      const isSelected = feature.properties.id === selectedProvinceId;
-      return {
-        color: isSelected ? '#f43f5e' : '#0284c7',
-        weight: isSelected ? 2.5 : 1.2,
-        opacity: isSelected ? 0.9 : 0.6,
-        fillColor: isSelected ? '#f43f5e' : '#0369a1',
-        fillOpacity: isSelected ? 0.25 : 0.08,
-      };
-    });
-  }, [selectedProvinceId]);
+        provincesLayerRef.current.setStyle((feature: any) => {
+            const isSelected = feature.properties.id === selectedProvinceId;
+            return {
+                color: isSelected ? "#b91c5c" : "#d52d68",
+                weight: isSelected ? 2.5 : 1.2,
+                opacity: isSelected ? 0.9 : 0.6,
+                fillColor: isSelected ? "#f97316" : "#efa45b",
+                fillOpacity: isSelected ? 0.52 : 0.34,
+            };
+        });
+    }, [selectedProvinceId, mapReady]);
 
-  // 6. WS6 OPTIMIZED: Rebuild tracks + forecast ONLY when data changes (not on scrub)
-  useEffect(() => {
-    if (!mapInstanceRef.current || !trackLayerRef.current || !coneLayerRef.current) return;
-    const trackGroup = trackLayerRef.current;
-    const coneGroup = coneLayerRef.current;
-    const compareGroup = compareLayerRef.current;
+    // 6. WS6 OPTIMIZED: Rebuild tracks + forecast ONLY when data changes (not on scrub)
+    useEffect(() => {
+        if (
+            !mapInstanceRef.current ||
+            !trackLayerRef.current ||
+            !coneLayerRef.current
+        )
+            return;
+        const trackGroup = trackLayerRef.current;
+        const coneGroup = coneLayerRef.current;
+        const compareGroup = compareLayerRef.current;
+        const leaflet = leafletApiRef.current;
 
-    trackGroup.clearLayers();
-    coneGroup.clearLayers();
-    compareGroup?.clearLayers();
+        trackGroup.clearLayers();
+        coneGroup.clearLayers();
+        compareGroup?.clearLayers();
 
-    // Clean up previous cyclone marker
-    if (cycloneMarkerRef.current && mapInstanceRef.current) {
-      mapInstanceRef.current.removeLayer(cycloneMarkerRef.current);
-      cycloneMarkerRef.current = null;
-    }
-    currentFixMarkerRef.current = null;
-    prevFixIndexRef.current = -1;
+        if (!observations || observations.length === 0) return;
 
-    if (!observations || observations.length === 0) return;
+        // A. Actual Track Polyline & Fix Markers
+        const obsCoords: L.LatLngExpression[] = observations.map((o) => [
+            o.lat,
+            o.lon,
+        ]);
+        const actualPolyline = leaflet.polyline(obsCoords, {
+            color: "#10b981",
+            weight: 3.5,
+            opacity: 0.9,
+        });
+        actualPolyline.addTo(trackGroup);
 
-    // A. Actual Track Polyline & Fix Markers
-    const obsCoords: L.LatLngExpression[] = observations.map((o) => [o.lat, o.lon]);
-    const actualPolyline = L.polyline(obsCoords, {
-      color: '#10b981',
-      weight: 3.5,
-      opacity: 0.9,
-    });
-    actualPolyline.addTo(trackGroup);
+        // Add observation point markers (all same size — active highlight handled in effect #7)
+        observations.forEach((obs) => {
+            const marker = leaflet.circleMarker([obs.lat, obs.lon], {
+                radius: 4.5,
+                color: "#047857",
+                weight: 1.5,
+                fillColor: "#34d399",
+                fillOpacity: 0.9,
+            });
 
-    // Add observation point markers (all same size — active highlight handled in effect #7)
-    observations.forEach((obs) => {
-      const marker = L.circleMarker([obs.lat, obs.lon], {
-        radius: 4.5,
-        color: '#047857',
-        weight: 1.5,
-        fillColor: '#34d399',
-        fillOpacity: 0.9,
-      });
-
-      marker.bindPopup(`
+            marker.bindPopup(`
         <div class="text-xs font-mono p-1">
           <div class="font-bold text-emerald-400 font-display text-sm">${t.legend_actual}</div>
           <div><strong>${t.popup_time}:</strong> ${new Date(obs.timestamp).toLocaleString()}</div>
-          <div><strong>${t.popup_coords}:</strong> ${obs.lat}°${lang === 'vi' ? 'B' : 'N'}, ${obs.lon}°${lang === 'vi' ? 'Đ' : 'E'}</div>
-          <div><strong>${t.popup_pressure}:</strong> ${obs.pressure_hpa || 'N/A'} hPa</div>
-          <div><strong>${t.popup_wind}:</strong> ${obs.wind_kmh || (obs.wind_ms ? Math.round(obs.wind_ms * 3.6) : 'N/A')} km/h</div>
+          <div><strong>${t.popup_coords}:</strong> ${obs.lat}°${lang === "vi" ? "B" : "N"}, ${obs.lon}°${lang === "vi" ? "Đ" : "E"}</div>
+          <div><strong>${t.popup_pressure}:</strong> ${obs.pressure_hpa || "N/A"} hPa</div>
+          <div><strong>${t.popup_wind}:</strong> ${obs.wind_kmh || (obs.wind_ms ? Math.round(obs.wind_ms * 3.6) : "N/A")} km/h</div>
           <div><strong>${t.popup_category}:</strong> ${obs.intensity}</div>
         </div>
       `);
 
-      marker.addTo(trackGroup);
-    });
-
-    // B. Forecast Track & Points
-    if (forecast && forecast.points && forecast.points.length > 0) {
-      const lastObs = observations[observations.length - 1];
-      const fcCoords: L.LatLngExpression[] = [
-        [lastObs.lat, lastObs.lon],
-        ...forecast.points.map((p) => [p.lat, p.lon] as L.LatLngExpression),
-      ];
-
-      const forecastPolyline = L.polyline(fcCoords, {
-        color: '#f59e0b',
-        weight: 3,
-        dashArray: '6, 6',
-        opacity: 0.9,
-      });
-      forecastPolyline.addTo(trackGroup);
-
-      // Forecast point markers
-      forecast.points.forEach((p) => {
-        const pMarker = L.circleMarker([p.lat, p.lon], {
-          radius: 5,
-          color: '#b45309',
-          weight: 1.5,
-          fillColor: '#f59e0b',
-          fillOpacity: 0.9,
+            marker.addTo(trackGroup);
         });
 
-        pMarker.bindPopup(`
+        // B. Forecast Track & Points
+        if (forecast && forecast.points && forecast.points.length > 0) {
+            const lastObs = observations[observations.length - 1];
+            const fcCoords: L.LatLngExpression[] = [
+                [lastObs.lat, lastObs.lon],
+                ...forecast.points.map(
+                    (p) => [p.lat, p.lon] as L.LatLngExpression,
+                ),
+            ];
+
+            const forecastPolyline = leaflet.polyline(fcCoords, {
+                color: "#f59e0b",
+                weight: 3,
+                dashArray: "6, 6",
+                opacity: 0.9,
+            });
+            forecastPolyline.addTo(trackGroup);
+
+            // Forecast point markers
+            forecast.points.forEach((p) => {
+                const pMarker = leaflet.circleMarker([p.lat, p.lon], {
+                    radius: 5,
+                    color: "#b45309",
+                    weight: 1.5,
+                    fillColor: "#f59e0b",
+                    fillOpacity: 0.9,
+                });
+
+                pMarker.bindPopup(`
           <div class="text-xs font-mono p-1">
             <div class="font-bold text-amber-400 font-display text-sm">${t.popup_forecast_prefix} +${p.horizon_hours} ${t.eta_hours_suffix}</div>
             <div><strong>${t.popup_valid_time}:</strong> ${new Date(p.valid_time).toLocaleString()}</div>
-            <div><strong>${t.popup_coords}:</strong> ${p.lat}°${lang === 'vi' ? 'B' : 'N'}, ${p.lon}°${lang === 'vi' ? 'Đ' : 'E'}</div>
-            <div><strong>${t.popup_wind}:</strong> ${p.wind_ms ? Math.round(p.wind_ms * 3.6) : 'N/A'} km/h</div>
+            <div><strong>${t.popup_coords}:</strong> ${p.lat}°${lang === "vi" ? "B" : "N"}, ${p.lon}°${lang === "vi" ? "Đ" : "E"}</div>
+            <div><strong>${t.popup_wind}:</strong> ${p.wind_ms ? Math.round(p.wind_ms * 3.6) : "N/A"} km/h</div>
             <div><strong>${t.popup_cone_radius}:</strong> ±${p.radius_km} km</div>
           </div>
         `);
-        pMarker.addTo(trackGroup);
+                pMarker.addTo(trackGroup);
 
-        // C. Cone of uncertainty polygons
-        if (showCone && p.cone && p.cone.coordinates) {
-          const coneLatLngs = p.cone.coordinates[0].map((coord) => [coord[1], coord[0]] as L.LatLngExpression);
-          const conePolygon = L.polygon(coneLatLngs, {
-            color: '#06b6d4',
-            weight: 1.2,
-            opacity: 0.7,
-            fillColor: '#06b6d4',
-            fillOpacity: 0.12,
-            dashArray: '3, 3',
-          });
-          conePolygon.addTo(coneGroup);
+                // C. Cone of uncertainty polygons
+                if (showCone && p.cone && p.cone.coordinates) {
+                    const coneLatLngs = p.cone.coordinates[0].map(
+                        (coord) => [coord[1], coord[0]] as L.LatLngExpression,
+                    );
+                    const conePolygon = leaflet.polygon(coneLatLngs, {
+                        color: "#06b6d4",
+                        weight: 1.2,
+                        opacity: 0.7,
+                        fillColor: "#06b6d4",
+                        fillOpacity: 0.12,
+                        dashArray: "3, 3",
+                    });
+                    conePolygon.addTo(coneGroup);
+                }
+            });
         }
-      });
-    }
 
-    // D. S10 Official Forecast Comparison
-    if (showCompare && compareGroup) {
-      const compareCoords: L.LatLngExpression[] = MOCK_OFFICIAL_COMPARISON.map(
-        (c) => [c.lat, c.lon] as L.LatLngExpression
-      );
-      const compareLine = L.polyline(compareCoords, {
-        color: '#c084fc',
-        weight: 2.5,
-        dashArray: '3, 6',
-        opacity: 0.8,
-      });
-      compareLine.addTo(compareGroup);
+        // C. Demo/backtest verification track. It is kept separate from the
+        // pre-issue observations so users can compare forecast vs outcome.
+        if (compareGroup && actualTrack.length > 0) {
+            const lastObs = observations[observations.length - 1];
+            const actualCoords: L.LatLngExpression[] = [
+                [lastObs.lat, lastObs.lon],
+                ...actualTrack.map(
+                    (point) => [point.lat, point.lon] as L.LatLngExpression,
+                ),
+            ];
+            leaflet.polyline(actualCoords, {
+                color: "#8b5cf6",
+                weight: 3.5,
+                opacity: 0.95,
+            }).addTo(compareGroup);
 
-      MOCK_OFFICIAL_COMPARISON.forEach((c) => {
-        const marker = L.circleMarker([c.lat, c.lon], {
-          radius: 4,
-          color: '#a855f7',
-          weight: 1,
-          fillColor: '#c084fc',
-          fillOpacity: 0.8,
-        });
-        marker.bindPopup(`
+            actualTrack.forEach((point) => {
+                const marker = leaflet.circleMarker([point.lat, point.lon], {
+                    radius: 4.5,
+                    color: "#6d28d9",
+                    weight: 1.5,
+                    fillColor: "#a78bfa",
+                    fillOpacity: 0.95,
+                });
+                marker.bindPopup(`
           <div class="text-xs font-mono p-1">
-            <div class="font-bold text-purple-400">${t.popup_nchmf_official}</div>
-            <div>${t.popup_forecast_hour} +${c.horizon_hours}h</div>
-            <div>${t.popup_coords}: ${c.lat}°${lang === 'vi' ? 'B' : 'N'}, ${c.lon}°${lang === 'vi' ? 'Đ' : 'E'}</div>
+            <div class="font-bold text-violet-400 font-display text-sm">${lang === "vi" ? "Thực tế kiểm chứng" : "Verified actual track"} +${point.horizon_hours} ${t.eta_hours_suffix}</div>
+            <div><strong>${t.popup_valid_time}:</strong> ${new Date(point.valid_time).toLocaleString()}</div>
+            <div><strong>${t.popup_coords}:</strong> ${point.lat}°${lang === "vi" ? "B" : "N"}, ${point.lon}°${lang === "vi" ? "Đ" : "E"}</div>
+            <div><strong>${lang === "vi" ? "Nguồn" : "Source"}:</strong> ${point.source}</div>
           </div>
         `);
-        marker.addTo(compareGroup);
-      });
-    }
-  // WS6: Only rebuild when data/toggles change — NOT on currentFixIndex
-  }, [observationsKey, forecastKey, showCone, showCompare, lang]);
+                marker.addTo(compareGroup);
+            });
+        }
 
-  // 7. WS6 OPTIMIZED: Update ONLY the active cyclone marker position on scrub
-  useEffect(() => {
-    if (!mapInstanceRef.current || !observations || observations.length === 0) return;
-    if (currentFixIndex === prevFixIndexRef.current) return;
+        // D. Explainable k-NN analog suggestion (what similar past storms did next).
+        const suggestion = forecast?.suggestion;
+        if (compareGroup && suggestion && suggestion.points.length > 0 && observations.length > 0) {
+            const lastObs = observations[observations.length - 1];
+            const analogNames = suggestion.analogs.map((a) => `${a.name} ${a.year}`).join(", ");
+            leaflet.polyline(
+                [
+                    [lastObs.lat, lastObs.lon] as L.LatLngExpression,
+                    ...suggestion.points.map((p) => [p.lat, p.lon] as L.LatLngExpression),
+                ],
+                { color: "#f472b6", weight: 3, dashArray: "2, 7", opacity: 0.95 },
+            ).addTo(compareGroup);
+            suggestion.points.forEach((p) => {
+                leaflet.circleMarker([p.lat, p.lon], {
+                    radius: 4,
+                    color: "#be185d",
+                    weight: 1.5,
+                    fillColor: "#f9a8d4",
+                    fillOpacity: 0.95,
+                })
+                    .bindPopup(`
+          <div class="text-xs font-mono p-1">
+            <div class="font-bold text-pink-400 font-display text-sm">${t.suggestion_title} +${p.horizon_hours} ${t.eta_hours_suffix}</div>
+            <div><strong>${t.popup_coords}:</strong> ${p.lat.toFixed(1)}°${lang === "vi" ? "B" : "N"}, ${p.lon.toFixed(1)}°${lang === "vi" ? "Đ" : "E"}</div>
+            <div><strong>${lang === "vi" ? "Bão tương tự" : "Similar storms"}:</strong> ${analogNames}</div>
+          </div>
+        `)
+                    .addTo(compareGroup);
+            });
+        }
 
-    prevFixIndexRef.current = currentFixIndex;
+        // Demo verification coordinates are explicitly labelled sample/best-track.
+        // WS6: Only rebuild when data/toggles change — NOT on currentFixIndex
+    }, [observationsKey, forecastKey, actualTrackKey, showCone, lang, mapReady]);
 
-    const isForecast = currentFixIndex >= observations.length;
-    let lat = 0;
-    let lon = 0;
+    // 7. WS6 OPTIMIZED: Update ONLY the active cyclone marker position on scrub
+    useEffect(() => {
+        if (!mapInstanceRef.current) return;
+        if (!observations || observations.length === 0) {
+            cycloneMarkerRef.current?.remove();
+            cycloneMarkerRef.current = null;
+            return;
+        }
 
-    if (isForecast && forecast?.points) {
-      const fp = forecast.points[currentFixIndex - observations.length];
-      if (fp) {
-        lat = fp.lat;
-        lon = fp.lon;
-      }
-    } else if (observations[currentFixIndex]) {
-      lat = observations[currentFixIndex].lat;
-      lon = observations[currentFixIndex].lon;
-    }
+        const isForecast = currentFixIndex >= observations.length;
+        let lat = 0;
+        let lon = 0;
 
-    if (!lat && !lon) return;
+        if (isForecast && forecast?.points) {
+            const fp = forecast.points[currentFixIndex - observations.length];
+            if (fp) {
+                lat = fp.lat;
+                lon = fp.lon;
+            }
+        } else if (observations[currentFixIndex]) {
+            lat = observations[currentFixIndex].lat;
+            lon = observations[currentFixIndex].lon;
+        }
 
-    // Move existing cyclone marker or create new one
-    if (cycloneMarkerRef.current) {
-      cycloneMarkerRef.current.setLatLng([lat, lon]);
-    } else {
-      const cycloneIcon = L.divIcon({
-        className: 'cyclone-active-marker',
-        html: `
+        if (!lat && !lon) {
+            cycloneMarkerRef.current?.remove();
+            cycloneMarkerRef.current = null;
+            return;
+        }
+        const leaflet = leafletApiRef.current;
+
+        // Move existing cyclone marker or create new one
+        if (cycloneMarkerRef.current) {
+            cycloneMarkerRef.current.setLatLng([lat, lon]);
+        } else {
+            const cycloneIcon = leaflet.divIcon({
+                className: "cyclone-active-marker",
+                html: `
           <div class="relative flex items-center justify-center w-12 h-12">
             <div class="absolute w-12 h-12 rounded-full bg-rose-500/30 pulse-ring-effect"></div>
             <div class="w-8 h-8 rounded-full bg-slate-950/80 border-2 border-rose-500 flex items-center justify-center shadow-lg shadow-rose-500/40">
@@ -399,93 +690,201 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
             </div>
           </div>
         `,
-        iconSize: [48, 48],
-        iconAnchor: [24, 24],
-      });
+                iconSize: [48, 48],
+                iconAnchor: [24, 24],
+            });
 
-      cycloneMarkerRef.current = L.marker([lat, lon], {
-        icon: cycloneIcon,
-        zIndexOffset: 1000,
-      }).addTo(mapInstanceRef.current);
-    }
-  }, [currentFixIndex, observations, forecast]);
+            cycloneMarkerRef.current = leaflet.marker([lat, lon], {
+                icon: cycloneIcon,
+                zIndexOffset: 1000,
+            }).addTo(mapInstanceRef.current);
+        }
+    }, [currentFixIndex, observations, forecast, mapReady]);
 
-  return (
-    <div className="relative w-full h-full min-h-[450px] rounded-xl overflow-hidden border border-slate-800 shadow-2xl">
-      {/* Map Container */}
-      <div
-        ref={mapContainerRef}
-        className="w-full h-full"
-        role="application"
-        aria-label={t.aria_map_container}
-      />
+    return (
+        <div
+            ref={mapShellRef}
+            data-basemap={basemapType}
+            data-map-provider={mapProvider}
+            className="typhoon-map-shell relative w-full overflow-hidden border border-line bg-surface"
+        >
+            {/* Map Container */}
+            <div
+                id="windy"
+                ref={mapContainerRef}
+                className="w-full h-full"
+                style={{ backgroundColor: "rgb(var(--c-bg))" }}
+                role="application"
+                aria-label={t.aria_map_container}
+            />
 
-      {/* Top Map Layer Controls Toolbar */}
-      <div className="absolute top-4 left-4 z-[1000] flex flex-wrap items-center gap-2 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-700/60 shadow-xl">
-        {/* Basemap Switcher */}
-        <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-lg text-xs font-mono" role="radiogroup" aria-label={t.basemap}>
-          <button
-            onClick={() => setBasemapType('dark')}
-            role="radio"
-            aria-checked={basemapType === 'dark'}
-            className={`px-2 py-1 rounded transition focus-ring ${
-              basemapType === 'dark' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            {t.basemap_dark}
-          </button>
-          <button
-            onClick={() => setBasemapType('osm')}
-            role="radio"
-            aria-checked={basemapType === 'osm'}
-            className={`px-2 py-1 rounded transition focus-ring ${
-              basemapType === 'osm' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            OSM
-          </button>
-          <button
-            onClick={() => setBasemapType('sat')}
-            role="radio"
-            aria-checked={basemapType === 'sat'}
-            className={`px-2 py-1 rounded transition focus-ring ${
-              basemapType === 'sat' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Satellite
-          </button>
+            {/* Top Map Layer Controls Toolbar */}
+            <div className={`map-layer-toolbar map-overlay absolute left-3 top-3 z-[1000] flex max-w-[calc(100%-4.5rem)] flex-wrap items-center gap-1.5 p-1.5 ${controlsOpen ? "is-open" : ""}`}>
+                <button
+                    type="button"
+                    className="map-toolbar-toggle focus-ring"
+                    aria-expanded={controlsOpen}
+                    aria-controls="map-toolbar-content"
+                    onClick={() => setControlsOpen((open) => !open)}
+                >
+                    <Layers3 className="h-4 w-4" aria-hidden="true" />
+                    <span>{activeLayerLabel}</span>
+                    <ChevronDown
+                        className={`h-4 w-4 transition-transform ${controlsOpen ? "rotate-180" : ""}`}
+                        aria-hidden="true"
+                    />
+                </button>
+                <div
+                    id="map-toolbar-content"
+                    className="map-toolbar-content"
+                    hidden={!controlsOpen}
+                >
+                {mapProvider === "windy" ? (
+                    <div
+                        className="segmented font-mono"
+                        role="radiogroup"
+                        aria-label={lang === "vi" ? "Lớp dự báo Windy" : "Windy forecast overlay"}
+                    >
+                        {(["wind", "temp", "pressure"] as WindyOverlay[]).map((overlay) => {
+                            const labels: Record<WindyOverlay, [string, string]> = {
+                                wind: ["Gió", "Wind"],
+                                temp: ["Nhiệt độ", "Temperature"],
+                                pressure: ["Áp suất", "Pressure"],
+                            };
+                            return (
+                                <button
+                                    key={overlay}
+                                    onClick={() => {
+                                        setWindyOverlay(overlay);
+                                        closeMapControls();
+                                    }}
+                                    role="radio"
+                                    aria-checked={windyOverlay === overlay}
+                                    className={`segmented-item focus-ring ${windyOverlay === overlay ? "segmented-item-active" : ""}`}
+                                >
+                                    {labels[overlay][lang === "vi" ? 0 : 1]}
+                                </button>
+                            );
+                        })}
+                    </div>
+                ) : mapProvider === "loading" ? (
+                    <span className="map-provider-badge" role="status">
+                        {lang === "vi" ? "Đang tải Windy…" : "Loading Windy…"}
+                    </span>
+                ) : (
+                    <div
+                        className="segmented font-mono"
+                        role="radiogroup"
+                        aria-label={t.basemap}
+                    >
+                        <button
+                            onClick={() => {
+                                setBasemapType("dark");
+                                closeMapControls();
+                            }}
+                            role="radio"
+                            aria-checked={basemapType === "dark"}
+                            className={`segmented-item focus-ring ${basemapType === "dark" ? "segmented-item-active" : ""}`}
+                        >
+                            {lang === "vi" ? "Bản đồ tối" : "Dark map"}
+                        </button>
+                        <button
+                            onClick={() => {
+                                setBasemapType("osm");
+                                closeMapControls();
+                            }}
+                            role="radio"
+                            aria-checked={basemapType === "osm"}
+                            className={`segmented-item focus-ring ${basemapType === "osm" ? "segmented-item-active" : ""}`}
+                        >
+                            {lang === "vi" ? "Địa hình" : "Terrain"}
+                        </button>
+                        <button
+                            onClick={() => {
+                                setBasemapType("sat");
+                                closeMapControls();
+                            }}
+                            role="radio"
+                            aria-checked={basemapType === "sat"}
+                            className={`segmented-item focus-ring ${basemapType === "sat" ? "segmented-item-active" : ""}`}
+                        >
+                            {lang === "vi" ? "Vệ tinh" : "Satellite"}
+                        </button>
+                    </div>
+                )}
+
+                {Boolean(forecast?.points?.length) && (
+                    <button
+                        onClick={() => {
+                            setShowCone(!showCone);
+                            closeMapControls();
+                        }}
+                        className={`chip min-h-8 px-2.5 font-mono focus-ring ${
+                            showCone
+                                ? "border-primary/50 bg-primary/10 text-primary"
+                                : ""
+                        }`}
+                        aria-pressed={showCone}
+                        aria-label={t.layer_cone}
+                    >
+                        <Eye className="w-3 h-3" aria-hidden="true" />
+                        <span className="hidden sm:inline">
+                            {lang === "vi" ? "Nón sai số" : "Cone"}
+                        </span>
+                    </button>
+                )}
+                </div>
+            </div>
+
+            {windyError && mapProvider === "leaflet" && (
+                <div
+                    className="map-provider-warning map-overlay"
+                    role="status"
+                    title={windyError}
+                >
+                    {lang === "vi"
+                        ? "Windy chưa khả dụng · đang dùng bản đồ dự phòng"
+                        : "Windy unavailable · using fallback map"}
+                </div>
+            )}
+
+            <div className="map-navigation absolute right-3 top-24 z-[1000] flex flex-col gap-1.5">
+                <div className="map-zoom-group" role="group" aria-label={lang === "vi" ? "Thu phóng bản đồ" : "Map zoom"}>
+                    <button type="button" className="map-zoom-button" disabled={zoomLevel >= 15} onClick={() => mapInstanceRef.current?.zoomIn()} aria-label={lang === "vi" ? "Phóng to bản đồ" : "Zoom in"} title={lang === "vi" ? "Phóng to bản đồ" : "Zoom in"}><Plus size={24} aria-hidden="true" /></button>
+                    <button type="button" className="map-zoom-button" disabled={zoomLevel <= 4} onClick={() => mapInstanceRef.current?.zoomOut()} aria-label={lang === "vi" ? "Thu nhỏ bản đồ" : "Zoom out"} title={lang === "vi" ? "Thu nhỏ bản đồ" : "Zoom out"}><Minus size={24} aria-hidden="true" /></button>
+                </div>
+                <button
+                    className="map-reset-button btn-icon bg-surface/90 shadow-overlay backdrop-blur-sm"
+                    onClick={() =>
+                        mapInstanceRef.current?.setView([16.5, 110], 6, {
+                            animate: true,
+                        })
+                    }
+                    aria-label={
+                        lang === "vi"
+                            ? "Đặt lại góc nhìn bản đồ"
+                            : "Reset map view"
+                    }
+                    title={lang === "vi" ? "Đặt lại góc nhìn" : "Reset view"}
+                >
+                    <LocateFixed className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <button
+                    className="map-fullscreen-button btn-icon bg-surface/90 shadow-overlay backdrop-blur-sm"
+                    onClick={() => {
+                        if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+                        else void mapShellRef.current?.requestFullscreen?.().catch(() => {});
+                    }}
+                    aria-label={
+                        lang === "vi"
+                            ? "Mở bản đồ toàn màn hình"
+                            : "Open fullscreen map"
+                    }
+                    title={lang === "vi" ? "Toàn màn hình" : "Fullscreen"}
+                >
+                    <Maximize2 className="h-4 w-4" aria-hidden="true" />
+                </button>
+            </div>
         </div>
-
-        {/* Cone Toggle */}
-        <button
-          onClick={() => setShowCone(!showCone)}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono border transition focus-ring ${
-            showCone
-              ? 'bg-cyan-950 text-cyan-300 border-cyan-500/50'
-              : 'bg-slate-800/80 text-slate-400 border-slate-700'
-          }`}
-          aria-pressed={showCone}
-          aria-label={t.layer_cone}
-        >
-          <Eye className="w-3 h-3" aria-hidden="true" />
-          <span className="hidden sm:inline">{lang === 'vi' ? 'Nón bất định' : 'Cone'}</span>
-        </button>
-
-        {/* S10 Official Comparison Toggle */}
-        <button
-          onClick={() => setShowCompare(!showCompare)}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono border transition focus-ring ${
-            showCompare
-              ? 'bg-purple-950 text-purple-300 border-purple-500/50'
-              : 'bg-slate-800/80 text-slate-400 border-slate-700'
-          }`}
-          aria-pressed={showCompare}
-          aria-label={t.layer_official_compare}
-        >
-          <Compass className="w-3 h-3" aria-hidden="true" />
-          <span className="hidden sm:inline">{lang === 'vi' ? 'So sánh NCHMF' : 'Compare NCHMF'}</span>
-        </button>
-      </div>
-    </div>
-  );
+    );
 };

@@ -69,6 +69,30 @@ class ForecastPoint(Contract):
     cone: dict
 
 
+class SuggestionPoint(Contract):
+    horizon_hours: int
+    valid_time: datetime
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+
+
+class AnalogStorm(Contract):
+    rank: int = Field(ge=1)
+    storm_id: str
+    name: str
+    year: int
+    issue_time: datetime
+
+
+class Suggestion(Contract):
+    """Explainable k-NN analog track: what similar past storms did next."""
+
+    method: str
+    note: str
+    points: list[SuggestionPoint]
+    analogs: list[AnalogStorm]
+
+
 class ForecastResponse(Contract):
     forecast_id: str
     storm_id: str
@@ -82,6 +106,7 @@ class ForecastResponse(Contract):
     warnings: list[str]
     disclaimer: str = DISCLAIMER
     points: list[ForecastPoint]
+    suggestion: Suggestion | None = None
 
     @field_validator("issue_time", "generated_at")
     @classmethod

@@ -73,10 +73,10 @@ class Store:
                 Path(url.split("///", 1)[1]).parent.mkdir(parents=True, exist_ok=True)
         self.engine = create_engine(url, **options)
         self.lock = RLock()
-        metadata.create_all(self.engine)
-        with self.engine.begin() as conn:
-            if conn.execute(select(schema_versions)).first() is None:
-                conn.execute(insert(schema_versions).values(version=1))
+        # Alembic owns the schema; legacy create_all databases are stamped.
+        from typhoon_vn.operations.migrations import upgrade
+
+        upgrade(self.engine)
 
     def upsert_observations(self, batch):
         # SQL upserts are atomic across API/worker processes.

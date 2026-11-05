@@ -78,6 +78,11 @@ class MlflowConfig(StrictModel):
     experiment_name: str = "typhoon_vn"
 
 
+class UncertaintyConfig(StrictModel):
+    # Target share of validation forecasts inside the cone at each horizon.
+    coverage: float = Field(default=0.8, gt=0, lt=1)
+
+
 class PipelineConfig(StrictModel):
     experiment: ExperimentConfig
     dataset: DataConfig
@@ -86,6 +91,7 @@ class PipelineConfig(StrictModel):
     loss: LossConfig
     checkpoint: CheckpointConfig
     mlflow: MlflowConfig
+    uncertainty: UncertaintyConfig = Field(default_factory=UncertaintyConfig)
 
 
 def load_config(path: str | Path) -> PipelineConfig:

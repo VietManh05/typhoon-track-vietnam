@@ -4,7 +4,6 @@ import sys
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 
-
 SCRIPT = Path(__file__).parents[1] / "scripts" / "refactor_root_imports.py"
 SPEC = spec_from_file_location("refactor_root_imports", SCRIPT)
 assert SPEC and SPEC.loader

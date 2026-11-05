@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python lint + tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: typhoon
+          POSTGRES_PASSWORD: typhoon
+          POSTGRES_DB: typhoon
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U typhoon -d typhoon"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+      TEST_POSTGRES_URL: postgresql+psycopg://typhoon:typhoon@localhost:5432/typhoon
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[api,train,ingestion,dev]"
+          python -m pip check
+
+      - name: Lint
+        run: |
+          python -m flake8 src tests scripts
+          python -m isort --check-only src tests scripts
+          python -m black --check src tests scripts
+
+      - name: Tests
+        run: python -m pytest -q --junitxml=pytest-report.xml
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: pytest-report.xml
+
+  frontend:
+    name: Frontend typecheck + build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: viz/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: viz/frontend/package-lock.json
+
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
+      - run: npx vite build --outDir dist --emptyOutDir
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+
+      - name: Served dashboard matches the build
+        working-directory: .
+        run: python scripts/check_dashboard_sync.py

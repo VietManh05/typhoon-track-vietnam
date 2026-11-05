@@ -1,0 +1,52 @@
+import { WeatherLocation } from "../types";
+
+/** 34 provincial-level units effective from 1 July 2025. */
+const entries: Array<[string, string, number, number, ...string[]]> = [
+  ["ha-noi", "Hà Nội", 21.0278, 105.8342],
+  ["hue", "Huế", 16.4637, 107.5909, "Thừa Thiên Huế"],
+  ["hai-phong", "Hải Phòng", 20.8449, 106.6881, "Hải Dương"],
+  ["da-nang", "Đà Nẵng", 16.0544, 108.2022, "Quảng Nam"],
+  ["can-tho", "Cần Thơ", 10.0452, 105.7469, "Hậu Giang", "Sóc Trăng"],
+  ["ho-chi-minh", "TP. Hồ Chí Minh", 10.8231, 106.6297, "Sài Gòn", "Bình Dương", "Bà Rịa - Vũng Tàu", "Vũng Tàu"],
+  ["lai-chau", "Lai Châu", 22.3862, 103.4703],
+  ["dien-bien", "Điện Biên", 21.3860, 103.0230],
+  ["son-la", "Sơn La", 21.3256, 103.9188],
+  ["lang-son", "Lạng Sơn", 21.8537, 106.7610],
+  ["cao-bang", "Cao Bằng", 22.6666, 106.2640],
+  ["tuyen-quang", "Tuyên Quang", 21.8236, 105.2140, "Hà Giang"],
+  ["lao-cai", "Lào Cai", 22.4856, 103.9707, "Yên Bái"],
+  ["thai-nguyen", "Thái Nguyên", 21.5942, 105.8482, "Bắc Kạn"],
+  ["phu-tho", "Phú Thọ", 21.3227, 105.4019, "Vĩnh Phúc", "Hòa Bình", "Việt Trì"],
+  ["bac-ninh", "Bắc Ninh", 21.1861, 106.0763, "Bắc Giang"],
+  ["hung-yen", "Hưng Yên", 20.6464, 106.0511, "Thái Bình"],
+  ["quang-ninh", "Quảng Ninh", 21.0064, 107.2925, "Hạ Long"],
+  ["ninh-binh", "Ninh Bình", 20.2506, 105.9745, "Hà Nam", "Nam Định"],
+  ["thanh-hoa", "Thanh Hóa", 19.8067, 105.7852],
+  ["nghe-an", "Nghệ An", 18.6796, 105.6813, "Vinh"],
+  ["ha-tinh", "Hà Tĩnh", 18.3559, 105.8877],
+  ["quang-tri", "Quảng Trị", 16.8163, 107.1003, "Quảng Bình", "Đồng Hới", "Đông Hà"],
+  ["quang-ngai", "Quảng Ngãi", 15.1205, 108.7923, "Kon Tum"],
+  ["gia-lai", "Gia Lai", 13.9833, 108.0000, "Bình Định", "Pleiku", "Quy Nhơn"],
+  ["dak-lak", "Đắk Lắk", 12.6667, 108.0500, "Phú Yên", "Buôn Ma Thuột", "Tuy Hòa"],
+  ["khanh-hoa", "Khánh Hòa", 12.2388, 109.1967, "Ninh Thuận", "Nha Trang", "Phan Rang"],
+  ["lam-dong", "Lâm Đồng", 11.9404, 108.4583, "Đắk Nông", "Bình Thuận", "Đà Lạt", "Phan Thiết"],
+  ["dong-nai", "Đồng Nai", 10.9574, 106.8427, "Bình Phước", "Biên Hòa"],
+  ["tay-ninh", "Tây Ninh", 11.3352, 106.1099, "Long An"],
+  ["dong-thap", "Đồng Tháp", 10.4559, 105.6342, "Tiền Giang", "Cao Lãnh", "Mỹ Tho"],
+  ["vinh-long", "Vĩnh Long", 10.2396, 105.9572, "Bến Tre", "Trà Vinh"],
+  ["an-giang", "An Giang", 10.3759, 105.4185, "Kiên Giang", "Phú Quốc", "Long Xuyên", "Rạch Giá"],
+  ["ca-mau", "Cà Mau", 9.1769, 105.1524, "Bạc Liêu"],
+];
+
+export const VIETNAM_WEATHER_LOCATIONS: WeatherLocation[] = entries.map(
+  ([id, name, latitude, longitude, ...aliases]) => ({
+    id,
+    name,
+    province: name,
+    country: "Việt Nam",
+    latitude,
+    longitude,
+    timezone: "Asia/Ho_Chi_Minh",
+    aliases,
+  }),
+);

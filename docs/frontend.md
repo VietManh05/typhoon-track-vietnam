@@ -9,7 +9,7 @@ Hệ thống giao diện trực quan hóa, theo dõi quỹ đạo và đánh gi�
 - **Tech Stack**:
   - **Framework**: React 18 + TypeScript 5
   - **Bundler**: Vite 5
-  - **Bản đồ GIS**: Leaflet 1.9 với tile layers Dark Matter (CartoDB), OpenStreetMap, ESRI World Imagery
+  - **Bản đồ GIS**: Leaflet 1.9 với tile layers Esri Dark Gray Canvas (mặc định, không cần key), OpenStreetMap, Esri World Imagery. CARTO Dark Matter đã bỏ vì nay yêu cầu API key
   - **Hệ thống biểu tượng**: Lucide React
   - **Thiết kế**: Vanilla CSS với CSS Variables & Glassmorphism chuẩn khí tượng vũ trụ (Dark mode & Light mode)
   - **Đa ngôn ngữ**: Hệ thống từ điển song ngữ Tiếng Việt 🇻🇳 (mặc định) và English 🇬🇧
@@ -27,7 +27,7 @@ Hệ thống giao diện trực quan hóa, theo dõi quỹ đạo và đánh gi�
 - Điểm tâm bão hiện tại với hiệu ứng xoay radar xoáy bão và vòng sóng lan tỏa (Pulsing ring effect).
 - Quỹ đạo dự báo (Dashed amber polyline) nối các mốc +6h, +12h, +24h, +48h, +72h.
 - Vùng nón bất định (Cone of Uncertainty polygon) bán trong suốt với viền gradient.
-- Chế độ so sánh dự báo chính thức (S10): Toggle so sánh mô hình AI vs NCHMF / JTWC.
+- So sánh dự báo chính thức (S10): **chưa có**. Lớp cũ hiển thị track NCHMF bịa đặt đã bị gỡ; chỉ bật lại khi có nguồn bản tin NCHMF/JTWC thật, có provenance.
 
 ### 2.2. Bảng Điều Khiển & Thông Số Bão (`src/components/StormOverviewCard.tsx`)
 - Tên bão, tên quốc tế, số hiệu bão Việt Nam (ví dụ: Bão số 3 Yagi).
@@ -93,3 +93,12 @@ Kiểm tra trực tiếp các route HTTP:
 ```bash
 .venv\Scripts\python scripts/verify_dashboard_http.py
 ```
+
+## Nguồn dữ liệu và chế độ demo
+
+- UI chỉ hiển thị dữ liệu từ API (`/typhoons/active`, `/typhoons/{id}/track`). Không có fallback âm thầm sang dữ liệu mẫu.
+- API trả danh sách rỗng là trạng thái hợp lệ ("không có bão"); banner offline chỉ hiện khi không gọi được API.
+- Dữ liệu demo (`services/mockData.ts`) là track mô phỏng (`DEMO-A`, `DEMO-B`, nguồn `synthetic-demo`), chỉ tải khi người dùng bấm "Xem dữ liệu mẫu", luôn kèm banner "DỮ LIỆU DEMO MÔ PHỎNG".
+- Ở các khung dự báo, gió/khí áp hiển thị N/A vì model chỉ dự báo vị trí và cấp; hướng/tốc độ di chuyển tính từ điểm liền trước trên quỹ đạo.
+- Nhãn nón bất định lấy phương pháp từ `uncertainty_method` của API (xem bảng dự báo), không ghi cứng xác suất.
+- Styling: Tailwind CSS v3 qua PostCSS (`tailwind.config.js`, `postcss.config.js`). Trước 2026-11-05 Tailwind chưa được cài nên bản build không có style.

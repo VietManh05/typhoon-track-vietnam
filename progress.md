@@ -108,3 +108,90 @@
 - Targeted Phase-2 data suite: 41 passed. Full regression: 105 passed, 2 dependency deprecation warnings.
 - Plan validator pass: 818/818 checkbox, 731 nodes, 2.977 links, roadmap unchanged. Flake8/isort/Black pass trên phạm vi Phase 2.
 - Phase 2 đóng với 256/256 task G00–G06 complete; không commit/push mới. Phase 3 chưa bắt đầu.
+
+## 2026-11-05 — Dựng lại môi trường và baseline kiểm thử
+
+- Untrack `viz/frontend/node_modules`, `.pytest_tmp_phase3_slice`, checkpoint `.pth`, `data/operational/typhoon.db`; cập nhật `.gitignore`.
+- venv Python 3.11.9; `pip install -e ".[api,train,ingestion,dev]"` và `pip check` pass.
+- flake8/isort/black pass trên `src tests scripts`.
+- pytest: 119 passed, 1 warning (httpx/starlette deprecation) khi bỏ qua 2 file test chưa có implementation:
+  - `tests/test_environment_forecast.py` cần `ForecastField` trong `ingestion/providers/environment.py`.
+  - `tests/test_phase3_management.py` cần `training.cross_validation`, `training.registry`, `training.tuning` (G14/G15).
+- Lỗi `DEBUG=release` trong báo cáo 19/09 không tái hiện trong môi trường sạch (cần `env -u DEBUG` nếu shell có biến này).
+- Next Step: chốt Phase 3 (G07/G08/G12), rồi dữ liệu IBTrACS thật.
+
+## 2026-11-05 — Phase 3: sửa toạ độ dự báo, đánh giá test split
+
+- BUG (critical): `TyphoonDataset` scale cả `lat/lon` trước khi lấy target, nên LSTM học và `predict_bundle` trả về toạ độ đã chuẩn hoá (~0°, 0°) như độ thật. Range check không bắt được.
+  - Sửa: target luôn lấy từ giá trị vật lý trước khi scale.
+  - LSTM nhận `position_mean/position_scale` (thống kê scaler của lat/lon) và dự báo độ dịch chuyển từ vị trí cuối; output là độ thật.
+  - Bundle bắt buộc có hai khoá này và phải khớp `scaler.json`; bundle cũ bị từ chối (fail closed). Checkpoint cũ `checkpoints/best_model_epoch53_loss0.0185.pth` không tương thích.
+- `backtest_storm/backtest_catalogue` nhận `scaler`.
+- `run_training` chấm LSTM, persistence, CLIPER-proxy trên test split; ghi `evaluation.json` và log metric `test_<model>_err_km_<h>h`.
+- Synthetic 60 bão, 30 epoch (early stop 12), 6 bão test, mean km 6/12/24/48/72h: LSTM 8/8/12/20/29; persistence 1/2/5/13/23; CLIPER 1/3/8/22/38. Synthetic, không phải bằng chứng skill.
+- pytest 126 passed; flake8/isort/black pass.
+- Next Step: bước 4, IBTrACS WP thật.
+
+## 2026-11-05 — Benchmark IBTrACS WP thật
+
+- `Trainer.fit` trả trọng số epoch cuối; `run_training` giờ nạp `best.pt` trước khi export/đánh giá (test mới).
+- `scripts/run_ibtracs_benchmark.py` + `configs/ibtracs_benchmark.yaml`: 1980–2024, 1089 bão, split theo năm (test 2021–2024, 84 bão, 714 forecast).
+- Mean km 6/12/24/48/72h — LSTM 34/66/135/294/470; persistence 31/68/155/390/676; CLIPER-proxy 30/65/151/388/677. LSTM hơn persistence 13% ở 24h, 30% ở 72h; kém nhẹ ở 6h.
+- Evidence: `docs/planning/evidence/B01-ibtracs-benchmark.md`. pytest 127 passed.
+- Next Step: G11 calibrate cone từ phân phối sai số val; nhiều seed + CI cho benchmark.
+
+## 2026-11-05 — G11 cone calibration, G15 registry/promotion gate
+
+- `run_training` fit `CalibratedCone` trên sai số LSTM của val split (`uncertainty.coverage`, mặc định 0.8); bán kính và mô tả phương pháp ghi vào bundle; API đọc `uncertainty_method` từ manifest.
+- IBTrACS: bán kính 52/97/210/455/714 km (6–72h); coverage test 84/82/86/85/82% (mục tiêu 80%). Bán kính minh hoạ cũ ở 72h = 360 km (chỉ ~½).
+- `training/registry.py`: `ModelRegistry` (register/promote/rollback, pin SHA-256 manifest, production phải qua staging), `PromotionPolicy` (sai số tối đa, coverage tối thiểu, tỉ lệ so với persistence), `promotion_metrics`. 8 test mới trong `tests/test_registry.py`.
+- Gate đề xuất tại 72h: ≤550 km, coverage ≥0.75, ≤0.9× persistence → PASS (470 km, 0.82, 0.70). Ngưỡng chờ chủ dự án duyệt.
+- pytest 136 passed. `tests/test_phase3_management.py` vẫn chờ `cross_validation`/`tuning` (G14).
+
+## 2026-11-05 — Bước 6: frontend nối API thật
+
+- Bỏ fallback âm thầm sang mock trong `api.ts`; rỗng = "không có bão", lỗi = banner offline/lỗi track. Demo chỉ khi bấm nút, có banner, nguồn `synthetic-demo`, tên DEMO-A/B.
+- Gỡ lớp "So sánh NCHMF" dùng track chính thức bịa đặt; đổi nhãn nguồn mock (trước gán cho NCHMF/JMA/PAGASA) và bỏ cảnh báo nguy hiểm bịa.
+- Bỏ giá trị bịa: gió 35 m/s / 970 hPa / "TY" ở khung dự báo; hướng 285° / 20 km/h; Beaufort mặc định cấp 10–12; nhãn "Vùng biển Biển Đông".
+- Tailwind chưa từng được cài (bản build không có style) → thêm tailwindcss 3.4 + PostCSS. Basemap mặc định đổi sang Esri Dark Gray (CARTO cần key).
+- E2E: API + bundle IBTrACS + replay Yagi 2024 (time-shifted, `synthetic-demo`) → dự báo ở toạ độ thật, cone 52–714 km, cảnh báo hiển thị; luồng rỗng và demo kiểm bằng Playwright.
+- Còn lại: phân loại tác động tỉnh theo khoảng cách (≤60 km = "rất nguy hiểm") bất kể cường độ; API key header chưa được frontend gửi (production bắt buộc).
+
+## 2026-11-05 — CI và dọn tồn tại frontend
+
+- Nhãn tác động tỉnh đổi thành mức khoảng cách (≤60/150/300/500 km); bỏ khẳng định "đổ bộ/vùng gió bão" vì hệ thống không có mô hình trường gió.
+- Spec chưa có implementation (`test_environment_forecast`, `test_phase3_management`) tự skip kèm lý do; `pytest` trơn: 136 passed, 2 skipped.
+- `.github/workflows/ci.yml`: job Python (pip check, flake8/isort/black, pytest, torch CPU) và frontend (npm ci, tsc, build, `scripts/check_dashboard_sync.py`).
+- `make dashboard` build + đồng bộ + kiểm tra; `make lint` gồm `scripts/`.
+- Chờ quyết định: cách dashboard xác thực với API ở production (không nhúng key vào JS).
+
+## 2026-11-05 — Push/PR, public read, Alembic, live worker
+
+- PR #1 mở; CI không chạy được: "account is locked due to a billing issue" (tài khoản GitHub), không phải lỗi code.
+- `PUBLIC_READ` (mặc định true): `/typhoons/active`, `/typhoons/{id}/track` không cần key, vẫn rate limit; ghi/alerts/metrics cần key. Sửa phát hiện bảo mật: tách bucket rate-limit public/keyed.
+- G18: Alembic `0001` = schema cũ; `Store` chạy `upgrade`; DB cũ được stamp, giữ dữ liệu. Kiểm trên SQLite và PostGIS 16-3.4 (Docker cục bộ), CI có service PostGIS. Sửa package-data (thiếu `dashboard/assets`).
+- G19: `operations/live.py` đọc NOAA IBTrACS ACTIVE (miễn phí, không key) qua cùng mapping/cleaning khi train; `typhoon-vn worker --ibtracs-active|--snapshot`; service `worker` trong docker-compose (6 h).
+- Chạy thật 2026-11-05: 1 bão WP (IN-FA, WP302026), chỉ 2 điểm trong vùng model, mới nhất 03/11 00Z → không đủ 4 điểm để dự báo, ngoài cửa sổ active 48 h. Độ trễ nguồn là giới hạn thật.
+- pytest 147 passed, 3 skipped.
+
+## 2026-11-05 — So sánh phương pháp cho báo cáo môn AI
+
+- Thêm k-NN analog (case-based, nêu tên bão tương tự), gradient boosting, wrapper residual cho mọi mạng nơ-ron, cửa sổ đánh giá dùng chung, tập con bão ảnh hưởng VN (≤300 km bờ biển).
+- IBTrACS 1980–2024, split theo năm (test 2021–2024, 84 bão; VN 27 bão), 3 seed. 72 h: persistence 676, k-NN 462, GBM 476, LSTM 464±5, Attention-LSTM 473±9, Transformer 468±5 km.
+- Bootstrap theo bão (72 h, 50 bão): mọi phương pháp học tốt hơn persistence có ý nghĩa; k-NN/GBM/Transformer không khác LSTM có ý nghĩa; Attention-LSTM kém hơn (+30 km).
+- Ablation thật: LSTM học tọa độ tuyệt đối 115/121/164/305/473 km (6h kém 3,5×).
+- Báo cáo nháp: `docs/report/README.md` (+ bảng, hình, case YAGI/SAOLA/YINXING/CONSON).
+
+## 2026-11-05 — Gợi ý theo bão tương tự trong hệ thống
+
+- `inference/analog.py` + `ANALOG_ARTIFACT`: artifact .npz không pickle (1005 bão 1980–2020, loại bão test); response có `suggestion` (đường k-NN + 5 bão tương tự có tên/năm); lỗi cửa sổ ngắn/không đều → cảnh báo, không lỗi.
+- Dashboard: đường gợi ý tím + nút bật/tắt, khung "Gợi ý theo bão tương tự", chú giải thu gọn mặc định, tự fitBounds theo bão.
+- Replay YAGI 2024 (06Z 04/09) ở chế độ production: LSTM 72h 580 km (trong nón), k-NN 656 km; analog PEIPAH 2007, DAN 1999, BETH 1996, ELLEN 1986, AERE 2016.
+
+## 2026-11-05 — Gộp vào app Cloudflare Pages (baoviet2026)
+
+- Nhập nguyên trạng app edge (JMA live, Functions, AI chat, NCHMF; trước đó chưa commit ở repo gốc) thành commit riêng.
+- JMA không cung cấp thời điểm cho quỹ đạo quá khứ (khoảng cách bước không đều) → không chạy k-NN live trung thực; thay vào đó: chế độ "Dự báo lại" dùng 20 bão thật 2021–2024 ảnh hưởng VN, dự báo bởi LSTM + k-NN đã huấn luyện (`scripts/export_hindcast.py`, file tĩnh `/data/hindcast`), có quỹ đạo thực tế và sai số.
+- Xóa `mockData.ts` (bão giả gán NCHMF/JMA); bỏ giá trị bịa (35 m/s, 970 hPa, 285°, 20 km/h); bỏ nhãn chú giải "Dự báo chính thức NCHMF/JTWC" không có dữ liệu; thêm lớp/khung gợi ý bão tương tự.
+- Kiểm thử: pytest 160, node 29, `wrangler pages dev` + trình duyệt.
+- Tồn tại (có từ trước): `/api/ai/chat` rate limit theo isolate, Origin tùy chọn → nên thêm Cloudflare Rate Limiting/Turnstile.

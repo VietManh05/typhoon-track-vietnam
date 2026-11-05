@@ -15,7 +15,7 @@ from typhoon_vn.inference.service import TyphoonForecaster
 from typhoon_vn.models.lstm import LSTMTrackForecaster
 from typhoon_vn.operations.store import Store
 from typhoon_vn.settings import Settings
-from typhoon_vn.training.pipeline import export_bundle
+from typhoon_vn.training.pipeline import export_bundle, position_stats
 
 
 def fixes(*, stale: bool = False, future: bool = False):
@@ -50,6 +50,7 @@ def bundle_path(tmp_path):
         "hidden_size": 8,
         "num_layers": 1,
         "dropout": 0.0,
+        **position_stats(scaler),
     }
     model = LSTMTrackForecaster(**config)
     for parameter in model.parameters():
@@ -65,6 +66,7 @@ def bundle_path(tmp_path):
         input_len=4,
         horizons_hours=[6, 12, 24, 48, 72],
         validation_radius_km={str(h): float(h) for h in [6, 12, 24, 48, 72]},
+        uncertainty_method="test-only cone method",
         split_manifest={"train": ["WP012024"], "val": [], "test": [], "seed": 1},
         synthetic=True,
     )
@@ -94,7 +96,7 @@ def test_trained_bundle_forecast_has_provenance_and_loads_once(
         for p in first.points
     )
     assert "not an official weather warning" in first.disclaimer
-    assert first.uncertainty_method
+    assert first.uncertainty_method == "test-only cone method"
 
 
 def test_missing_artifact_and_time_freshness_fail_or_warn(tmp_path) -> None:
@@ -177,3 +179,85 @@ def test_forecast_route_runs_blocking_inference_off_event_loop() -> None:
     # A synchronous endpoint is intentionally dispatched by Starlette's thread pool,
     # keeping pandas/PyTorch/database work out of the asyncio event loop.
     assert not inspect.iscoroutinefunction(route.endpoint)
+
+
+@pytest.mark.parametrize("public_read", [True, False])
+def test_dashboard_read_routes_follow_public_read_setting(public_read) -> None:
+    settings = Settings(
+        _env_file=None,
+        api_key="secret",
+        public_read=public_read,
+        requests_per_minute=50,
+        cache_enabled=False,
+        operational_database_url="sqlite:///:memory:",
+    )
+    app = create_app(
+        settings=settings,
+        store=Store("sqlite:///:memory:"),
+        forecaster=TyphoonForecaster(),
+    )
+    batch = {
+        "storm_id": "S",
+        "name": "S",
+        "observations": [fix.model_dump(mode="json") for fix in fixes()],
+    }
+    expected_read = 200 if public_read else 401
+    with TestClient(app) as client:
+        # Writes and operator routes always need the key.
+        assert client.post("/observations", json=batch).status_code == 401
+        assert client.get("/alerts").status_code == 401
+        assert client.get("/metrics").status_code == 401
+        headers = {"X-API-Key": "secret"}
+        assert (
+            client.post("/observations", json=batch, headers=headers).status_code == 200
+        )
+
+        assert client.get("/typhoons/active").status_code == expected_read
+        assert client.get("/typhoons/S/track").status_code == expected_read
+        assert client.get("/typhoons/active", headers=headers).status_code == 200
+
+
+def test_public_read_routes_are_still_rate_limited() -> None:
+    settings = Settings(
+        _env_file=None,
+        api_key="secret",
+        public_read=True,
+        requests_per_minute=1,
+        cache_enabled=False,
+        operational_database_url="sqlite:///:memory:",
+    )
+    app = create_app(
+        settings=settings,
+        store=Store("sqlite:///:memory:"),
+        forecaster=TyphoonForecaster(),
+    )
+    with TestClient(app) as client:
+        assert client.get("/typhoons/active").status_code == 200
+        assert client.get("/typhoons/active").status_code == 429
+
+
+def test_public_reads_do_not_consume_authenticated_rate_limit() -> None:
+    settings = Settings(
+        _env_file=None,
+        api_key="secret",
+        public_read=True,
+        requests_per_minute=1,
+        cache_enabled=False,
+        operational_database_url="sqlite:///:memory:",
+    )
+    app = create_app(
+        settings=settings,
+        store=Store("sqlite:///:memory:"),
+        forecaster=TyphoonForecaster(),
+    )
+    headers = {"X-API-Key": "secret"}
+    with TestClient(app) as client:
+        assert client.get("/typhoons/active").status_code == 200
+        assert client.get("/typhoons/active").status_code == 429
+        # Same client address, but the operator bucket is untouched.
+        assert client.get("/alerts", headers=headers).status_code == 200
+        # A wrong key on a read route is rejected, not treated as public.
+        assert (
+            client.get("/typhoons/active", headers={"X-API-Key": "x"}).status_code
+            == 401
+        )

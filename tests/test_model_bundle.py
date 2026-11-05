@@ -1,16 +1,23 @@
 """Model bundle export/load/prediction contract."""
 
+import json
 from datetime import timedelta
 
 import pandas as pd
 import pytest
+import torch
 
 from typhoon_vn.api.schemas import Fix
 from typhoon_vn.datasets.synthetic import generate_storm_track
 from typhoon_vn.features.build import FEATURE_COLUMNS, FeatureBuilder
 from typhoon_vn.features.scaling import FeatureScaler
 from typhoon_vn.models.lstm import LSTMTrackForecaster
-from typhoon_vn.training.pipeline import export_bundle, load_bundle, predict_bundle
+from typhoon_vn.training.pipeline import (
+    export_bundle,
+    load_bundle,
+    position_stats,
+    predict_bundle,
+)
 
 
 def make_bundle(tmp_path):
@@ -24,6 +31,7 @@ def make_bundle(tmp_path):
         "hidden_size": 8,
         "num_layers": 1,
         "dropout": 0.0,
+        **position_stats(scaler),
     }
     model = LSTMTrackForecaster(**config)
     export_bundle(
@@ -93,3 +101,25 @@ def test_predict_rejects_irregular_window(tmp_path) -> None:
     )
     with pytest.raises(ValueError, match="regular"):
         predict_bundle(load_bundle(root), fixes, [6])
+
+
+def test_bundle_forecast_is_in_physical_degrees_near_last_fix(tmp_path) -> None:
+    root, frame = make_bundle(tmp_path)
+    bundle = load_bundle(root)
+    torch.nn.init.zeros_(bundle["model"].reg_head.weight)
+    torch.nn.init.zeros_(bundle["model"].reg_head.bias)
+    fixes = frame_to_fixes(frame.iloc[:8])
+    coords, _ = predict_bundle(bundle, fixes, [6, 72])
+    last = (fixes[-1].lat, fixes[-1].lon)
+    # A zero displacement head must forecast the last fix, not scaled ~(0, 0).
+    assert coords == [pytest.approx(last, abs=1e-4)] * 2
+
+
+def test_bundle_rejects_position_stats_that_disagree_with_scaler(tmp_path) -> None:
+    root, _ = make_bundle(tmp_path)
+    manifest_path = root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["model"]["constructor"]["position_mean"] = [0.0, 0.0]
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="position_mean does not match"):
+        load_bundle(root)

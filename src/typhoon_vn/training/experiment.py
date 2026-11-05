@@ -51,7 +51,9 @@ class ExperimentTracker:
             try:
                 import mlflow
             except ImportError as exc:
-                raise RuntimeError("MLflow tracking requires the experiment extra") from exc
+                raise RuntimeError(
+                    "MLflow tracking requires the experiment extra"
+                ) from exc
             mlflow.set_tracking_uri(self.tracking_uri)
             mlflow.set_experiment(self.experiment_name)
             active = mlflow.start_run(run_name=self.name)
@@ -65,7 +67,9 @@ class ExperimentTracker:
         if self._mlflow is not None:
             self._mlflow.log_params(values)
 
-    def log_metrics(self, payload: dict[str, float], *, step: int | None = None) -> None:
+    def log_metrics(
+        self, payload: dict[str, float], *, step: int | None = None
+    ) -> None:
         values = {key: float(value) for key, value in payload.items()}
         record: dict[str, Any] = {"values": values}
         if step is not None:

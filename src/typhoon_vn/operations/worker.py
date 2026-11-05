@@ -43,8 +43,9 @@ def update(store, forecaster, batches):
         request = ForecastRequest(storm_id=batch.storm_id, observations=track[-512:])
         try:
             result = forecaster.forecast(request)
-        except ValueError:
-            logger.exception("Forecast rejected for %s", batch.storm_id)
+        except ValueError as exc:
+            # Expected for short/irregular tracks; not an operational error.
+            logger.warning("Forecast skipped for %s: %s", batch.storm_id, exc)
             continue
         store.save_forecast(result)
         evaluate_alerts(store, result.model_dump(mode="json"))
@@ -74,16 +75,31 @@ def demo_batches():
     ]
 
 
-def run_worker(store, forecaster, snapshot: Path, interval=1800, once=False):
+def snapshot_source(snapshot: Path):
+    """Batches from a JSON snapshot file (list of ObservationBatch payloads)."""
+
+    def load():
+        return json.loads(Path(snapshot).read_text(encoding="utf-8"))
+
+    return load
+
+
+def run_worker(store, forecaster, *, source, interval=1800, once=False):
+    """Poll ``source()`` for observation batches and refresh forecasts.
+
+    ``source`` is any callable returning ObservationBatch objects or payloads,
+    e.g. :func:`snapshot_source` or ``typhoon_vn.operations.live``.
+    """
+
     if interval < 1:
         raise ValueError("interval must be positive")
     while True:
         try:
-            batches = json.loads(snapshot.read_text(encoding="utf-8"))
-            update(store, forecaster, batches)
-            logger.info("Snapshot processed: %s", snapshot)
+            batches = source()
+            ids = update(store, forecaster, batches)
+            logger.info("Processed %d batches, %d forecasts", len(batches), len(ids))
         except Exception:
-            logger.exception("Snapshot update failed")
+            logger.exception("Worker update failed")
             if once:
                 raise
         if once:

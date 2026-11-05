@@ -164,3 +164,12 @@
 - `.github/workflows/ci.yml`: job Python (pip check, flake8/isort/black, pytest, torch CPU) và frontend (npm ci, tsc, build, `scripts/check_dashboard_sync.py`).
 - `make dashboard` build + đồng bộ + kiểm tra; `make lint` gồm `scripts/`.
 - Chờ quyết định: cách dashboard xác thực với API ở production (không nhúng key vào JS).
+
+## 2026-11-05 — Push/PR, public read, Alembic, live worker
+
+- PR #1 mở; CI không chạy được: "account is locked due to a billing issue" (tài khoản GitHub), không phải lỗi code.
+- `PUBLIC_READ` (mặc định true): `/typhoons/active`, `/typhoons/{id}/track` không cần key, vẫn rate limit; ghi/alerts/metrics cần key. Sửa phát hiện bảo mật: tách bucket rate-limit public/keyed.
+- G18: Alembic `0001` = schema cũ; `Store` chạy `upgrade`; DB cũ được stamp, giữ dữ liệu. Kiểm trên SQLite và PostGIS 16-3.4 (Docker cục bộ), CI có service PostGIS. Sửa package-data (thiếu `dashboard/assets`).
+- G19: `operations/live.py` đọc NOAA IBTrACS ACTIVE (miễn phí, không key) qua cùng mapping/cleaning khi train; `typhoon-vn worker --ibtracs-active|--snapshot`; service `worker` trong docker-compose (6 h).
+- Chạy thật 2026-11-05: 1 bão WP (IN-FA, WP302026), chỉ 2 điểm trong vùng model, mới nhất 03/11 00Z → không đủ 4 điểm để dự báo, ngoài cửa sổ active 48 h. Độ trễ nguồn là giới hạn thật.
+- pytest 147 passed, 3 skipped.

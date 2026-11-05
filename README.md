@@ -8,7 +8,15 @@ Vietnam-focused tropical-cyclone track forecasting research and decision-support
 
 The local test path currently covers ingestion, feature contracts, storm-safe splitting, train-only scaling, deterministic checkpoint/resume, model-bundle integrity, synthetic training smoke, trained/baseline inference, and API validation/auth/rate limiting.
 
-This repository is **not production-ready**. PostGIS/Alembic migrations, Redis read/invalidation, a live-provider worker, subscription ownership, and alert delivery remain backlog items. Synthetic smoke results and the constant-motion baseline are not evidence of real-storm forecast skill.
+This repository is **not production-ready**. Redis read/invalidation, subscription ownership, and alert delivery remain backlog items. Synthetic smoke results and the constant-motion baseline are not evidence of real-storm forecast skill; the real-data benchmark is in [B01](docs/planning/evidence/B01-ibtracs-benchmark.md).
+
+Implemented since 2026-11-05: Alembic migrations for the operational store (tested on SQLite and PostGIS), and a worker fed by the keyless NOAA IBTrACS ACTIVE file:
+
+```powershell
+python -m typhoon_vn.cli worker --ibtracs-active --once
+```
+
+IBTrACS ACTIVE is refreshed a few times a week, so positions can be days old and may fall outside the API's 48-hour "active" window. It is not an operational bulletin feed.
 
 ## Architecture
 

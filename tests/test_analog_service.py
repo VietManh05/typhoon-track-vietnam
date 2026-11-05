@@ -99,6 +99,26 @@ def test_artifact_is_pickle_free_and_schema_checked(artifact, tmp_path) -> None:
         AnalogService(broken)
 
 
+def test_artifact_with_extra_columns_is_rejected_at_load(tmp_path) -> None:
+    frame = generate_synthetic_catalogue(n_storms=8, n_fixes=24, seed=4)
+    windows = build_windows(frame, DatasetConfig(feature_cols=tuple(FEATURE_COLUMNS)))
+    extra = np.concatenate([windows.x_raw, np.zeros((*windows.x_raw.shape[:2], 2))], 2)
+    path = save_analog_artifact(
+        tmp_path / "steering.npz",
+        x_raw=extra,
+        y=windows.y,
+        storm_ids=windows.storm_ids,
+        storm_names=list(windows.storm_ids),
+        issue_times=[pd.Timestamp(t).isoformat() for t in windows.issue_times],
+        k=5,
+        weights={"track": 1.0, "steering": 1.0},
+        horizons_hours=HORIZONS,
+        dataset_version="synthetic",
+    )
+    with pytest.raises(ValueError, match="steering"):
+        AnalogService(path)
+
+
 def test_cache_key_changes_with_analog_library(artifact) -> None:
     request = ForecastRequest(storm_id="S", observations=fixes())
     assert TyphoonForecaster().key(request) != TyphoonForecaster(

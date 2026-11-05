@@ -42,6 +42,7 @@ def save_analog_artifact(
         "format_version": FORMAT_VERSION,
         "feature_columns": list(FEATURE_COLUMNS),
         "input_len": int(x_raw.shape[1]),
+        "n_features": int(x_raw.shape[2]),
         "horizons_hours": [int(h) for h in horizons_hours],
         "k": int(k),
         "weights": {key: float(value) for key, value in weights.items()},
@@ -71,6 +72,10 @@ class AnalogService:
             raise ValueError("unsupported analog artifact version")
         if self.meta["feature_columns"] != list(FEATURE_COLUMNS):
             raise ValueError("analog artifact feature columns mismatch")
+        # Serving builds only FEATURE_COLUMNS; extra (e.g. steering) columns
+        # would make every query fail and silently drop the suggestion.
+        if self.meta.get("n_features", len(FEATURE_COLUMNS)) != len(FEATURE_COLUMNS):
+            raise ValueError("analog artifact needs steering features at inference")
         self.version = (
             "analog-knn-" + hashlib.sha256(path.read_bytes()).hexdigest()[:12]
         )

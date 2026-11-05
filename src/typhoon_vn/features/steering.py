@@ -52,6 +52,8 @@ class SteeringFields:
 
     def year(self, year: int) -> dict | None:
         if year not in self._years:
+            # Keep one year (~45 MB) at a time; callers visit fixes in time order.
+            self._years.clear()
             paths = {
                 v: self.directory / f"{v}.{year}.npz" for v in ("uwnd", "vwnd", "hgt")
             }
@@ -111,9 +113,11 @@ def steering_features(
 
     out = np.full((len(frame), len(ENV_COLUMNS)), np.nan)
     times = pd.to_datetime(frame["timestamp"], utc=True)
-    for row, (when, lat, lon) in enumerate(
-        zip(times, frame["lat"].astype(float), frame["lon"].astype(float))
-    ):
+    lats_in = frame["lat"].to_numpy(dtype=float)
+    lons_in = frame["lon"].to_numpy(dtype=float)
+    # Time order so each year's fields are loaded once.
+    for row in np.argsort(times.to_numpy(), kind="stable"):
+        when, lat, lon = times.iloc[row], lats_in[row], lons_in[row]
         arrays = fields.year(when.year)
         if arrays is None:
             continue

@@ -24,7 +24,7 @@ import xarray as xr
 BASE = "https://psl.noaa.gov/thredds/dodsC/Datasets/ncep.reanalysis/pressure/"
 VARIABLES = ("uwnd", "vwnd", "hgt")
 LEVELS = [850, 500, 200]
-LAT = slice(52.5, -2.5)  # dataset latitude is descending
+LAT = slice(62.5, -10.0)  # descending; 800 km ring + 5 deg ridge offset past 0-50N
 LON = slice(92.5, 182.5)
 
 

@@ -233,14 +233,24 @@ class Store:
             ]
 
     def pending_alerts(self, limit=500):
-        """Alert drafts not yet delivered or given up on, oldest first."""
+        """Alert drafts not yet delivered or given up on, oldest first.
 
+        Status lives in the JSON payload, so filter while streaming instead of
+        applying LIMIT first: old delivered/failed rows must not hide new drafts.
+        """
+
+        drafts = []
         with self.engine.connect() as conn:
-            rows = conn.execute(
-                select(alerts.c.payload).order_by(alerts.c.created_at).limit(limit)
-            ).scalars()
-            drafts = [json.loads(row) for row in rows]
-        return [alert for alert in drafts if alert.get("status") == "draft"]
+            rows = conn.execution_options(stream_results=True).execute(
+                select(alerts.c.payload).order_by(alerts.c.created_at)
+            )
+            for payload in rows.scalars():
+                alert = json.loads(payload)
+                if alert.get("status") == "draft":
+                    drafts.append(alert)
+                    if len(drafts) >= limit:
+                        break
+        return drafts
 
     def update_alert(self, alert_id, fields):
         from sqlalchemy import update

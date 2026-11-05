@@ -26,6 +26,11 @@ class _Receiver(BaseHTTPRequestHandler):
         self.send_response(type(self).status)
         self.end_headers()
 
+    def do_GET(self):  # noqa: N802 (a followed 302/303 arrives as GET)
+        type(self).received.append((dict(self.headers), b""))
+        self.send_response(200)
+        self.end_headers()
+
     def log_message(self, *args):
         pass
 
@@ -107,3 +112,57 @@ def test_disabled_by_default_and_url_is_restricted(store_with_alert, receiver) -
     ):
         with pytest.raises(ValueError):
             _config(bad)
+
+
+def test_redirects_are_not_followed(store_with_alert, receiver) -> None:
+    target = receiver  # a second endpoint that must never be reached
+
+    class _Redirect(BaseHTTPRequestHandler):
+        def do_POST(self):  # noqa: N802
+            self.send_response(302)
+            self.send_header("Location", target)
+            self.end_headers()
+
+        def log_message(self, *args):
+            pass
+
+    server = HTTPServer(("127.0.0.1", 0), _Redirect)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        url = f"http://127.0.0.1:{server.server_port}/hook"
+        result = deliver_pending(store_with_alert, _config(url, max_attempts=1))
+    finally:
+        server.shutdown()
+    assert result["delivered"] == 0
+    assert _Receiver.received == []  # the redirect target was never contacted
+    assert store_with_alert.alert_drafts()[0]["status"] == "failed"
+
+
+def test_new_drafts_are_not_starved_by_old_delivered_alerts(store_with_alert) -> None:
+    store = store_with_alert
+    draft = store.alert_drafts()[0]
+    store.update_alert(draft["id"], {"status": "delivered"})
+    # A newer draft behind more delivered rows than the page size.
+    from typhoon_vn.operations.store import alerts
+
+    with store.engine.begin() as conn:
+        for i in range(5):
+            conn.execute(
+                alerts.insert().values(
+                    id=f"old{i}",
+                    subscription_id="x",
+                    storm_id="S",
+                    created_at=f"2000-01-0{i + 1}T00:00:00+00:00",
+                    payload=json.dumps({"id": f"old{i}", "status": "delivered"}),
+                )
+            )
+        conn.execute(
+            alerts.insert().values(
+                id="new",
+                subscription_id="x",
+                storm_id="S",
+                created_at="2999-01-01T00:00:00+00:00",
+                payload=json.dumps({"id": "new", "status": "draft"}),
+            )
+        )
+    assert [a["id"] for a in store.pending_alerts(limit=2)] == ["new"]

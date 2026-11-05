@@ -25,6 +25,17 @@ from urllib.parse import urlsplit
 LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Refuse redirects: a receiver must not bounce signed alerts elsewhere
+    (scheme downgrade or internal targets). A 3xx counts as a failed attempt."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+_OPENER = urllib.request.build_opener(_NoRedirect)
+
+
 @dataclass(frozen=True)
 class DeliveryConfig:
     enabled: bool = False
@@ -62,7 +73,7 @@ def _post(config: DeliveryConfig, alert: dict) -> bool:
         },
     )
     try:
-        with urllib.request.urlopen(request, timeout=config.timeout_s) as response:
+        with _OPENER.open(request, timeout=config.timeout_s) as response:
             return 200 <= response.status < 300
     except (urllib.error.URLError, TimeoutError, OSError):
         return False

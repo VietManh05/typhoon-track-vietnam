@@ -8,6 +8,7 @@ from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from pathlib import Path
 from threading import RLock
+from uuid import uuid4
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +25,7 @@ from typhoon_vn.api.schemas import (
 )
 from typhoon_vn.features.geo import haversine_km
 from typhoon_vn.inference.service import TyphoonForecaster
+from typhoon_vn.operations.monitoring import verify_forecasts
 from typhoon_vn.operations.store import Store
 from typhoon_vn.operations.worker import evaluate_alerts, update
 from typhoon_vn.settings import Settings, get_settings
@@ -46,7 +48,15 @@ def create_app(
         "public": defaultdict(deque),
         "edge": defaultdict(deque),
     }
-    counters = {"requests": 0, "errors": 0, "forecast_cache_hits": 0}
+    counters = {
+        "requests": 0,
+        "errors": 0,
+        "forecast_cache_hits": 0,
+        "forecasts_issued": 0,
+    }
+    # Prometheus-style request latency histogram (seconds).
+    buckets = (0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0)
+    latency = {"counts": [0] * (len(buckets) + 1), "sum": 0.0}
 
     def initialize():
         with lock:
@@ -85,9 +95,28 @@ def create_app(
     @app.middleware("http")
     async def accounting(request, call_next):
         counters["requests"] += 1
+        request_id = uuid4().hex
+        started = time.perf_counter()
         response = await call_next(request)
+        elapsed = time.perf_counter() - started
+        with lock:
+            latency["sum"] += elapsed
+            index = next(
+                (i for i, edge in enumerate(buckets) if elapsed <= edge), len(buckets)
+            )
+            latency["counts"][index] += 1
         if response.status_code >= 400:
             counters["errors"] += 1
+        # One structured line per request; no query strings or headers (no secrets).
+        logger.info(
+            "request id=%s method=%s path=%s status=%s ms=%.1f",
+            request_id,
+            request.method,
+            request.url.path,
+            response.status_code,
+            elapsed * 1000,
+        )
+        response.headers["X-Request-ID"] = request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["X-Frame-Options"] = "DENY"
@@ -183,12 +212,37 @@ def create_app(
         "/metrics", response_class=PlainTextResponse, dependencies=[Depends(authorize)]
     )
     def metrics():
-        return (
-            "\n".join(
-                f"typhoon_{name}_total {value}" for name, value in counters.items()
+        lines = []
+        for name, value in counters.items():
+            lines.append(f"# TYPE typhoon_{name}_total counter")
+            lines.append(f"typhoon_{name}_total {value}")
+        lines.append("# TYPE typhoon_http_request_duration_seconds histogram")
+        with lock:
+            cumulative = 0
+            for edge, count in zip((*buckets, "+Inf"), latency["counts"]):
+                cumulative += count
+                lines.append(
+                    f'typhoon_http_request_duration_seconds_bucket{{le="{edge}"}} '
+                    f"{cumulative}"
+                )
+            lines.append(
+                f"typhoon_http_request_duration_seconds_sum {latency['sum']:.6f}"
             )
-            + "\n"
-        )
+            lines.append(f"typhoon_http_request_duration_seconds_count {cumulative}")
+        # Live skill: issued forecasts verified against later observations.
+        report = verify_forecasts(db())
+        for gauge, key in (
+            ("forecast_verified", "n"),
+            ("forecast_error_km_mean", "mean_error_km"),
+            ("forecast_cone_coverage", "cone_coverage"),
+        ):
+            lines.append(f"# TYPE typhoon_{gauge} gauge")
+            for row in report["horizons"]:
+                if row[key] is not None:
+                    lines.append(
+                        f'typhoon_{gauge}{{horizon_h="{row["horizon_h"]}"}} {row[key]}'
+                    )
+        return "\n".join(lines) + "\n"
 
     def compute(body):
         service = initialize()["forecaster"]
@@ -214,6 +268,7 @@ def create_app(
             result = service.forecast(body)
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
+        counters["forecasts_issued"] += 1
         db().save_forecast(result)
         evaluate_alerts(db(), result.model_dump(mode="json"))
         return result

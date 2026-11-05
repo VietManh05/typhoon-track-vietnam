@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     # and operator routes always require it. Read routes stay rate limited.
     public_read: bool = True
     requests_per_minute: int = Field(default=120, ge=1)
+    # Outward alert delivery is off unless explicitly enabled and approved.
+    alert_delivery_enabled: bool = False
+    alert_webhook_url: str = ""
+    alert_webhook_secret: str = ""
     data_dir: Path = Path("data")
     model_registry_uri: str = "./mlruns"
     feature_store_dir: Path = Path("data/processed/features")

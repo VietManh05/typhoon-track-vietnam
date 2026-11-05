@@ -219,6 +219,48 @@ class Store:
                 ).scalars()
             ]
 
+    def recent_forecasts(self, limit=2000):
+        """Most recently issued forecasts (payload dicts), newest first."""
+
+        with self.engine.connect() as conn:
+            return [
+                json.loads(payload)
+                for payload in conn.execute(
+                    select(forecasts.c.payload)
+                    .order_by(forecasts.c.issue_time.desc())
+                    .limit(limit)
+                ).scalars()
+            ]
+
+    def pending_alerts(self, limit=500):
+        """Alert drafts not yet delivered or given up on, oldest first."""
+
+        with self.engine.connect() as conn:
+            rows = conn.execute(
+                select(alerts.c.payload).order_by(alerts.c.created_at).limit(limit)
+            ).scalars()
+            drafts = [json.loads(row) for row in rows]
+        return [alert for alert in drafts if alert.get("status") == "draft"]
+
+    def update_alert(self, alert_id, fields):
+        from sqlalchemy import update
+
+        with self.lock, self.engine.begin() as conn:
+            payload = conn.execute(
+                select(alerts.c.payload)
+                .where(alerts.c.id == alert_id)
+                .with_for_update()
+            ).scalar()
+            if payload is None:
+                raise KeyError(alert_id)
+            alert = {**json.loads(payload), **fields}
+            conn.execute(
+                update(alerts)
+                .where(alerts.c.id == alert_id)
+                .values(payload=json.dumps(alert))
+            )
+        return alert
+
     def record_alert(self, subscription_id, forecast, subscription, closest):
         import hashlib
 

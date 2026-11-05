@@ -84,11 +84,13 @@ def snapshot_source(snapshot: Path):
     return load
 
 
-def run_worker(store, forecaster, *, source, interval=1800, once=False):
+def run_worker(store, forecaster, *, source, interval=1800, once=False, delivery=None):
     """Poll ``source()`` for observation batches and refresh forecasts.
 
     ``source`` is any callable returning ObservationBatch objects or payloads,
-    e.g. :func:`snapshot_source` or ``typhoon_vn.operations.live``.
+    e.g. :func:`snapshot_source` or ``typhoon_vn.operations.live``. When an
+    enabled ``delivery`` config (``operations.delivery``) is given, pending alert
+    drafts are sent after each cycle.
     """
 
     if interval < 1:
@@ -98,6 +100,10 @@ def run_worker(store, forecaster, *, source, interval=1800, once=False):
             batches = source()
             ids = update(store, forecaster, batches)
             logger.info("Processed %d batches, %d forecasts", len(batches), len(ids))
+            if delivery is not None and delivery.enabled:
+                from typhoon_vn.operations.delivery import deliver_pending
+
+                logger.info("Alert delivery: %s", deliver_pending(store, delivery))
         except Exception:
             logger.exception("Worker update failed")
             if once:

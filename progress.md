@@ -147,3 +147,12 @@
 - `training/registry.py`: `ModelRegistry` (register/promote/rollback, pin SHA-256 manifest, production phải qua staging), `PromotionPolicy` (sai số tối đa, coverage tối thiểu, tỉ lệ so với persistence), `promotion_metrics`. 8 test mới trong `tests/test_registry.py`.
 - Gate đề xuất tại 72h: ≤550 km, coverage ≥0.75, ≤0.9× persistence → PASS (470 km, 0.82, 0.70). Ngưỡng chờ chủ dự án duyệt.
 - pytest 136 passed. `tests/test_phase3_management.py` vẫn chờ `cross_validation`/`tuning` (G14).
+
+## 2026-11-05 — Bước 6: frontend nối API thật
+
+- Bỏ fallback âm thầm sang mock trong `api.ts`; rỗng = "không có bão", lỗi = banner offline/lỗi track. Demo chỉ khi bấm nút, có banner, nguồn `synthetic-demo`, tên DEMO-A/B.
+- Gỡ lớp "So sánh NCHMF" dùng track chính thức bịa đặt; đổi nhãn nguồn mock (trước gán cho NCHMF/JMA/PAGASA) và bỏ cảnh báo nguy hiểm bịa.
+- Bỏ giá trị bịa: gió 35 m/s / 970 hPa / "TY" ở khung dự báo; hướng 285° / 20 km/h; Beaufort mặc định cấp 10–12; nhãn "Vùng biển Biển Đông".
+- Tailwind chưa từng được cài (bản build không có style) → thêm tailwindcss 3.4 + PostCSS. Basemap mặc định đổi sang Esri Dark Gray (CARTO cần key).
+- E2E: API + bundle IBTrACS + replay Yagi 2024 (time-shifted, `synthetic-demo`) → dự báo ở toạ độ thật, cone 52–714 km, cảnh báo hiển thị; luồng rỗng và demo kiểm bằng Playwright.
+- Còn lại: phân loại tác động tỉnh theo khoảng cách (≤60 km = "rất nguy hiểm") bất kể cường độ; API key header chưa được frontend gửi (production bắt buộc).

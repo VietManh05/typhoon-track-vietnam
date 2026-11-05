@@ -12,19 +12,23 @@ import { AlertModal } from './components/AlertModal';
 import { DashboardSkeleton, EmptyState, ErrorBanner, TrackLoadingIndicator } from './components/LoadingStates';
 import { CollapsibleSection } from './components/CollapsibleSection';
 import { Language, translations } from './i18n';
-import { ActiveTyphoonItem, StormTrackResponse, ProvinceImpact } from './types';
+import { ActiveTyphoonItem, Fix, StormTrackResponse, ProvinceImpact } from './types';
 import {
-  checkBackendHealth,
   fetchActiveTyphoons,
   fetchStormTrack,
   calculateProvinceImpacts,
+  bearingDeg,
+  haversineKm,
 } from './services/api';
-import { MOCK_STORMS_LIST } from './services/mockData';
+import { MOCK_STORMS_LIST, MOCK_TRACKS } from './services/mockData';
 
 export const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('vi');
   const [isDark, setIsDark] = useState<boolean>(true);
   const [isLive, setIsLive] = useState<boolean>(false);
+  // Demo data is shown only after an explicit user action, and always labelled.
+  const [isDemo, setIsDemo] = useState<boolean>(false);
+  const [trackError, setTrackError] = useState<string | null>(null);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState<boolean>(false);
 
   // WS1: Loading & Error states
@@ -51,19 +55,15 @@ export const App: React.FC = () => {
       setLoadError(false);
 
       try {
-        // Check backend health
-        const { online } = await checkBackendHealth();
-        setIsLive(online);
-
-        // Load active storms
-        const { typhoons, isLive: liveStatus } = await fetchActiveTyphoons();
+        // Load active storms; an empty list from a reachable backend is valid.
+        const { typhoons, online } = await fetchActiveTyphoons();
         setStorms(typhoons);
-        setIsLive(liveStatus);
+        setIsLive(online);
         if (typhoons.length > 0) {
           setSelectedStormId(typhoons[0].id);
         }
 
-        if (!liveStatus) {
+        if (!online) {
           setLoadError(true);
         }
       } catch (err) {
@@ -92,16 +92,34 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (!selectedStormId) return;
 
+    let cancelled = false;
     setIsTrackLoading(true);
-    fetchStormTrack(selectedStormId).then((data) => {
-      setStormTrack(data);
-      // Set initial index to latest observation
-      if (data.observations && data.observations.length > 0) {
-        setCurrentFixIndex(data.observations.length - 1);
-      }
-      setIsTrackLoading(false);
-    });
-  }, [selectedStormId]);
+    setTrackError(null);
+    const load = isDemo
+      ? Promise.resolve(MOCK_TRACKS[selectedStormId])
+      : fetchStormTrack(selectedStormId);
+    load
+      .then((data) => {
+        if (cancelled) return;
+        setStormTrack(data);
+        // Set initial index to latest observation
+        if (data.observations && data.observations.length > 0) {
+          setCurrentFixIndex(data.observations.length - 1);
+        }
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        console.warn('Track load failed:', err);
+        setStormTrack(null);
+        setTrackError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => {
+        if (!cancelled) setIsTrackLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedStormId, isDemo]);
 
   // 3. Sync Theme Class with <html> tag
   useEffect(() => {
@@ -121,7 +139,7 @@ export const App: React.FC = () => {
   }, [storms, selectedStormId]);
 
   // Active observation / forecast point according to scrubber
-  const currentFix = useMemo(() => {
+  const rawFix = useMemo((): Fix | undefined => {
     if (!stormTrack || !stormTrack.observations || stormTrack.observations.length === 0) {
       return currentStorm?.latest;
     }
@@ -132,19 +150,42 @@ export const App: React.FC = () => {
     const forecastIdx = currentFixIndex - stormTrack.observations.length;
     if (stormTrack.forecast && stormTrack.forecast.points[forecastIdx]) {
       const p = stormTrack.forecast.points[forecastIdx];
+      // The model forecasts position and class only; never invent wind/pressure.
       return {
         timestamp: p.valid_time,
         lat: p.lat,
         lon: p.lon,
-        wind_ms: p.wind_ms ?? 35,
-        pressure_hpa: p.pressure_hpa ?? 970,
-        intensity: (p.intensity as any) || 'TY',
-        source: 'Forecast Model',
-        wind_kmh: p.wind_ms ? Math.round(p.wind_ms * 3.6) : 126,
+        wind_ms: p.wind_ms ?? null,
+        pressure_hpa: p.pressure_hpa ?? null,
+        intensity: (p.intensity as any) || 'UNK',
+        source: stormTrack.forecast.model_kind,
+        wind_kmh: p.wind_ms ? Math.round(p.wind_ms * 3.6) : undefined,
       };
     }
     return stormTrack.observations[stormTrack.observations.length - 1];
   }, [stormTrack, currentFixIndex, currentStorm]);
+
+  // Movement (bearing/speed) from the previous point on the same timeline.
+  const currentFix = useMemo(() => {
+    if (!rawFix || !stormTrack) return rawFix;
+    if (rawFix.bearing_deg != null && rawFix.speed_kmh != null) return rawFix;
+    const timeline = [
+      ...stormTrack.observations.map((o) => ({ t: o.timestamp, lat: o.lat, lon: o.lon })),
+      ...(stormTrack.forecast?.points ?? []).map((p) => ({ t: p.valid_time, lat: p.lat, lon: p.lon })),
+    ];
+    const index = timeline.findIndex((p) => p.t === rawFix.timestamp);
+    if (index < 1) return rawFix;
+    const prev = timeline[index - 1];
+    const hours = (Date.parse(rawFix.timestamp) - Date.parse(prev.t)) / 3.6e6;
+    if (!(hours > 0)) return rawFix;
+    return {
+      ...rawFix,
+      bearing_deg: rawFix.bearing_deg ?? bearingDeg(prev.lat, prev.lon, rawFix.lat, rawFix.lon),
+      speed_kmh:
+        rawFix.speed_kmh ??
+        Math.round(haversineKm(prev.lat, prev.lon, rawFix.lat, rawFix.lon) / hours),
+    };
+  }, [rawFix, stormTrack]);
 
   // Calculate real-time province impacts
   const provinceImpacts: ProvinceImpact[] = useMemo(() => {
@@ -158,21 +199,36 @@ export const App: React.FC = () => {
 
   const handleRefresh = useCallback(async () => {
     setLoadError(false);
-    const { online } = await checkBackendHealth();
+    setTrackError(null);
+    const { typhoons, online } = await fetchActiveTyphoons();
     setIsLive(online);
-    if (selectedStormId) {
+    setLoadError(!online);
+    if (!online) return;
+    setIsDemo(false);
+    setStorms(typhoons);
+    const keep = typhoons.some((s) => s.id === selectedStormId);
+    const nextId = keep ? selectedStormId : typhoons[0]?.id ?? '';
+    if (keep && nextId) {
       setIsTrackLoading(true);
-      const track = await fetchStormTrack(selectedStormId);
-      setStormTrack(track);
-      setIsTrackLoading(false);
+      try {
+        setStormTrack(await fetchStormTrack(nextId));
+      } catch (err) {
+        setStormTrack(null);
+        setTrackError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setIsTrackLoading(false);
+      }
+    } else {
+      setStormTrack(null);
+      setSelectedStormId(nextId);
     }
   }, [selectedStormId]);
 
-  // WS1: Load demo data when user clicks in empty state
+  // WS1: Load clearly-labelled synthetic demo data on explicit user request
   const handleLoadDemo = useCallback(() => {
+    setIsDemo(true);
     setStorms(MOCK_STORMS_LIST);
     setSelectedStormId(MOCK_STORMS_LIST[0].id);
-    setIsLive(false);
   }, []);
 
   // WS1: Show full-page skeleton during initial load
@@ -195,6 +251,25 @@ export const App: React.FC = () => {
 
       {/* 2. Permanent Legal & Meteorological Disclaimer Banner */}
       <DisclaimerBanner lang={lang} />
+
+      {isDemo && (
+        <div className="px-3 md:px-4 pt-2" role="status">
+          <div className="rounded-lg border border-amber-500/60 bg-amber-950/60 px-3 py-2 text-xs font-mono text-amber-200">
+            {lang === 'vi'
+              ? 'DỮ LIỆU DEMO MÔ PHỎNG — không phải cơn bão thật, quan trắc hay dự báo thật.'
+              : 'SYNTHETIC DEMO DATA — not a real storm, observation or forecast.'}
+          </div>
+        </div>
+      )}
+
+      {trackError && !isTrackLoading && (
+        <div className="px-3 md:px-4 pt-2" role="alert">
+          <div className="rounded-lg border border-red-500/60 bg-red-950/60 px-3 py-2 text-xs font-mono text-red-200">
+            {lang === 'vi' ? 'Không tải được quỹ đạo/dự báo: ' : 'Could not load track/forecast: '}
+            {trackError}
+          </div>
+        </div>
+      )}
 
       {/* WS1: Error Banner when API is offline */}
       {loadError && (

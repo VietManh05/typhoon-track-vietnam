@@ -3,14 +3,8 @@ import {
   StormTrackResponse,
   ProvinceImpact,
   SystemHealth,
-  SystemVersion,
   Fix,
 } from '../types';
-import {
-  MOCK_STORMS_LIST,
-  MOCK_TRACK_YAGI,
-  MOCK_TRACK_SIM,
-} from './mockData';
 
 const BASE_URL = ''; // Relative path leverages Vite dev proxy & FastAPI static serving
 
@@ -29,6 +23,17 @@ export function haversineKm(lat1: number, lon1: number, lat2: number, lon2: numb
   return Math.round(R * c * 10) / 10;
 }
 
+// Initial great-circle bearing in degrees (0 = north, clockwise)
+export function bearingDeg(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const toRad = Math.PI / 180;
+  const dLon = (lon2 - lon1) * toRad;
+  const y = Math.sin(dLon) * Math.cos(lat2 * toRad);
+  const x =
+    Math.cos(lat1 * toRad) * Math.sin(lat2 * toRad) -
+    Math.sin(lat1 * toRad) * Math.cos(lat2 * toRad) * Math.cos(dLon);
+  return Math.round(((Math.atan2(y, x) / toRad) + 360) % 360);
+}
+
 // Check if backend API is online
 export async function checkBackendHealth(): Promise<{ online: boolean; info?: SystemHealth }> {
   try {
@@ -43,44 +48,36 @@ export async function checkBackendHealth(): Promise<{ online: boolean; info?: Sy
   }
 }
 
-// Fetch active typhoons (with automatic mock fallback)
+/**
+ * Fetch active typhoons from the backend. Never substitutes demo data: an
+ * empty list means "no active storms", and failures are reported as offline.
+ */
 export async function fetchActiveTyphoons(): Promise<{
   typhoons: ActiveTyphoonItem[];
-  isLive: boolean;
+  online: boolean;
 }> {
   try {
     const res = await fetch(`${BASE_URL}/typhoons/active`, { signal: AbortSignal.timeout(2000) });
     if (res.ok) {
       const data = await res.json();
-      if (data.typhoons && data.typhoons.length > 0) {
-        return { typhoons: data.typhoons, isLive: true };
-      }
+      return { typhoons: Array.isArray(data.typhoons) ? data.typhoons : [], online: true };
     }
+    console.warn(`/typhoons/active returned HTTP ${res.status}`);
   } catch (err) {
-    console.warn('Backend unavailable, using realistic mock typhoons:', err);
+    console.warn('Backend unavailable:', err);
   }
-
-  // Fallback to mock active storms
-  return { typhoons: MOCK_STORMS_LIST, isLive: false };
+  return { typhoons: [], online: false };
 }
 
-// Fetch track and forecast for a given storm
+// Fetch observed track and model forecast for a storm; throws on failure.
 export async function fetchStormTrack(stormId: string): Promise<StormTrackResponse> {
-  try {
-    const res = await fetch(`${BASE_URL}/typhoons/${stormId}/track`, { signal: AbortSignal.timeout(2500) });
-    if (res.ok) {
-      const data = await res.json();
-      return data;
-    }
-  } catch (err) {
-    console.warn(`Backend /track failed for ${stormId}, returning mock track:`, err);
+  const res = await fetch(`${BASE_URL}/typhoons/${encodeURIComponent(stormId)}/track`, {
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!res.ok) {
+    throw new Error(`/typhoons/${stormId}/track returned HTTP ${res.status}`);
   }
-
-  // Fallback mock track matching ID
-  if (stormId === 'WP112024') {
-    return MOCK_TRACK_YAGI;
-  }
-  return MOCK_TRACK_SIM;
+  return res.json();
 }
 
 // Fetch or calculate province impacts against storm track

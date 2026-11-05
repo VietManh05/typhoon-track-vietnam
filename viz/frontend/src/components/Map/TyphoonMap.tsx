@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import L from 'leaflet';
 import { Fix, ForecastResponse } from '../../types';
 import { Language, translations } from '../../i18n';
-import { MOCK_OFFICIAL_COMPARISON } from '../../services/mockData';
-import { Eye, Compass } from 'lucide-react';
+import { Eye } from 'lucide-react';
 
 interface TyphoonMapProps {
   observations: Fix[];
@@ -31,7 +30,6 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
   const islandsLayerRef = useRef<L.LayerGroup | null>(null);
   const trackLayerRef = useRef<L.LayerGroup | null>(null);
   const coneLayerRef = useRef<L.LayerGroup | null>(null);
-  const compareLayerRef = useRef<L.LayerGroup | null>(null);
 
   // WS6: Separate ref for the active cyclone marker — avoids full layer rebuild on scrub
   const cycloneMarkerRef = useRef<L.Marker | null>(null);
@@ -41,7 +39,6 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
   // State for toggles
   const [basemapType, setBasemapType] = useState<'dark' | 'osm' | 'sat'>('dark');
   const [showCone, setShowCone] = useState(true);
-  const [showCompare, setShowCompare] = useState(true);
   const [islandsData, setIslandsData] = useState<any[]>([]);
 
   const t = translations[lang];
@@ -80,16 +77,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
 
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Default tile: CartoDB Dark Matter
-    baseTileRef.current = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19,
-      }
-    ).addTo(map);
+    // Default tile: Esri Dark Gray Canvas (keyless; CARTO Dark Matter now needs a key)
+    baseTileRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
+      maxZoom: 16,
+    }).addTo(map);
 
     // Create layer groups
     provincesLayerRef.current = L.geoJSON(undefined, {
@@ -104,7 +96,6 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
 
     islandsLayerRef.current = L.layerGroup().addTo(map);
     coneLayerRef.current = L.layerGroup().addTo(map);
-    compareLayerRef.current = L.layerGroup().addTo(map);
     trackLayerRef.current = L.layerGroup().addTo(map);
 
     mapInstanceRef.current = map;
@@ -145,8 +136,8 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
 
     mapInstanceRef.current.removeLayer(baseTileRef.current);
 
-    let url = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-    let attr = '&copy; OpenStreetMap &copy; CARTO';
+    let url = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+    let attr = 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors';
 
     if (basemapType === 'osm') {
       url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -222,11 +213,9 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
     if (!mapInstanceRef.current || !trackLayerRef.current || !coneLayerRef.current) return;
     const trackGroup = trackLayerRef.current;
     const coneGroup = coneLayerRef.current;
-    const compareGroup = compareLayerRef.current;
 
     trackGroup.clearLayers();
     coneGroup.clearLayers();
-    compareGroup?.clearLayers();
 
     // Clean up previous cyclone marker
     if (cycloneMarkerRef.current && mapInstanceRef.current) {
@@ -323,40 +312,8 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
         }
       });
     }
-
-    // D. S10 Official Forecast Comparison
-    if (showCompare && compareGroup) {
-      const compareCoords: L.LatLngExpression[] = MOCK_OFFICIAL_COMPARISON.map(
-        (c) => [c.lat, c.lon] as L.LatLngExpression
-      );
-      const compareLine = L.polyline(compareCoords, {
-        color: '#c084fc',
-        weight: 2.5,
-        dashArray: '3, 6',
-        opacity: 0.8,
-      });
-      compareLine.addTo(compareGroup);
-
-      MOCK_OFFICIAL_COMPARISON.forEach((c) => {
-        const marker = L.circleMarker([c.lat, c.lon], {
-          radius: 4,
-          color: '#a855f7',
-          weight: 1,
-          fillColor: '#c084fc',
-          fillOpacity: 0.8,
-        });
-        marker.bindPopup(`
-          <div class="text-xs font-mono p-1">
-            <div class="font-bold text-purple-400">${t.popup_nchmf_official}</div>
-            <div>${t.popup_forecast_hour} +${c.horizon_hours}h</div>
-            <div>${t.popup_coords}: ${c.lat}°${lang === 'vi' ? 'B' : 'N'}, ${c.lon}°${lang === 'vi' ? 'Đ' : 'E'}</div>
-          </div>
-        `);
-        marker.addTo(compareGroup);
-      });
-    }
   // WS6: Only rebuild when data/toggles change — NOT on currentFixIndex
-  }, [observationsKey, forecastKey, showCone, showCompare, lang]);
+  }, [observationsKey, forecastKey, showCone, lang]);
 
   // 7. WS6 OPTIMIZED: Update ONLY the active cyclone marker position on scrub
   useEffect(() => {
@@ -471,20 +428,6 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
           <span className="hidden sm:inline">{lang === 'vi' ? 'Nón bất định' : 'Cone'}</span>
         </button>
 
-        {/* S10 Official Comparison Toggle */}
-        <button
-          onClick={() => setShowCompare(!showCompare)}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono border transition focus-ring ${
-            showCompare
-              ? 'bg-purple-950 text-purple-300 border-purple-500/50'
-              : 'bg-slate-800/80 text-slate-400 border-slate-700'
-          }`}
-          aria-pressed={showCompare}
-          aria-label={t.layer_official_compare}
-        >
-          <Compass className="w-3 h-3" aria-hidden="true" />
-          <span className="hidden sm:inline">{lang === 'vi' ? 'So sánh NCHMF' : 'Compare NCHMF'}</span>
-        </button>
       </div>
     </div>
   );

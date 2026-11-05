@@ -48,7 +48,15 @@ const getBearingCompass = (deg: number = 0, t: TranslationStrings): string => {
 };
 
 /** Get pressure description using i18n */
+/** Vietnamese Beaufort-extended level (0-17) from sustained wind in km/h. */
+const beaufortLevel = (kmh: number): number => {
+  const upper = [1, 5, 11, 19, 28, 38, 49, 61, 74, 88, 102, 117, 133, 149, 166, 183];
+  const level = upper.findIndex((limit) => kmh <= limit);
+  return level === -1 ? 17 : level;
+};
+
 const getPressureDesc = (hpa: number | null, t: TranslationStrings): string => {
+  if (hpa == null) return '';
   if (!hpa) return '';
   return hpa < 980 ? t.pressure_deep : t.pressure_normal;
 };
@@ -64,9 +72,10 @@ export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
   const catLabel = t.categories[cat] || cat;
 
   const windKmh = currentFix.wind_kmh || (currentFix.wind_ms ? Math.round(currentFix.wind_ms * 3.6) : null);
-  const beaufort = currentFix.beaufort_level || (windKmh ? (windKmh >= 184 ? 16 : windKmh >= 150 ? 14 : windKmh >= 118 ? 12 : 10) : 12);
-  const bearing = currentFix.bearing_deg ?? 285;
-  const speedKmh = currentFix.speed_kmh ?? 20;
+  const beaufort = currentFix.beaufort_level ?? (windKmh != null ? beaufortLevel(windKmh) : null);
+  // Movement is derived from the track upstream; never substitute a default.
+  const bearing = currentFix.bearing_deg ?? null;
+  const speedKmh = currentFix.speed_kmh ?? null;
 
   return (
     <div className="glass-panel p-4 flex flex-col gap-4 animate-fade-in-up" role="region" aria-label={t.storm_overview}>
@@ -106,7 +115,8 @@ export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
               {windKmh ? `${windKmh} km/h` : 'N/A'}
             </div>
             <div className="text-[11px] text-slate-400 font-mono">
-              {currentFix.wind_ms ? `${currentFix.wind_ms} m/s` : ''} · {t.beaufort_prefix} {beaufort}
+              {currentFix.wind_ms != null ? `${currentFix.wind_ms.toFixed(1)} m/s` : ''}
+              {beaufort != null ? ` · ${t.beaufort_prefix} ${beaufort}` : ''}
             </div>
           </div>
         </div>
@@ -137,24 +147,21 @@ export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
             <div className="text-xl font-bold font-mono text-emerald-300">
               {currentFix.lat.toFixed(1)}°{lang === 'vi' ? 'B' : 'N'} · {currentFix.lon.toFixed(1)}°{lang === 'vi' ? 'Đ' : 'E'}
             </div>
-            <div className="text-[11px] text-slate-400 font-mono">
-              {t.sea_region}
-            </div>
           </div>
         </div>
 
         {/* Movement Vector */}
         <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 flex flex-col justify-between">
           <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-            <Navigation className="w-3.5 h-3.5 text-rose-400" style={{ transform: `rotate(${bearing}deg)` }} aria-hidden="true" />
+            <Navigation className="w-3.5 h-3.5 text-rose-400" style={{ transform: `rotate(${bearing ?? 0}deg)` }} aria-hidden="true" />
             <span>{t.movement}</span>
           </div>
           <div className="mt-2">
             <div className="text-xl font-bold font-mono text-rose-300">
-              {speedKmh} km/h
+              {speedKmh != null ? `${speedKmh} km/h` : 'N/A'}
             </div>
             <div className="text-[11px] text-slate-400 font-mono truncate">
-              {getBearingCompass(bearing, t)} ({bearing}°)
+              {bearing != null ? `${getBearingCompass(bearing, t)} (${bearing}°)` : ''}
             </div>
           </div>
         </div>

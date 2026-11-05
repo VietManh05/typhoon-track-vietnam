@@ -1,6 +1,6 @@
 # G29 — Definition of Done toàn dự án
 
-> Kết quả nghiệm thu 2026-11-05: xem [docs/acceptance/README.md](../acceptance/README.md) — 25 Đạt, 3 Đạt một phần, 0 Chưa đạt.
+> Kết quả nghiệm thu 2026-11-05: xem [docs/acceptance/README.md](../acceptance/README.md) — 27 Đạt, 1 Đạt một phần, 0 Chưa đạt.
 
 - Trạng thái: pending; chưa nghiệm thu.
 - Hiện trạng: Tất cả tiêu chí chưa được nghiệm thu.

@@ -215,3 +215,6 @@
 - A29-020: webhook cảnh báo ký HMAC, retry, idempotent, tắt mặc định (`operations/delivery.py`).
 - A29-019 xếp lại Đạt (vùng ảnh hưởng hình học, phạm vi ghi rõ).
 - Nghiệm thu: 25 Đạt, 3 Đạt một phần (PostGIS không gian, Docker build lại — máy thiếu RAM, CI — GitHub billing). pytest 171 passed.
+- A29-016 → Đạt: migration 0002 (lat/lon + geography GIST trên PostGIS), `storms_near` dùng `ST_DWithin` (index scan), `/typhoons/near`.
+- A29-022 → Đạt: build lại image sau sửa bảo mật, container healthy + PostGIS + model đã train; `.dockerignore` loại runs/, *.db, artefact.
+- Nghiệm thu cuối: 27 Đạt, 1 Đạt một phần (CI — GitHub billing). pytest 175 passed, 4 skipped.

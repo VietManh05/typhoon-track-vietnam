@@ -71,6 +71,9 @@ export const ActiveStormSelector: React.FC<ActiveStormSelectorProps> = ({
                                 key={storm.id}
                                 role="tab"
                                 aria-selected={active}
+                                title={active
+                                    ? (lang === "vi" ? "Bấm lần nữa để bỏ chọn" : "Tap again to clear")
+                                    : (lang === "vi" ? "Bấm để xem đường đi của bão" : "Tap to show this storm")}
                                 onClick={() => onSelectStorm(storm.id)}
                                 className={`chip ${active ? "chip-active" : ""}`}
                             >

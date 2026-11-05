@@ -583,6 +583,12 @@ export const App: React.FC = () => {
                     selectedStormId={selectedStormId}
                     onSelectStorm={(id) => {
                         setStormTrack(null);
+                        // Tapping the selected storm again clears the selection.
+                        if (id === selectedStormId) {
+                            setSelectedStormId("");
+                            setDetailsOpen(false);
+                            return;
+                        }
                         setSelectedStormId(id);
                         selectDetailTab("storm");
                         setDetailsOpen(true);

@@ -293,3 +293,9 @@ html .immersive-map .disclaimer-strip { width: max-content; margin-left: auto; b
   font-size: 13px;
   font-weight: 650;
 }
+
+/* Timeline sits lower: a small gap above the bottom edge (desktop). The
+   disclaimer is a small right-aligned tag, so the bottom-left is free. */
+@media (min-width: 768px) {
+  .immersive-map .map-column > .timeline-player { bottom: 18px; }
+}

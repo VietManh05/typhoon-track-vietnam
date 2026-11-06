@@ -67,3 +67,6 @@ runs/
 # Personal editor / AI-tool configuration (kept locally, not part of the project)
 .agent/
 .grapuco/
+
+# DAST scanner config (local tooling, not needed to run the project)
+stackhawk.yml

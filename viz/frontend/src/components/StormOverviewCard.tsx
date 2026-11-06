@@ -89,7 +89,8 @@ export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
     const category = currentFix.intensity || "UNK";
     const categoryToken = getIntensityToken(category);
     const speed = windKmh(currentFix.wind_ms, currentFix.wind_kmh);
-    const beaufort = currentFix.beaufort_level ?? beaufortFromKmh(speed);
+    // No wind reading -> no force level ("Cấp 0" would wrongly read as calm).
+    const beaufort = currentFix.beaufort_level ?? (speed == null ? "—" : beaufortFromKmh(speed));
     // Movement must come from the track; never substitute a default.
     const bearing = currentFix.bearing_deg ?? null;
     const movementSpeed = currentFix.speed_kmh ?? null;
@@ -103,9 +104,7 @@ export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
             <div className="panel-head items-start">
                 <div className="min-w-0">
                     <div className="mb-1 flex flex-wrap items-center gap-2">
-                        <span className="section-label">
-                            {t.storm_overview}
-                        </span>
+                        {/* Section title already shown by the collapsible header. */}
                         <span className="badge border-line bg-surface-2 font-mono text-fg-faint">
                             {storm.id}
                         </span>

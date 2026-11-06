@@ -20,7 +20,7 @@ import { ProvinceImpactPanel } from "./components/ProvinceImpactPanel";
 import { AlertModal } from "./components/AlertModal";
 import { WeatherPanel } from "./components/WeatherPanel";
 import { DEMO_WEATHER_LOCATIONS, getDemoWeather } from "./services/demoWeather";
-import { weatherLocationForProvince } from "./data/vietnamLocations";
+import { impactsByUnit, weatherLocationForProvince } from "./data/vietnamLocations";
 import { OllamaAssistant } from "./components/OllamaAssistant";
 import {
     DashboardSkeleton,
@@ -176,7 +176,11 @@ export const App: React.FC = () => {
                 const res = await fetch("/data/vietnam_provinces.geojson");
                 const data = await res.json();
                 if (data.features) {
-                    setProvincesGeoJson(data.features);
+                    // GADM names are run together ("QuảngNinh"): space them once for display.
+                    setProvincesGeoJson(data.features.map((f: ProvinceGeoFeature) => ({
+                        ...f,
+                        properties: { ...f.properties, name: f.properties.name.replace(/(\p{Ll})(\p{Lu})/gu, "$1 $2") },
+                    })));
                 }
             } catch (err) {
                 console.warn("Could not load provinces:", err);
@@ -470,11 +474,12 @@ export const App: React.FC = () => {
     // Calculate real-time province impacts
     const provinceImpacts: ProvinceImpact[] = useMemo(() => {
         if (!currentFix || provincesGeoJson.length === 0) return [];
-        return calculateProvinceImpacts(
+        // Listed per current (2025) province, not per old map polygon.
+        return impactsByUnit(calculateProvinceImpacts(
             provincesGeoJson,
             currentFix,
             stormTrack?.forecast?.points || [],
-        );
+        ));
     }, [provincesGeoJson, currentFix, stormTrack]);
 
     const handleRefresh = useCallback(async () => {
@@ -523,7 +528,8 @@ export const App: React.FC = () => {
             setLoadError(false);
             setStorms(archive);
             setStormTrack(null);
-            setSelectedStormId(archive[0]?.id ?? "");
+            // Same rule as live mode: nothing is drawn until the user picks a storm.
+            setSelectedStormId("");
             setIsLive(false);
         } catch (err) {
             console.warn("Hindcast archive unavailable:", err);
@@ -592,7 +598,8 @@ export const App: React.FC = () => {
                         }
                         setSelectedStormId(id);
                         selectDetailTab("storm");
-                        setDetailsOpen(true);
+                        // Phones: show the track on the map first; the sheet would cover it.
+                        setDetailsOpen(window.innerWidth >= 768);
                     }}
                     lang={lang}
                 />

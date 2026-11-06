@@ -9,7 +9,7 @@ import {
     WeatherLocation,
 } from "../../types";
 import { Language, translations } from "../../i18n";
-import { VIETNAM_WEATHER_LOCATIONS, fold } from "../../data/vietnamLocations";
+import { VIETNAM_WEATHER_LOCATIONS, unitCentres } from "../../data/vietnamLocations";
 import { sweptCone } from "../../lib/cone";
 
 // Label-free basemaps: OSM/OpenTopoMap print neighbours in Thai/Chinese and name
@@ -127,7 +127,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
     const [controlsOpen, setControlsOpen] = useState(false);
     const [zoomLevel, setZoomLevel] = useState(6);
     const [islandsData, setIslandsData] = useState<any[]>([]);
-    // Province polygon centroids keyed by folded name, for label placement.
+    // Area centre of each current province (keyed by location id), for labels.
     const [provinceCentroids, setProvinceCentroids] = useState<Record<string, [number, number]>>({});
     const [mapReady, setMapReady] = useState(false);
     const [mapProvider, setMapProvider] = useState<"loading" | "windy" | "leaflet">(
@@ -222,9 +222,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                     if (cancelled || !mapInstanceRef.current) return;
                     provincesLayerRef.current?.clearLayers();
                     provincesLayerRef.current?.addData(geojson);
-                    setProvinceCentroids(Object.fromEntries(
-                        (geojson.features ?? []).map((f: any) => [fold(String(f.properties?.name ?? "")), f.properties?.centroid]),
-                    ));
+                    setProvinceCentroids(unitCentres((geojson.features ?? []).map((f: any) => f.properties)));
                     provincesLayerRef.current?.eachLayer((layer: any) => {
                         const props = layer.feature?.properties;
                         if (!props) return;
@@ -338,11 +336,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
             for (const place of VIETNAM_WEATHER_LOCATIONS) {
                 // Label at the province's area centre, not its capital: capitals
                 // such as Vinh sit on a border and read as the neighbour's name.
-                const centre = provinceCentroids[fold(place.name)];
-                // Near the capital the weather bubble would cover it: sit below the bubble.
-                const nearBubble = !centre || Math.hypot(centre[0] - place.latitude, centre[1] - place.longitude) < 0.35;
-                if (nearBubble) label(place.latitude, place.longitude, place.name, "province", -24);
-                else label(centre[0], centre[1], place.name, "province");
+                // Name sits at the centre of the province's whole (merged) area.
+                const [lat, lon] = provinceCentroids[place.id] ?? [place.latitude, place.longitude];
+                // If the weather bubble (at the capital) is on that spot, drop the name just below it.
+                const underBubble = Math.hypot(lat - place.latitude, lon - place.longitude) < 0.35;
+                label(lat, lon, place.name, "province", underBubble ? -24 : 10);
             }
         }
     }, [mapReady, lang, showProvinceNames, provinceCentroids]);
@@ -365,8 +363,13 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
         map.fitBounds(L.latLngBounds(points), {
             // Keep the storm clear of the header (top) and timeline (bottom).
             paddingTopLeft: [80, 180],
-            paddingBottomRight: [100, 170],
-            maxZoom: 7,
+            // Leave room for the detail panel on the right when it is open.
+            paddingBottomRight: [
+                (document.querySelector(".details-is-open .details-panel")?.getBoundingClientRect().width ?? 0) + 100,
+                170,
+            ],
+            // Wide enough to keep the coast in view as a landmark.
+            maxZoom: 6,
             animate: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps

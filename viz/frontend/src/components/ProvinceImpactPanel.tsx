@@ -51,7 +51,7 @@ export const ProvinceImpactPanel: React.FC<ProvinceImpactPanelProps> = ({
     );
 
     const selected =
-        impacts.find((impact) => impact.id === selectedProvinceId) ??
+        impacts.find((impact) => impact.id === selectedProvinceId || impact.member_ids?.includes(selectedProvinceId ?? "")) ??
         impacts[0];
     const filterLabels: Record<Filter, string> = {
         all: lang === "vi" ? "Tất cả" : "All",
@@ -65,7 +65,8 @@ export const ProvinceImpactPanel: React.FC<ProvinceImpactPanelProps> = ({
             className="panel overflow-hidden"
             aria-labelledby="province-risk-title"
         >
-            <div className="panel-head">
+            {/* The collapsible section above already shows this title; keep it for screen readers. */}
+            <div className="sr-only">
                 <div>
                     <div className="mb-1 flex items-center gap-2 text-primary">
                         <MapPin className="h-4 w-4" aria-hidden="true" />

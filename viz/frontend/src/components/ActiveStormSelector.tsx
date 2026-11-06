@@ -25,7 +25,13 @@ export const ActiveStormSelector: React.FC<ActiveStormSelectorProps> = ({
             className="storm-strip border-b border-line bg-surface/55 px-3 py-2 sm:px-4"
             aria-labelledby="tracked-storms-title"
         >
-            <div className="mx-auto flex max-w-[1920px] items-center gap-3 overflow-x-auto pb-0.5">
+            <div
+                className="mx-auto flex max-w-[1920px] items-center gap-3 overflow-x-auto pb-0.5"
+                // Mouse wheel scrolls the storm list sideways (vertical wheels can't otherwise).
+                onWheel={(event) => {
+                    if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) event.currentTarget.scrollLeft += event.deltaY;
+                }}
+            >
                 <div className="flex shrink-0 items-center gap-2 pr-1">
                     <Radar
                         className="h-4 w-4 text-primary"

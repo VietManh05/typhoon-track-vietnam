@@ -95,7 +95,7 @@ export const TimelinePlayer: React.FC<TimelinePlayerProps> = ({
                         className="section-label text-fg-muted"
                     >
                         <span className="hidden sm:inline">{t.timeline_title}</span>
-                        <span className="sm:hidden">{lang === "vi" ? "Quỹ đạo bão" : "Storm track"}</span>
+                        <span className="sm:hidden">{t.timeline_title}</span>
                     </h2>
                 </div>
                 <div className="flex items-center gap-2 text-2xs">

@@ -1,4 +1,4 @@
-import type { WeatherLocation } from "../types";
+import type { ProvinceImpact, WeatherLocation } from "../types";
 
 /** 34 provincial-level units effective from 1 July 2025. */
 const entries: Array<[string, string, number, number, ...string[]]> = [
@@ -70,4 +70,49 @@ export function weatherLocationForProvince(name: string, centroid: [number, numb
     (place.latitude - lat) ** 2 + (place.longitude - lon) ** 2 <
     (best.latitude - lat) ** 2 + (best.longitude - lon) ** 2 ? place : best,
   );
+}
+
+interface ProvinceShape {
+  name: string;
+  centroid: [number, number];
+  min_lat: number;
+  max_lat: number;
+  min_lon: number;
+  max_lon: number;
+}
+
+/**
+ * Area centre of each current (2025) unit, from the pre-2025 polygons merged
+ * into it: centroids weighted by each polygon's bounding-box area.
+ * shortcut: bbox area approximates polygon area; use true areas if labels drift.
+ */
+export function unitCentres(shapes: ProvinceShape[]): Record<string, [number, number]> {
+  const sums: Record<string, [number, number, number]> = {};
+  for (const shape of shapes) {
+    const unit = weatherLocationForProvince(shape.name, shape.centroid).id;
+    const weight = Math.max(1e-6, (shape.max_lat - shape.min_lat) * (shape.max_lon - shape.min_lon));
+    const sum = (sums[unit] ??= [0, 0, 0]);
+    sum[0] += shape.centroid[0] * weight;
+    sum[1] += shape.centroid[1] * weight;
+    sum[2] += weight;
+  }
+  return Object.fromEntries(
+    Object.entries(sums).map(([id, [lat, lon, w]]) => [id, [lat / w, lon / w] as [number, number]]),
+  );
+}
+
+/**
+ * Collapse per-polygon impacts (63 pre-2025 provinces) into the 34 current
+ * units: each unit keeps its member closest to the storm, named after the unit.
+ * Input is sorted by distance, so the first member seen is the closest.
+ */
+export function impactsByUnit(impacts: ProvinceImpact[]): ProvinceImpact[] {
+  const units = new Map<string, ProvinceImpact>();
+  for (const impact of impacts) {
+    const unit = weatherLocationForProvince(impact.name, impact.centroid);
+    const kept = units.get(unit.id);
+    if (kept) kept.member_ids!.push(impact.id);
+    else units.set(unit.id, { ...impact, name: unit.name, member_ids: [impact.id] });
+  }
+  return [...units.values()];
 }

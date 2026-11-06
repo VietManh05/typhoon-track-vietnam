@@ -134,6 +134,8 @@ export interface ProvinceImpact {
     within_cone: boolean;
     impact_level: "critical" | "high" | "moderate" | "low" | "none";
     wind_threat_level?: string;
+    /** Map polygon ids merged into this current (2025) province. */
+    member_ids?: string[];
 }
 
 export interface ProvinceGeoFeature {

@@ -20,6 +20,7 @@ import { ProvinceImpactPanel } from "./components/ProvinceImpactPanel";
 import { AlertModal } from "./components/AlertModal";
 import { WeatherPanel } from "./components/WeatherPanel";
 import { DEMO_WEATHER_LOCATIONS, getDemoWeather } from "./services/demoWeather";
+import { weatherLocationForProvince } from "./data/vietnamLocations";
 import { OllamaAssistant } from "./components/OllamaAssistant";
 import {
     DashboardSkeleton,
@@ -633,7 +634,11 @@ export const App: React.FC = () => {
                                 selectedProvinceId={selectedProvinceId}
                                 onSelectProvince={(id) => {
                                     setSelectedProvinceId(id);
-                                    selectDetailTab("storm");
+                                    // A province click shows that place's weather (old
+                                    // 63-province polygon -> current 34-unit location).
+                                    const province = provincesGeoJson.find((f) => f.properties.id === id)?.properties;
+                                    if (province) setWeatherLocationId(weatherLocationForProvince(province.name, province.centroid).id);
+                                    selectDetailTab("weather");
                                     setDetailsOpen(true);
                                 }}
                                 lang={lang}

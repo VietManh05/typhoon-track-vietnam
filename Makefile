@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: setup clean-data train serve test lint format hooks dvc-init mlflow-ui dashboard
+.PHONY: setup clean-data train serve test lint format hooks dvc-init mlflow-ui dashboard package
 
 setup:
 	$(PYTHON) -m pip install --upgrade pip
@@ -41,3 +41,6 @@ dashboard:
 	cd viz/frontend && npm ci && npx tsc --noEmit && npm test && npx vite build --outDir dist --emptyOutDir
 	$(PYTHON) -c "import shutil; shutil.rmtree('src/typhoon_vn/dashboard', ignore_errors=True); shutil.copytree('viz/frontend/dist', 'src/typhoon_vn/dashboard')"
 	$(PYTHON) scripts/check_dashboard_sync.py
+
+package:
+	$(PYTHON) scripts/package_submission.py --out dist/TyphoonVN_DoAn.zip

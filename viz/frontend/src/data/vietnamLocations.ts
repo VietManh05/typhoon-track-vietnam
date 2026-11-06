@@ -1,4 +1,4 @@
-import { WeatherLocation } from "../types";
+import type { WeatherLocation } from "../types";
 
 /** 34 provincial-level units effective from 1 July 2025. */
 const entries: Array<[string, string, number, number, ...string[]]> = [
@@ -50,3 +50,24 @@ export const VIETNAM_WEATHER_LOCATIONS: WeatherLocation[] = entries.map(
     aliases,
   }),
 );
+
+export const fold = (value: string) =>
+  value.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").replace(/[^a-z]/gi, "").toLowerCase();
+
+/**
+ * Weather location for a pre-2025 province polygon (63-province map layer):
+ * match its name against the 34 current units and their former names,
+ * else fall back to the nearest unit to the polygon centroid.
+ */
+export function weatherLocationForProvince(name: string, centroid: [number, number]): WeatherLocation {
+  const key = fold(name);
+  const named = VIETNAM_WEATHER_LOCATIONS.find((place) =>
+    [place.name, ...(place.aliases ?? [])].some((alias) => fold(alias) === key),
+  );
+  if (named) return named;
+  const [lat, lon] = centroid;
+  return VIETNAM_WEATHER_LOCATIONS.reduce((best, place) =>
+    (place.latitude - lat) ** 2 + (place.longitude - lon) ** 2 <
+    (best.latitude - lat) ** 2 + (best.longitude - lon) ** 2 ? place : best,
+  );
+}

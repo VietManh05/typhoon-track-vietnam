@@ -527,7 +527,8 @@ export const App: React.FC = () => {
             setLoadError(false);
             setStorms(archive);
             setStormTrack(null);
-            setSelectedStormId(archive[0]?.id ?? "");
+            // Same rule as live mode: nothing is drawn until the user picks a storm.
+            setSelectedStormId("");
             setIsLive(false);
         } catch (err) {
             console.warn("Hindcast archive unavailable:", err);

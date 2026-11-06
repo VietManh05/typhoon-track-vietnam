@@ -1,4 +1,4 @@
-import type { WeatherLocation } from "../types";
+import type { ProvinceImpact, WeatherLocation } from "../types";
 
 /** 34 provincial-level units effective from 1 July 2025. */
 const entries: Array<[string, string, number, number, ...string[]]> = [
@@ -99,4 +99,20 @@ export function unitCentres(shapes: ProvinceShape[]): Record<string, [number, nu
   return Object.fromEntries(
     Object.entries(sums).map(([id, [lat, lon, w]]) => [id, [lat / w, lon / w] as [number, number]]),
   );
+}
+
+/**
+ * Collapse per-polygon impacts (63 pre-2025 provinces) into the 34 current
+ * units: each unit keeps its member closest to the storm, named after the unit.
+ * Input is sorted by distance, so the first member seen is the closest.
+ */
+export function impactsByUnit(impacts: ProvinceImpact[]): ProvinceImpact[] {
+  const units = new Map<string, ProvinceImpact>();
+  for (const impact of impacts) {
+    const unit = weatherLocationForProvince(impact.name, impact.centroid);
+    const kept = units.get(unit.id);
+    if (kept) kept.member_ids!.push(impact.id);
+    else units.set(unit.id, { ...impact, name: unit.name, member_ids: [impact.id] });
+  }
+  return [...units.values()];
 }

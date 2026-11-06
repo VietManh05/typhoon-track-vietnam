@@ -20,7 +20,7 @@ import { ProvinceImpactPanel } from "./components/ProvinceImpactPanel";
 import { AlertModal } from "./components/AlertModal";
 import { WeatherPanel } from "./components/WeatherPanel";
 import { DEMO_WEATHER_LOCATIONS, getDemoWeather } from "./services/demoWeather";
-import { weatherLocationForProvince } from "./data/vietnamLocations";
+import { impactsByUnit, weatherLocationForProvince } from "./data/vietnamLocations";
 import { OllamaAssistant } from "./components/OllamaAssistant";
 import {
     DashboardSkeleton,
@@ -474,11 +474,12 @@ export const App: React.FC = () => {
     // Calculate real-time province impacts
     const provinceImpacts: ProvinceImpact[] = useMemo(() => {
         if (!currentFix || provincesGeoJson.length === 0) return [];
-        return calculateProvinceImpacts(
+        // Listed per current (2025) province, not per old map polygon.
+        return impactsByUnit(calculateProvinceImpacts(
             provincesGeoJson,
             currentFix,
             stormTrack?.forecast?.points || [],
-        );
+        ));
     }, [provincesGeoJson, currentFix, stormTrack]);
 
     const handleRefresh = useCallback(async () => {

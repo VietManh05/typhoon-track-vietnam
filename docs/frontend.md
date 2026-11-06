@@ -49,7 +49,7 @@ Hệ thống giao diện trực quan hóa, theo dõi quỹ đạo và đánh gi�
   - Nút lùi/tiến từng bước (Step backward / forward).
 
 ### 2.4. Phân Tích Rủi Ro 63 Tỉnh Thành (`src/components/ProvinceImpactPanel.tsx`)
-- Tìm kiếm nhanh 63 tỉnh/thành hoặc click trực tiếp trên bản đồ.
+- Danh sách rủi ro theo 34 tỉnh/thành hiện hành (mỗi tỉnh lấy vùng cũ gần tâm bão nhất); tìm kiếm hoặc bấm trực tiếp trên bản đồ (bấm tỉnh mở tab Thời tiết của tỉnh đó).
 - Tự động tính toán khoảng cách Geodesic Haversine từ tâm bão tới tỉnh (km).
 - Khoảng cách tiếp cận gần nhất trong dự báo và ETA (thời gian tiếp cận gần nhất).
 - Phân loại cấp độ ảnh hưởng: Rất nguy hiểm, Ảnh hưởng mạnh, Ảnh hưởng trung bình, Ảnh hưởng xa, Ngoài vùng nguy cấp.

@@ -51,7 +51,7 @@ export const ProvinceImpactPanel: React.FC<ProvinceImpactPanelProps> = ({
     );
 
     const selected =
-        impacts.find((impact) => impact.id === selectedProvinceId) ??
+        impacts.find((impact) => impact.id === selectedProvinceId || impact.member_ids?.includes(selectedProvinceId ?? "")) ??
         impacts[0];
     const filterLabels: Record<Filter, string> = {
         all: lang === "vi" ? "Tất cả" : "All",

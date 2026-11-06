@@ -71,3 +71,32 @@ export function weatherLocationForProvince(name: string, centroid: [number, numb
     (best.latitude - lat) ** 2 + (best.longitude - lon) ** 2 ? place : best,
   );
 }
+
+interface ProvinceShape {
+  name: string;
+  centroid: [number, number];
+  min_lat: number;
+  max_lat: number;
+  min_lon: number;
+  max_lon: number;
+}
+
+/**
+ * Area centre of each current (2025) unit, from the pre-2025 polygons merged
+ * into it: centroids weighted by each polygon's bounding-box area.
+ * shortcut: bbox area approximates polygon area; use true areas if labels drift.
+ */
+export function unitCentres(shapes: ProvinceShape[]): Record<string, [number, number]> {
+  const sums: Record<string, [number, number, number]> = {};
+  for (const shape of shapes) {
+    const unit = weatherLocationForProvince(shape.name, shape.centroid).id;
+    const weight = Math.max(1e-6, (shape.max_lat - shape.min_lat) * (shape.max_lon - shape.min_lon));
+    const sum = (sums[unit] ??= [0, 0, 0]);
+    sum[0] += shape.centroid[0] * weight;
+    sum[1] += shape.centroid[1] * weight;
+    sum[2] += weight;
+  }
+  return Object.fromEntries(
+    Object.entries(sums).map(([id, [lat, lon, w]]) => [id, [lat / w, lon / w] as [number, number]]),
+  );
+}

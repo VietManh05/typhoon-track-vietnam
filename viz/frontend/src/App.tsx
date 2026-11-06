@@ -176,7 +176,11 @@ export const App: React.FC = () => {
                 const res = await fetch("/data/vietnam_provinces.geojson");
                 const data = await res.json();
                 if (data.features) {
-                    setProvincesGeoJson(data.features);
+                    // GADM names are run together ("QuảngNinh"): space them once for display.
+                    setProvincesGeoJson(data.features.map((f: ProvinceGeoFeature) => ({
+                        ...f,
+                        properties: { ...f.properties, name: f.properties.name.replace(/(\p{Ll})(\p{Lu})/gu, "$1 $2") },
+                    })));
                 }
             } catch (err) {
                 console.warn("Could not load provinces:", err);
@@ -592,7 +596,8 @@ export const App: React.FC = () => {
                         }
                         setSelectedStormId(id);
                         selectDetailTab("storm");
-                        setDetailsOpen(true);
+                        // Phones: show the track on the map first; the sheet would cover it.
+                        setDetailsOpen(window.innerWidth >= 768);
                     }}
                     lang={lang}
                 />

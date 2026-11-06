@@ -271,7 +271,9 @@ html .immersive-map .disclaimer-strip {
 }
 html .immersive-map .map-top-chrome.map-top-chrome { border-radius: 16px; }
 html .immersive-map .map-column > .timeline-player { border-radius: 14px; }
-html .immersive-map .disclaimer-strip { width: max-content; margin-left: auto; border-radius: 10px 10px 0 0; padding: 4px 14px; }
+@media (min-width: 768px) {
+  html .immersive-map .disclaimer-strip { width: max-content; margin-left: auto; border-radius: 10px 10px 0 0; padding: 4px 14px; }
+}
 
 /* Map controls: one vertical column on the right edge (like Windy/Google Maps). */
 @media (min-width: 768px) {
@@ -303,3 +305,29 @@ html .immersive-map .disclaimer-strip { width: max-content; margin-left: auto; b
 /* No browser focus box around a clicked province polygon (mouse only);
    keyboard focus keeps its visible ring. */
 .leaflet-interactive:focus:not(:focus-visible) { outline: none; }
+
+/* ---------- Layout pass: one-row header, compact panel heading ---------- */
+@media (min-width: 1100px) {
+  /* Storm chooser moves into the empty centre of the header row, so the
+     header is one row (~64px) instead of two (~126px). */
+  .immersive-map .map-top-chrome { position: fixed; }
+  .immersive-map .map-top-chrome > .storm-strip {
+    position: absolute;
+    top: 8px;
+    /* Starts after the brand, stops before the clock and action buttons. */
+    left: 330px;
+    max-width: calc(100% - 330px - 540px);
+    border: 0;
+    padding: 0;
+  }
+}
+/* Panel heading: smaller card, the tabs below carry the meaning. */
+.immersive-map .workspace-heading { padding: 8px 12px; }
+.immersive-map .workspace-heading h2 { font-size: 18px; }
+/* With the detail panel open, the timeline only uses the map area to its left. */
+@media (min-width: 768px) {
+  .immersive-map.details-is-open .map-column > .timeline-player {
+    width: min(880px, calc(100vw - var(--detail-width) - 64px));
+    max-width: min(880px, calc(100vw - var(--detail-width) - 64px));
+  }
+}

@@ -54,7 +54,7 @@ python -m pip install -e ".[api,train]"        # Python 3.11
 $env:MODEL_ARTIFACT="artifacts/model-bundle"   # trong gói nộp
 $env:ANALOG_ARTIFACT="artifacts/analog-wp.npz"
 python -m uvicorn typhoon_vn.api.app:app       # mở http://127.0.0.1:8000
-python -m pytest -q                            # 175 test
+python -m pytest -q                            # 176 test
 ```
 
 Docker: `docker build -f infra/docker/Dockerfile -t typhoon-vn .` rồi mount hai

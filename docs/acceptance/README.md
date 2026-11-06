@@ -12,9 +12,9 @@ còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt"
 
 | Lệnh | Kết quả |
 |---|---|
-| `python -m pytest -q` | 175 passed, 4 skipped (spec chưa có implementation, có lý do) |
+| `python -m pytest -q` | 176 passed, 4 skipped (3 spec chưa có implementation + 1 test chỉ chạy khi có PostGIS; đều có lý do) |
 | `flake8` / `isort --check` / `black --check` trên `src tests scripts` | sạch |
-| `cd viz/frontend && npx tsc --noEmit && npm test` | TypeScript sạch; 29/29 test Node |
+| `cd viz/frontend && npx tsc --noEmit && npm test` | TypeScript sạch; 33/33 test Node |
 | `python scripts/check_dashboard_sync.py` (sau `vite build --outDir dist`) | dashboard khớp bản build (44 file) |
 
 ## Bảng nghiệm thu
@@ -41,7 +41,7 @@ còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt"
 | A29-018 | Actual + forecast track | **Đạt** | Quỹ đạo quan trắc, dự báo, quỹ đạo thực tế sau dự báo (tím) và gợi ý k-NN (hồng) |
 | A29-019 | Vùng ảnh hưởng | **Đạt** | Tỉnh nằm trong nón bất định + khoảng cách gần nhất tới trọng tâm 63 tỉnh theo từng mốc dự báo (dashboard, `calculateProvinceImpacts`); `/typhoons/{id}/impact` cho một vị trí. Phạm vi: hình học (không mô hình gió/mưa/lũ), giao diện ghi rõ |
 | A29-020 | Cảnh báo nếu triển khai | **Đạt** | Đăng ký vị trí/bán kính/thời hạn → bản nháp cảnh báo idempotent có cooldown; kênh gửi webhook ký HMAC-SHA256, thử lại tối đa 5 lần, không gửi trùng, chỉ HTTPS (`operations/delivery.py`, `tests/test_alert_delivery.py` với máy nhận cục bộ). **Tắt mặc định** (`ALERT_DELIVERY_ENABLED`) — bật khi có phê duyệt nghiệp vụ |
-| A29-021 | Unit/integration/model tests | **Đạt** | 175 test Python (unit, API, migration SQLite/PostGIS, model, pipeline) + 29 test Node (Functions, frontend) |
+| A29-021 | Unit/integration/model tests | **Đạt** | 176 test Python (unit, API, migration SQLite/PostGIS, model, pipeline) + 33 test Node (Functions, frontend) |
 | A29-022 | Docker | **Đạt** | Build lại sau sửa bảo mật (`cc5c19c`, `1fee1c9`): exit 0, torch 2.15.0+cpu chỉ từ index PyTorch; container `healthy`, user `app` (không root), production bắt buộc API key; chạy cùng PostGIS: nhận quan trắc, dự báo bằng model đã train + 5 bão tương tự; `.dockerignore` loại `.env*`, `runs/`, `*.db`, `*.pt`, `*.npz`, dữ liệu thô; artefact mount read-only |
 | A29-023 | CI/CD cơ bản | **Đạt một phần** | Workflow lint/test/PostGIS/frontend/đồng bộ dashboard; **chưa chạy được** vì tài khoản GitHub bị khoá do billing; deploy Pages thủ công bằng `wrangler` |
 | A29-024 | Logging/monitoring cơ bản | **Đạt** | Log mỗi request (request id, path, status, ms) + header `X-Request-ID`; `/metrics` định dạng Prometheus (histogram độ trễ, số dự báo, lỗi); **giám sát chất lượng mô hình thực tế**: dự báo đã phát được đối chiếu quan trắc đến sau (`operations/monitoring.py`, `typhoon-vn monitor`, exit 2 khi suy giảm). Chạy trên 20 hindcast: độ phủ nón 80/85/95/95/90% tại 6–72 h, sai số 72 h 408 km → `ok` |

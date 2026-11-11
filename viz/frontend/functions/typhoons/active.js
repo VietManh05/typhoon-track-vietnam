@@ -1,13 +1,9 @@
-import { activeItem, attribution, storm, targets } from "../_lib/jma.js";
+import { activeItem, activeStorms, attribution } from "../_lib/jma.js";
 import { approvedActiveFeed } from "../_lib/backend.js";
 
 export async function onRequestGet({ env, request }) {
-    const jma = (async () => {
-        const list = await targets();
-        return Promise.all(list.map(async (item) =>
-            activeItem(await storm(item.tropicalCyclone)),
-        ));
-    })().then((typhoons) => ({ typhoons }), () => null);
+    const jma = activeStorms()
+        .then((storms) => ({ typhoons: storms.map(activeItem) }), () => null);
     const approved = await approvedActiveFeed(
         env, request.url, request.headers.get("CF-Connecting-IP"),
     );

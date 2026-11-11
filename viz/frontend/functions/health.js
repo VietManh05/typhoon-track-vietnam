@@ -1,13 +1,10 @@
-import { targets, storm } from "./_lib/jma.js";
+import { activeStorms } from "./_lib/jma.js";
 import { activeAlertDelivery, approvedActiveFeed } from "./_lib/backend.js";
 
 export async function onRequestGet({ env, request }) {
     const [backendResult, feedResult, alertResult] = await Promise.allSettled([
         approvedActiveFeed(env, request.url),
-        (async () => {
-            const items = await targets();
-            await Promise.all(items.map((item) => storm(item.tropicalCyclone)));
-        })(),
+        activeStorms(),
         activeAlertDelivery(env, request.url),
     ]);
     const backend = backendResult.status === "fulfilled" ? backendResult.value : null;

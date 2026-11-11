@@ -48,6 +48,7 @@ import {
     fetchLocalWeather,
     fetchCurrentWeather,
     fetchWeatherLocations,
+    loadProvincesGeoJson,
     fetchHindcastIndex,
     fetchHindcastTrack,
     bearingDeg,
@@ -65,13 +66,21 @@ const WindPressureChart = lazy(() =>
     })),
 );
 
+// Storage can throw (blocked cookies, some in-app webviews); preferences are optional.
+const readPref = (key: string): string | null => {
+    try { return localStorage.getItem(key); } catch { return null; }
+};
+const writePref = (key: string, value: string) => {
+    try { localStorage.setItem(key, value); } catch { /* preference not persisted */ }
+};
+
 export const App: React.FC = () => {
     const [lang, setLang] = useState<Language>(() =>
-        localStorage.getItem("typhoon-language") === "en" ? "en" : "vi",
+        readPref("typhoon-language") === "en" ? "en" : "vi",
     );
     const [isDark, setIsDark] = useState<boolean>(
         // Bright daylight theme by default (easiest to read for everyone); dark is opt-in.
-        () => localStorage.getItem("typhoon-theme") === "dark",
+        () => readPref("typhoon-theme") === "dark",
     );
     const [isLive, setIsLive] = useState<boolean>(false);
     const [isAlertModalOpen, setIsAlertModalOpen] = useState<boolean>(false);
@@ -100,6 +109,8 @@ export const App: React.FC = () => {
         null,
     );
     const [currentFixIndex, setCurrentFixIndex] = useState<number>(0);
+    const stormTrackRef = useRef(stormTrack);
+    stormTrackRef.current = stormTrack;
 
     // Geographic provinces data
     const [provincesGeoJson, setProvincesGeoJson] = useState<
@@ -143,13 +154,9 @@ export const App: React.FC = () => {
             setLoadError(false);
 
             try {
-                // Check backend health
-                const { online } = await checkBackendHealth();
-                setIsLive(online);
-
-                // Load active storms
-                const { typhoons, isLive: liveStatus, feedAvailable } =
-                    await fetchActiveTyphoons();
+                // Health and the storm list are independent; fetch them together.
+                const [{ online }, { typhoons, isLive: liveStatus, feedAvailable }] =
+                    await Promise.all([checkBackendHealth(), fetchActiveTyphoons()]);
                 setStorms(typhoons);
                 setStormFeedAvailable(feedAvailable);
                 setIsDemoMode(false);
@@ -173,8 +180,7 @@ export const App: React.FC = () => {
 
             // Load provinces GeoJSON for impact calculation
             try {
-                const res = await fetch("/data/vietnam_provinces.geojson");
-                const data = await res.json();
+                const data = await loadProvincesGeoJson();
                 if (data.features) {
                     // GADM names are run together ("QuảngNinh"): space them once for display.
                     setProvincesGeoJson(data.features.map((f: ProvinceGeoFeature) => ({
@@ -351,8 +357,10 @@ export const App: React.FC = () => {
             if (cancelled || running || document.visibilityState === "hidden") return;
             running = true;
             try {
-                const { online } = await checkBackendHealth();
-                const active = await fetchActiveTyphoons();
+                const [{ online }, active] = await Promise.all([
+                    checkBackendHealth(),
+                    fetchActiveTyphoons(),
+                ]);
                 if (cancelled) return;
                 setStorms(active.typhoons);
                 setStormFeedAvailable(active.feedAvailable);
@@ -367,18 +375,24 @@ export const App: React.FC = () => {
                 } else if (nextId) {
                     const track = await fetchStormTrack(nextId);
                     if (!cancelled) {
+                        // Follow the newest fix only if the user was already on it;
+                        // otherwise keep their scrubbed position (clamped to the new range).
+                        const previousLatest = Math.max(0, (stormTrackRef.current?.observations.length ?? 0) - 1);
+                        const lastIndex = Math.max(0, track.observations.length + (track.forecast?.points.length ?? 0) - 1);
                         setStormTrack(track);
-                        setCurrentFixIndex(Math.max(0, track.observations.length - 1));
+                        setCurrentFixIndex((index) =>
+                            index === previousLatest
+                                ? Math.max(0, track.observations.length - 1)
+                                : Math.min(index, lastIndex),
+                        );
                     }
                 } else {
                     setStormTrack(null);
                 }
             } catch {
+                // A transient failure keeps the last good data on screen and shows the retry banner.
                 if (!cancelled) {
                     setIsLive(false);
-                    setStormFeedAvailable(false);
-                    setStorms([]);
-                    setStormTrack(null);
                     setLoadError(true);
                 }
             } finally {
@@ -398,14 +412,14 @@ export const App: React.FC = () => {
     }, [isDemoMode, isInitialLoading, selectedStormId]);
 
     useEffect(() => {
-        localStorage.setItem("typhoon-language", lang);
+        writePref("typhoon-language", lang);
         document.documentElement.lang = lang;
     }, [lang]);
 
     // 3. Sync Theme Class with <html> tag
     useEffect(() => {
         const root = document.documentElement;
-        localStorage.setItem("typhoon-theme", isDark ? "dark" : "light");
+        writePref("typhoon-theme", isDark ? "dark" : "light");
         if (isDark) {
             root.classList.add("dark");
             root.classList.remove("light");
@@ -486,9 +500,10 @@ export const App: React.FC = () => {
         setLoadError(false);
         setIsDemoMode(false);
         try {
-            const { online } = await checkBackendHealth();
-            setIsLive(online);
-            const active = await fetchActiveTyphoons();
+            const [{ online }, active] = await Promise.all([
+                checkBackendHealth(),
+                fetchActiveTyphoons(),
+            ]);
             setStorms(active.typhoons);
             setStormFeedAvailable(active.feedAvailable);
             setIsLive(online && active.isLive && active.feedAvailable);

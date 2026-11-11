@@ -15,6 +15,17 @@ let credential: { kind: "key" | "bearer"; value: string } | null = null;
 
 export function clearCredentials(): void { credential = null; }
 
+// One shared request: the map layer and the impact panel both need this large file.
+let provincesRequest: Promise<{ type: string; features: ProvinceGeoFeature[] }> | null = null;
+export function loadProvincesGeoJson() {
+    provincesRequest ??= fetch("/data/vietnam_provinces.geojson").then((response) => {
+        if (!response.ok) throw new Error(`Provinces GeoJSON HTTP ${response.status}`);
+        return response.json();
+    });
+    provincesRequest.catch(() => { provincesRequest = null; }); // allow a retry after failure
+    return provincesRequest;
+}
+
 export function authHeaders(): Record<string, string> {
     if (!credential) return {};
     return credential.kind === "key"

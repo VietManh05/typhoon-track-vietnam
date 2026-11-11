@@ -3,6 +3,9 @@ import type L from "leaflet";
 const LEAFLET_SCRIPT_ID = "windy-leaflet-runtime";
 const WINDY_SCRIPT_ID = "windy-map-forecast-runtime";
 const LEAFLET_URL = "https://unpkg.com/leaflet@1.4.0/dist/leaflet.js";
+// Pinned version, so the CDN copy must match this hash. Windy's own boot script
+// is unversioned and cannot be pinned this way.
+const LEAFLET_SRI = "sha384-jV/9OyZzm1ZMHG4pfYVMmnnCtVUlZdWgZ8mNSX3CPFM4HSK2KUSP8xzLljzMDkWd";
 const WINDY_URL = "https://api.windy.com/assets/map-forecast/libBoot.js";
 
 export type WindyOverlay = "wind" | "temp" | "pressure";
@@ -51,7 +54,7 @@ declare global {
 
 const scriptLoads = new Map<string, Promise<void>>();
 
-function loadScript(id: string, src: string): Promise<void> {
+function loadScript(id: string, src: string, integrity?: string): Promise<void> {
     const activeLoad = scriptLoads.get(id);
     if (activeLoad) return activeLoad;
 
@@ -78,6 +81,7 @@ function loadScript(id: string, src: string): Promise<void> {
             script.src = src;
             script.async = true;
             script.crossOrigin = "anonymous";
+            if (integrity) script.integrity = integrity;
             document.head.appendChild(script);
         }
     });
@@ -87,7 +91,7 @@ function loadScript(id: string, src: string): Promise<void> {
 }
 
 async function loadWindyRuntime(): Promise<typeof import("leaflet")> {
-    if (!window.L) await loadScript(LEAFLET_SCRIPT_ID, LEAFLET_URL);
+    if (!window.L) await loadScript(LEAFLET_SCRIPT_ID, LEAFLET_URL, LEAFLET_SRI);
     if (!window.L) throw new Error("Windy Leaflet runtime did not initialize");
 
     if (!window.windyInit) await loadScript(WINDY_SCRIPT_ID, WINDY_URL);

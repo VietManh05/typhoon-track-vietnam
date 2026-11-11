@@ -44,12 +44,18 @@ function sourceUrl(id) {
 export async function targets() {
     const items = await readJson("targetTc.json");
     if (!Array.isArray(items) || items.length > 20) throw new Error("JMA active list is invalid");
-    for (const item of items) {
-        if (!STORM_ID.test(item?.tropicalCyclone) || !fresh(item.issue)) {
-            throw new Error("JMA active list is invalid or stale");
-        }
-    }
-    return items;
+    // Drop individual stale/invalid entries so one bad bulletin can't hide every storm.
+    return items.filter((item) => STORM_ID.test(item?.tropicalCyclone) && fresh(item.issue));
+}
+
+// Loads every active storm, skipping ones whose bulletin fails validation.
+// Throws only when storms exist but none could be loaded.
+export async function activeStorms() {
+    const list = await targets();
+    const results = await Promise.allSettled(list.map((item) => storm(item.tropicalCyclone)));
+    const loaded = results.filter((r) => r.status === "fulfilled").map((r) => r.value);
+    if (list.length > 0 && loaded.length === 0) throw new Error("JMA storm bulletins are invalid or stale");
+    return loaded;
 }
 
 export async function storm(id) {

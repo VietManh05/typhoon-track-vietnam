@@ -125,7 +125,7 @@ test("AI route rejects a body larger than the byte limit without Content-Length"
     const response = await chat({
         request: new Request("https://example.test/api/ai/chat", {
             method: "POST",
-            headers: { "CF-Connecting-IP": "192.0.2.10" },
+            headers: { Origin: "https://example.test", "CF-Connecting-IP": "192.0.2.10" },
             body: JSON.stringify({ question: "x".repeat(21000) }),
         }),
         env: { OLLAMA_API_KEY: "secret" },
@@ -202,4 +202,50 @@ test("weather catalogue exposes all 34 current provinces and searches former nam
     });
     const aliasMatches = (await aliasResponse.json()).locations;
     assert.equal(aliasMatches[0].id, "ho-chi-minh");
+});
+
+test("AI route rejects scripted calls without an Origin header", async () => {
+    const response = await chat({
+        request: new Request("https://example.test/api/ai/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: "test" }),
+        }),
+        env: { OLLAMA_API_KEY: "secret" },
+    });
+    assert.equal(response.status, 403);
+});
+
+test("AI route uses the shared rate-limit binding when configured", async () => {
+    const response = await chat({
+        request: new Request("https://example.test/api/ai/chat", {
+            method: "POST",
+            headers: { Origin: "https://example.test", "CF-Connecting-IP": "192.0.2.13" },
+            body: JSON.stringify({ question: "test" }),
+        }),
+        env: { OLLAMA_API_KEY: "secret", AI_RATE_LIMITER: { limit: async () => ({ success: false }) } },
+    });
+    assert.equal(response.status, 429);
+});
+
+test("one invalid JMA bulletin does not hide the other active storms", async () => {
+    const { activeStorms } = await import("../functions/_lib/jma.js");
+    const now = new Date().toISOString();
+    globalThis.fetch = async (url) => {
+        const path = String(url);
+        if (path.endsWith("targetTc.json")) {
+            return Response.json([
+                { tropicalCyclone: "TC2601", issue: now },
+                { tropicalCyclone: "TC2602", issue: now },
+                { tropicalCyclone: "TC2603", issue: "2000-01-01T00:00:00Z" },
+            ]);
+        }
+        if (path.includes("TC2602")) return Response.json([{ issue: { UTC: now } }]);
+        return Response.json([
+            { issue: { UTC: now }, name: { en: "GOOD" } },
+            { advancedHours: 0, validtime: { UTC: now }, position: { deg: [15, 115] }, category: { en: "TS" } },
+        ]);
+    };
+    const storms = await activeStorms();
+    assert.deepEqual(storms.map((item) => item.id), ["TC2601"]);
 });

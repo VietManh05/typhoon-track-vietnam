@@ -12,9 +12,19 @@ const json = (body, status = 200, headers = {}) =>
         headers: { "Cache-Control": "no-store", ...headers },
     });
 
-const isRateLimited = (request) => {
-    const now = Date.now();
+// Prefer the Cloudflare rate-limit binding (shared across isolates). The
+// in-memory map is only a per-isolate fallback when the binding is absent.
+const isRateLimited = async (request, env) => {
     const key = request.headers.get("CF-Connecting-IP") || "unknown";
+    if (env?.AI_RATE_LIMITER?.limit) {
+        try {
+            const { success } = await env.AI_RATE_LIMITER.limit({ key });
+            return !success;
+        } catch {
+            // Fall through to the local limiter if the binding errors.
+        }
+    }
+    const now = Date.now();
     let bucket = rateLimitBuckets.get(key);
     if (!bucket || now - bucket.startedAt >= RATE_LIMIT_WINDOW_MS) {
         bucket = { startedAt: now, count: 0 };
@@ -51,7 +61,8 @@ const cleanHistory = (history) => {
 
 export async function onRequestPost({ request, env }) {
     const requestOrigin = request.headers.get("Origin");
-    if (requestOrigin && requestOrigin !== new URL(request.url).origin) {
+    // Browsers always send Origin on POST; a missing one means a scripted client.
+    if (requestOrigin !== new URL(request.url).origin) {
         return json({ error: { code: "FORBIDDEN", message: "Origin not allowed" } }, 403);
     }
 
@@ -68,7 +79,7 @@ export async function onRequestPost({ request, env }) {
         );
     }
 
-    if (isRateLimited(request)) {
+    if (await isRateLimited(request, env)) {
         return json(
             {
                 error: {

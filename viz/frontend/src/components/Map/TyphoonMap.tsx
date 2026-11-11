@@ -46,8 +46,16 @@ import {
     WindyApi,
     WindyOverlay,
 } from "../../services/windyMap";
+import { loadProvincesGeoJson } from "../../services/api";
+import { formatDateTime } from "../../lib/format";
 
 const WINDY_API_KEY = import.meta.env.VITE_WINDY_MAP_API_KEY?.trim() ?? "";
+
+// Leaflet popups are raw HTML; feed-supplied text must be escaped first.
+const escapeHtml = (value: unknown) =>
+    String(value ?? "").replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+// Bulletins are for Vietnam: always show Vietnam time, labelled, in the UI language.
+const popupTime = (iso: string, lang: Language) => `${formatDateTime(iso, lang)} (GMT+7)`;
 const LEAFLET_STYLESHEET_ID = "leaflet-fallback-stylesheet";
 
 function ensureLeafletStylesheet() {
@@ -216,12 +224,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
             setMapProvider(provider);
             setMapReady(true);
 
-            fetch("/data/vietnam_provinces.geojson")
-                .then((response) => response.json())
+            loadProvincesGeoJson()
                 .then((geojson) => {
                     if (cancelled || !mapInstanceRef.current) return;
                     provincesLayerRef.current?.clearLayers();
-                    provincesLayerRef.current?.addData(geojson);
+                    provincesLayerRef.current?.addData(geojson as GeoJSON.GeoJsonObject);
                     setProvinceCentroids(unitCentres((geojson.features ?? []).map((f: any) => f.properties)));
                     provincesLayerRef.current?.eachLayer((layer: any) => {
                         const props = layer.feature?.properties;
@@ -410,7 +417,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                     keyboard: true,
                 },
             ).addTo(layer);
-            marker.bindTooltip(label, {
+            marker.bindTooltip(escapeHtml(label), {
                 direction: "top",
                 offset: [0, -18],
                 className: "tvn-tooltip weather-tooltip",
@@ -576,11 +583,11 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
             marker.bindPopup(`
         <div class="text-xs font-mono p-1">
           <div class="font-bold text-emerald-400 font-display text-sm">${t.legend_actual}</div>
-          <div><strong>${t.popup_time}:</strong> ${new Date(obs.timestamp).toLocaleString()}</div>
+          <div><strong>${t.popup_time}:</strong> ${popupTime(obs.timestamp, lang)}</div>
           <div><strong>${t.popup_coords}:</strong> ${obs.lat}°${lang === "vi" ? "B" : "N"}, ${obs.lon}°${lang === "vi" ? "Đ" : "E"}</div>
-          <div><strong>${t.popup_pressure}:</strong> ${obs.pressure_hpa || "N/A"} hPa</div>
+          <div><strong>${t.popup_pressure}:</strong> ${escapeHtml(obs.pressure_hpa || "N/A")} hPa</div>
           <div><strong>${t.popup_wind}:</strong> ${obs.wind_kmh || (obs.wind_ms ? Math.round(obs.wind_ms * 3.6) : "N/A")} km/h</div>
-          <div><strong>${t.popup_category}:</strong> ${obs.intensity}</div>
+          <div><strong>${t.popup_category}:</strong> ${escapeHtml(obs.intensity)}</div>
         </div>
       `);
 
@@ -618,10 +625,10 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                 pMarker.bindPopup(`
           <div class="text-xs font-mono p-1">
             <div class="font-bold text-amber-400 font-display text-sm">${t.popup_forecast_prefix} +${p.horizon_hours} ${t.eta_hours_suffix}</div>
-            <div><strong>${t.popup_valid_time}:</strong> ${new Date(p.valid_time).toLocaleString()}</div>
+            <div><strong>${t.popup_valid_time}:</strong> ${popupTime(p.valid_time, lang)}</div>
             <div><strong>${t.popup_coords}:</strong> ${p.lat}°${lang === "vi" ? "B" : "N"}, ${p.lon}°${lang === "vi" ? "Đ" : "E"}</div>
             <div><strong>${t.popup_wind}:</strong> ${p.wind_ms ? Math.round(p.wind_ms * 3.6) : "N/A"} km/h</div>
-            <div><strong>${t.popup_cone_radius}:</strong> ±${p.radius_km} km</div>
+            <div><strong>${t.popup_cone_radius}:</strong> ±${escapeHtml(p.radius_km)} km</div>
           </div>
         `);
                 pMarker.addTo(trackGroup);
@@ -681,9 +688,9 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
                 marker.bindPopup(`
           <div class="text-xs font-mono p-1">
             <div class="font-bold text-violet-400 font-display text-sm">${lang === "vi" ? "Thực tế kiểm chứng" : "Verified actual track"} +${point.horizon_hours} ${t.eta_hours_suffix}</div>
-            <div><strong>${t.popup_valid_time}:</strong> ${new Date(point.valid_time).toLocaleString()}</div>
+            <div><strong>${t.popup_valid_time}:</strong> ${popupTime(point.valid_time, lang)}</div>
             <div><strong>${t.popup_coords}:</strong> ${point.lat}°${lang === "vi" ? "B" : "N"}, ${point.lon}°${lang === "vi" ? "Đ" : "E"}</div>
-            <div><strong>${lang === "vi" ? "Nguồn" : "Source"}:</strong> ${point.source}</div>
+            <div><strong>${lang === "vi" ? "Nguồn" : "Source"}:</strong> ${escapeHtml(point.source)}</div>
           </div>
         `);
                 marker.addTo(compareGroup);
@@ -714,7 +721,7 @@ export const TyphoonMap: React.FC<TyphoonMapProps> = ({
           <div class="text-xs font-mono p-1">
             <div class="font-bold text-pink-400 font-display text-sm">${t.suggestion_title} +${p.horizon_hours} ${t.eta_hours_suffix}</div>
             <div><strong>${t.popup_coords}:</strong> ${p.lat.toFixed(1)}°${lang === "vi" ? "B" : "N"}, ${p.lon.toFixed(1)}°${lang === "vi" ? "Đ" : "E"}</div>
-            <div><strong>${lang === "vi" ? "Bão tương tự" : "Similar storms"}:</strong> ${analogNames}</div>
+            <div><strong>${lang === "vi" ? "Bão tương tự" : "Similar storms"}:</strong> ${escapeHtml(analogNames)}</div>
           </div>
         `)
                     .addTo(compareGroup);

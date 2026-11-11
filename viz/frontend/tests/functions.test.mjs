@@ -270,3 +270,12 @@ test("login proxy rate-limits each client separately", async () => {
     assert.notEqual((await attempt("203.0.113.8")).status, 429);
     assert.equal(backendCalls, callsBefore + 1);
 });
+
+test("rate-limit key groups an IPv6 /64 and keeps IPv4 whole", async () => {
+    const { clientKey } = await import("../functions/_lib/rateLimit.js");
+    assert.equal(clientKey("2001:db8:1:2:aaaa::1"), clientKey("2001:0DB8:0001:0002::ffff"));
+    assert.notEqual(clientKey("2001:db8:1:2::1"), clientKey("2001:db8:1:3::1"));
+    assert.equal(clientKey("2001:db8::1"), "2001:db8:0:0::/64");
+    assert.equal(clientKey("203.0.113.7"), "203.0.113.7");
+    assert.equal(clientKey("::ffff:203.0.113.7"), "::ffff:203.0.113.7");
+});

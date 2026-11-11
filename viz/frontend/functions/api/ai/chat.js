@@ -162,17 +162,20 @@ export async function onRequestPost({ request, env }) {
         });
 
         if (!upstream.ok) {
+            const status = upstream.status;
+            const model = env.OLLAMA_MODEL || DEFAULT_MODEL;
+            // Visible via `wrangler pages deployment tail`; the body never contains our key.
+            console.error("Ollama upstream error", status, (await upstream.text().catch(() => "")).slice(0, 300));
+            const message =
+                status === 401 ? "Ollama API key không hợp lệ hoặc đã bị thu hồi."
+                : status === 403 ? `API key không có quyền dùng model ${model}.`
+                : status === 404 ? `Model ${model} không có trên Ollama Cloud.`
+                : status === 429 ? "Đã hết hạn mức (quota) Ollama Cloud. Vui lòng thử lại sau."
+                : "Ollama Cloud tạm thời không khả dụng.";
+            const configProblem = [401, 403, 404].includes(status);
             return json(
-                {
-                    error: {
-                        code: "OLLAMA_UPSTREAM_ERROR",
-                        message:
-                            upstream.status === 401
-                                ? "Ollama API key không hợp lệ."
-                                : "Ollama Cloud tạm thời không khả dụng.",
-                    },
-                },
-                upstream.status === 401 ? 502 : 503,
+                { error: { code: "OLLAMA_UPSTREAM_ERROR", message, upstreamStatus: status } },
+                configProblem ? 502 : 503,
             );
         }
 

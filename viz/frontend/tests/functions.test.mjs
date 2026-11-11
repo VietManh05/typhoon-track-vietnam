@@ -249,3 +249,19 @@ test("one invalid JMA bulletin does not hide the other active storms", async () 
     const storms = await activeStorms();
     assert.deepEqual(storms.map((item) => item.id), ["TC2601"]);
 });
+
+test("AI route reports the Ollama upstream status and a specific reason", async () => {
+    globalThis.fetch = async () => new Response("quota exceeded", { status: 429 });
+    const response = await chat({
+        request: new Request("https://example.test/api/ai/chat", {
+            method: "POST",
+            headers: { Origin: "https://example.test", "CF-Connecting-IP": "192.0.2.14" },
+            body: JSON.stringify({ question: "test" }),
+        }),
+        env: { OLLAMA_API_KEY: "secret" },
+    });
+    const payload = await response.json();
+    assert.equal(response.status, 503);
+    assert.equal(payload.error.upstreamStatus, 429);
+    assert.match(payload.error.message, /quota/);
+});

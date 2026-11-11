@@ -249,3 +249,24 @@ test("one invalid JMA bulletin does not hide the other active storms", async () 
     const storms = await activeStorms();
     assert.deepEqual(storms.map((item) => item.id), ["TC2601"]);
 });
+
+test("login proxy rate-limits each client separately", async () => {
+    let backendCalls = 0;
+    globalThis.fetch = async () => {
+        backendCalls += 1;
+        return Response.json({ detail: "no" }, { status: 401 });
+    };
+    const attempt = (ip) => token({
+        env: { TYPHOON_BACKEND_URL: "https://backend.example.test" },
+        request: new Request("https://example.test/token", {
+            method: "POST", body: "{}", headers: { "CF-Connecting-IP": ip },
+        }),
+    });
+    const statuses = [];
+    for (let i = 0; i < 11; i += 1) statuses.push((await attempt("203.0.113.7")).status);
+    assert.equal(statuses[10], 429);
+    assert.ok(statuses.slice(0, 10).every((status) => status !== 429));
+    const callsBefore = backendCalls;
+    assert.notEqual((await attempt("203.0.113.8")).status, 429);
+    assert.equal(backendCalls, callsBefore + 1);
+});

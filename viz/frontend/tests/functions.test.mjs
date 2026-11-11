@@ -265,3 +265,18 @@ test("AI route reports the Ollama upstream status and a specific reason", async 
     assert.equal(payload.error.upstreamStatus, 429);
     assert.match(payload.error.message, /quota/);
 });
+
+test("AI route explains an Ollama billing (402) failure", async () => {
+    globalThis.fetch = async () => new Response("payment required", { status: 402 });
+    const response = await chat({
+        request: new Request("https://example.test/api/ai/chat", {
+            method: "POST",
+            headers: { Origin: "https://example.test", "CF-Connecting-IP": "192.0.2.15" },
+            body: JSON.stringify({ question: "test" }),
+        }),
+        env: { OLLAMA_API_KEY: "secret" },
+    });
+    const payload = await response.json();
+    assert.equal(payload.error.upstreamStatus, 402);
+    assert.match(payload.error.message, /thanh toán/);
+});

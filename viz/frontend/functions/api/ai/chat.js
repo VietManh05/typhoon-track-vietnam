@@ -170,6 +170,7 @@ export async function onRequestPost({ request, env }) {
                 status === 401 ? "Ollama API key không hợp lệ hoặc đã bị thu hồi."
                 : status === 403 ? `API key không có quyền dùng model ${model}.`
                 : status === 404 ? `Model ${model} không có trên Ollama Cloud.`
+                : status === 402 ? "Tài khoản Ollama Cloud đã hết hạn mức hoặc cần thanh toán. Trợ lý AI tạm ngưng."
                 : status === 429 ? "Đã hết hạn mức (quota) Ollama Cloud. Vui lòng thử lại sau."
                 : "Ollama Cloud tạm thời không khả dụng.";
             const configProblem = [401, 403, 404].includes(status);

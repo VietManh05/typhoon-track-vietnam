@@ -4,10 +4,22 @@ const WINDOW_MS = 60000;
 // address, so its own per-IP limit cannot tell callers apart.
 // shortcut: without the Cloudflare binding this is per-isolate memory, which
 // only slows an attacker down; bind `bindingName` in production.
+// One IPv6 customer usually owns a whole /64, so rotating the low bits must
+// not buy a fresh budget. IPv4 (and IPv4-mapped) addresses are kept whole.
+export const clientKey = (ip) => {
+    if (!ip.includes(":") || ip.includes(".")) return ip;
+    const [head, tail = ""] = ip.toLowerCase().split("::");
+    const left = head ? head.split(":") : [];
+    const right = tail ? tail.split(":") : [];
+    const missing = ip.includes("::") ? Math.max(0, 8 - left.length - right.length) : 0;
+    const groups = [...left, ...Array(missing).fill("0"), ...right];
+    return `${groups.slice(0, 4).map((group) => group.replace(/^0+(?=.)/, "")).join(":")}::/64`;
+};
+
 export const createRateLimiter = (bindingName, maxRequests) => {
     const buckets = new Map();
     return async (request, env) => {
-        const key = request.headers.get("CF-Connecting-IP") || "unknown";
+        const key = clientKey(request.headers.get("CF-Connecting-IP") || "unknown");
         const binding = env?.[bindingName];
         if (binding?.limit) {
             try {

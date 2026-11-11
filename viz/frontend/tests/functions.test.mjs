@@ -278,4 +278,6 @@ test("rate-limit key groups an IPv6 /64 and keeps IPv4 whole", async () => {
     assert.equal(clientKey("2001:db8::1"), "2001:db8:0:0::/64");
     assert.equal(clientKey("203.0.113.7"), "203.0.113.7");
     assert.equal(clientKey("::ffff:203.0.113.7"), "::ffff:203.0.113.7");
+    assert.notEqual(clientKey("::ffff:cb00:7107"), clientKey("::ffff:cb00:7108"));
+    assert.equal(clientKey("::FFFF:cb00:7107"), clientKey("0:0:0:0:0:ffff:cb00:7107"));
 });

@@ -1,46 +1,16 @@
+import { createRateLimiter } from "../../_lib/rateLimit.js";
+
 const DEFAULT_MODEL = "gemma4:31b";
 const MAX_QUESTION_LENGTH = 2000;
 const MAX_HISTORY_MESSAGES = 6;
 const MAX_BODY_BYTES = 20000;
-const RATE_LIMIT_WINDOW_MS = 60000;
-const RATE_LIMIT_REQUESTS = 10;
-const rateLimitBuckets = new Map();
+const isRateLimited = createRateLimiter("AI_RATE_LIMITER", 10);
 
 const json = (body, status = 200, headers = {}) =>
     Response.json(body, {
         status,
         headers: { "Cache-Control": "no-store", ...headers },
     });
-
-// Prefer the Cloudflare rate-limit binding (shared across isolates). The
-// in-memory map is only a per-isolate fallback when the binding is absent.
-const isRateLimited = async (request, env) => {
-    const key = request.headers.get("CF-Connecting-IP") || "unknown";
-    if (env?.AI_RATE_LIMITER?.limit) {
-        try {
-            const { success } = await env.AI_RATE_LIMITER.limit({ key });
-            return !success;
-        } catch {
-            // Fall through to the local limiter if the binding errors.
-        }
-    }
-    const now = Date.now();
-    let bucket = rateLimitBuckets.get(key);
-    if (!bucket || now - bucket.startedAt >= RATE_LIMIT_WINDOW_MS) {
-        bucket = { startedAt: now, count: 0 };
-        rateLimitBuckets.set(key, bucket);
-    }
-    bucket.count += 1;
-
-    if (rateLimitBuckets.size > 1000) {
-        for (const [bucketKey, candidate] of rateLimitBuckets) {
-            if (now - candidate.startedAt >= RATE_LIMIT_WINDOW_MS) {
-                rateLimitBuckets.delete(bucketKey);
-            }
-        }
-    }
-    return bucket.count > RATE_LIMIT_REQUESTS;
-};
 
 const cleanHistory = (history) => {
     if (!Array.isArray(history)) return [];

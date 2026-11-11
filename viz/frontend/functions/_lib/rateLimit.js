@@ -2,8 +2,10 @@ const WINDOW_MS = 60000;
 
 // Per-client limiter for proxied routes: the backend only sees the proxy's
 // address, so its own per-IP limit cannot tell callers apart.
-// shortcut: without the Cloudflare binding this is per-isolate memory, which
-// only slows an attacker down; bind `bindingName` in production.
+// shortcut: unless `bindingName` is bound this is per-isolate memory, which only
+// slows an attacker down, and Cloudflare's docs do not list a rate-limit binding
+// for Pages Functions; the backend's own limiter stays the hard cap. Move the
+// counter to KV or a Durable Object if that cap is not enough.
 // One IPv6 customer usually owns a whole /64, so rotating the low bits must
 // not buy a fresh budget. IPv4 (and IPv4-mapped) addresses are kept whole.
 export const clientKey = (ip) => {
@@ -12,8 +14,11 @@ export const clientKey = (ip) => {
     const left = head ? head.split(":") : [];
     const right = tail ? tail.split(":") : [];
     const missing = ip.includes("::") ? Math.max(0, 8 - left.length - right.length) : 0;
-    const groups = [...left, ...Array(missing).fill("0"), ...right];
-    return `${groups.slice(0, 4).map((group) => group.replace(/^0+(?=.)/, "")).join(":")}::/64`;
+    const groups = [...left, ...Array(missing).fill("0"), ...right]
+        .map((group) => group.replace(/^0+(?=.)/, ""));
+    // Hex-form IPv4-mapped (::ffff:cb00:7107) is still one IPv4 host, not a /64.
+    if (groups.slice(0, 6).join(":") === "0:0:0:0:0:ffff") return groups.join(":");
+    return `${groups.slice(0, 4).join(":")}::/64`;
 };
 
 export const createRateLimiter = (bindingName, maxRequests) => {

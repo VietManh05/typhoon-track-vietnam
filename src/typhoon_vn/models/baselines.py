@@ -35,13 +35,13 @@ def _wrap_longitude_array(longitude: np.ndarray) -> np.ndarray:
 
 def _last_two_positions(
     x: torch.Tensor, mask: torch.Tensor | None
-) -> tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     if x.ndim != 3 or x.shape[1] < 2 or x.shape[2] < 2:
         raise ValueError("x must have shape (B, T>=2, F>=2)")
     if not torch.isfinite(x[..., :2]).all():
         raise ValueError("baseline coordinates must be finite")
     if mask is None:
-        return x[:, -2, :2], x[:, -1, :2]
+        return x[:, -2, :2], x[:, -1, :2], x.new_ones(x.shape[0])
     if mask.shape != x.shape[:2]:
         raise ValueError("mask must have shape (B, T)")
     valid = mask.to(dtype=torch.bool)
@@ -51,7 +51,7 @@ def _last_two_positions(
     ranked = indices.masked_fill(~valid, -1).topk(2, dim=1).values.sort(dim=1).values
     batch = torch.arange(x.shape[0], device=x.device).unsqueeze(1)
     selected = x[batch, ranked, :2]
-    return selected[:, 0], selected[:, 1]
+    return selected[:, 0], selected[:, 1], ranked[:, 1] - ranked[:, 0]
 
 
 class PersistenceForecaster(TrackForecaster):
@@ -93,22 +93,23 @@ class PersistenceForecaster(TrackForecaster):
 
         Args:
             x: shape ``(B, T, F)`` where ``F >= 2`` and ``x[..., :2]`` is lat/lon.
-            mask: ignored (kept for interface compatibility).
+            mask: valid positions on a regular grid; gaps retain elapsed time.
+                Horizons start at the last valid position.
 
         Returns:
             dict with ``reg`` of shape ``(B, H, 2)`` and dummy ``cls`` zeros.
         """
         batch_size = x.size(0)
         device = x.device
-        previous, current = _last_two_positions(x, mask)
+        previous, current, elapsed_steps = _last_two_positions(x, mask)
         lat1, lon1 = previous.unbind(dim=-1)
         lat2, lon2 = current.unbind(dim=-1)
 
         reg_outputs: list[torch.Tensor] = []
         for step in self.horizon_steps:
-            # Compute bearing and distance of the last step
-            delta_lat = lat2 - lat1
-            delta_lon = _wrap_longitude_tensor(lon2 - lon1)
+            # Normalize displacement by elapsed observation steps.
+            delta_lat = (lat2 - lat1) / elapsed_steps
+            delta_lon = _wrap_longitude_tensor(lon2 - lon1) / elapsed_steps
 
             # Accumulate `step` steps of the same motion vector
             target_lat = lat2 + delta_lat * step
@@ -160,19 +161,19 @@ class CLIPERForecaster(TrackForecaster):
 
         Args:
             x: shape ``(B, T, F)`` where ``x[..., :2]`` is lat/lon.
-            mask: ignored.
+            mask: valid positions on a regular grid, including gaps.
 
         Returns:
             dict with ``reg`` of shape ``(B, H, 2)`` and dummy ``cls`` zeros.
         """
         batch_size = x.size(0)
         device = x.device
-        previous, current = _last_two_positions(x, mask)
+        previous, current, elapsed_steps = _last_two_positions(x, mask)
         lat1, lon1 = previous.unbind(dim=-1)
         lat2, lon2 = current.unbind(dim=-1)
 
-        delta_lat = lat2 - lat1
-        delta_lon = _wrap_longitude_tensor(lon2 - lon1)
+        delta_lat = (lat2 - lat1) / elapsed_steps
+        delta_lon = _wrap_longitude_tensor(lon2 - lon1) / elapsed_steps
 
         reg_outputs: list[torch.Tensor] = []
         for step in self.horizon_steps:
@@ -206,7 +207,9 @@ class ClimatologyPersistenceBaseline:
     ) -> "ClimatologyPersistenceBaseline":
         required = {"storm_id", "timestamp", "lat", "lon"}
         if not required.issubset(frame.columns):
-            raise ValueError(f"baseline frame missing columns: {sorted(required - set(frame))}")
+            raise ValueError(
+                f"baseline frame missing columns: {sorted(required - set(frame))}"
+            )
         corrections: dict[int, list[np.ndarray]] = {step: [] for step in horizon_steps}
         delta = pd.Timedelta(hours=time_step_hours)
         for _, group in frame.groupby("storm_id", sort=False):

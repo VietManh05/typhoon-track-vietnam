@@ -1,6 +1,6 @@
 # G08 — LSTM cơ sở
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: complete; nghiệm thu tại [G08-lstm.md](evidence/G08-lstm.md).
 - Hiện trạng: Có model và test cũ; chưa chạy lại.
 - Đầu vào: Tensor contract, feature schema, target schema và vocabulary cố định.
 - Gate phụ thuộc: G05, G06.
@@ -17,7 +17,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 <a id="t08-001"></a>
 ## T08-001 — Tạo BaseModel.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [766](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:766).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -31,12 +31,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-001.md](evidence/T08-001.md).
 
 <a id="t08-002"></a>
 ## T08-002 — Xác định input size.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [767](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:767).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -50,12 +50,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-002.md](evidence/T08-002.md).
 
 <a id="t08-003"></a>
 ## T08-003 — Xác định hidden size.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [768](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:768).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -69,12 +69,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-003.md](evidence/T08-003.md).
 
 <a id="t08-004"></a>
 ## T08-004 — Xác định number of layers.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [769](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:769).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -88,12 +88,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-004.md](evidence/T08-004.md).
 
 <a id="t08-005"></a>
 ## T08-005 — Xác định dropout.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [770](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:770).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -107,12 +107,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-005.md](evidence/T08-005.md).
 
 <a id="t08-006"></a>
 ## T08-006 — Tạo LSTM.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [771](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:771).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -126,12 +126,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-006.md](evidence/T08-006.md).
 
 <a id="t08-007"></a>
 ## T08-007 — Tạo output head.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [772](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:772).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -145,12 +145,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-007.md](evidence/T08-007.md).
 
 <a id="t08-008"></a>
 ## T08-008 — Viết forward.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [773](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:773).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -164,12 +164,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-008.md](evidence/T08-008.md).
 
 <a id="t08-009"></a>
 ## T08-009 — Kiểm tra tensor shape.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.1 Architecture; dòng [774](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:774).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.1 Architecture.
@@ -183,12 +183,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Input B×T×F với B=1/4 và T=4/6/8; cấu hình sai bị báo lỗi rõ; không hardcode kích thước batch.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-009.md](evidence/T08-009.md).
 
 <a id="t08-010"></a>
 ## T08-010 — Output 6h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.2 Output; dòng [777](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:777).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.2 Output.
@@ -202,12 +202,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Output B×5×2 gắn đúng thứ tự horizon; kiểm tra đơn vị tọa độ và denormalization trong pipeline.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-010.md](evidence/T08-010.md).
 
 <a id="t08-011"></a>
 ## T08-011 — Output 12h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.2 Output; dòng [778](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:778).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.2 Output.
@@ -221,12 +221,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Output B×5×2 gắn đúng thứ tự horizon; kiểm tra đơn vị tọa độ và denormalization trong pipeline.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-011.md](evidence/T08-011.md).
 
 <a id="t08-012"></a>
 ## T08-012 — Output 24h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.2 Output; dòng [779](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:779).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.2 Output.
@@ -240,12 +240,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Output B×5×2 gắn đúng thứ tự horizon; kiểm tra đơn vị tọa độ và denormalization trong pipeline.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-012.md](evidence/T08-012.md).
 
 <a id="t08-013"></a>
 ## T08-013 — Output 48h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.2 Output; dòng [780](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:780).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.2 Output.
@@ -259,12 +259,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Output B×5×2 gắn đúng thứ tự horizon; kiểm tra đơn vị tọa độ và denormalization trong pipeline.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-013.md](evidence/T08-013.md).
 
 <a id="t08-014"></a>
 ## T08-014 — Output 72h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.2 Output; dòng [781](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:781).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.2 Output.
@@ -278,12 +278,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Output B×5×2 gắn đúng thứ tự horizon; kiểm tra đơn vị tọa độ và denormalization trong pipeline.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-014.md](evidence/T08-014.md).
 
 <a id="t08-015"></a>
 ## T08-015 — Kiểm tra lat/lon.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.2 Output; dòng [782](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:782).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.2 Output.
@@ -297,12 +297,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Output B×5×2 gắn đúng thứ tự horizon; kiểm tra đơn vị tọa độ và denormalization trong pipeline.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-015.md](evidence/T08-015.md).
 
 <a id="t08-016"></a>
 ## T08-016 — Tạo wind head.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.3 Intensity Head; dòng [785](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:785).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.3 Intensity Head.
@@ -316,12 +316,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Chỉ thêm wind/pressure regression heads khi có nhãn và masked loss; thiếu nhãn không được gán 0; class vocabulary cố định.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-016.md](evidence/T08-016.md).
 
 <a id="t08-017"></a>
 ## T08-017 — Tạo pressure head.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.3 Intensity Head; dòng [786](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:786).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.3 Intensity Head.
@@ -335,12 +335,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Chỉ thêm wind/pressure regression heads khi có nhãn và masked loss; thiếu nhãn không được gán 0; class vocabulary cố định.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-017.md](evidence/T08-017.md).
 
 <a id="t08-018"></a>
 ## T08-018 — Tạo category head nếu dữ liệu hỗ trợ.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.3 Intensity Head; dòng [787](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:787).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.3 Intensity Head.
@@ -354,12 +354,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Chỉ thêm wind/pressure regression heads khi có nhãn và masked loss; thiếu nhãn không được gán 0; class vocabulary cố định.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-018.md](evidence/T08-018.md).
 
 <a id="t08-019"></a>
 ## T08-019 — Kiểm tra output shape.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.3 Intensity Head; dòng [788](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:788).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.3 Intensity Head.
@@ -373,12 +373,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Chỉ thêm wind/pressure regression heads khi có nhãn và masked loss; thiếu nhãn không được gán 0; class vocabulary cố định.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-019.md](evidence/T08-019.md).
 
 <a id="t08-020"></a>
 ## T08-020 — Forward test.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.4 Tests; dòng [791](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:791).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.4 Tests.
@@ -392,12 +392,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Save/load cùng input giữ output trong dung sai; gradient hữu hạn và có update; thử CPU trước GPU.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-020.md](evidence/T08-020.md).
 
 <a id="t08-021"></a>
 ## T08-021 — Batch-size test.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.4 Tests; dòng [792](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:792).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.4 Tests.
@@ -411,12 +411,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Save/load cùng input giữ output trong dung sai; gradient hữu hạn và có update; thử CPU trước GPU.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-021.md](evidence/T08-021.md).
 
 <a id="t08-022"></a>
 ## T08-022 — Sequence-length test.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.4 Tests; dòng [793](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:793).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.4 Tests.
@@ -430,12 +430,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Save/load cùng input giữ output trong dung sai; gradient hữu hạn và có update; thử CPU trước GPU.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-022.md](evidence/T08-022.md).
 
 <a id="t08-023"></a>
 ## T08-023 — Gradient test.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.4 Tests; dòng [794](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:794).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.4 Tests.
@@ -449,12 +449,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Loss/gradient hữu hạn với fixture đúng; NaN/empty phải fail rõ và không lưu best checkpoint giả.
 - **Kịch bản tiểu mục:** Save/load cùng input giữ output trong dung sai; gradient hữu hạn và có update; thử CPU trước GPU.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-023.md](evidence/T08-023.md).
 
 <a id="t08-024"></a>
 ## T08-024 — Save/load test.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 8.4 Tests; dòng [795](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:795).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G05, G06; contract/fixture của tiểu mục 8.4 Tests.
@@ -468,4 +468,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Reload đủ state; resume so với chạy liên tục; epoch/history/LR nhất quán; checkpoint mới không đè artifact khác.
 - **Kịch bản tiểu mục:** Save/load cùng input giữ output trong dung sai; gradient hữu hạn và có update; thử CPU trước GPU.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T08-024.md](evidence/T08-024.md).

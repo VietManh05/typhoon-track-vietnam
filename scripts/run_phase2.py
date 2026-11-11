@@ -19,6 +19,7 @@ Usage (repo root)::
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import sys
@@ -31,12 +32,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import numpy as np
 import pandas as pd
 
+from typhoon_vn.contracts.track import CleaningReport, TrackSchema
 from typhoon_vn.datasets.typhoon_dataset import split_by_storm_or_year
 from typhoon_vn.features import build as features
 from typhoon_vn.features.bridge import load_raw_observations, to_canonical_frame
 from typhoon_vn.features.cleaning import clean_tracks, quality_summary
 from typhoon_vn.features.scaling import FeatureScaler
-from typhoon_vn.features.schema import CleaningReport, TrackSchema
 from typhoon_vn.ingestion.merge_sources import merge_observations
 from typhoon_vn.ingestion.models import Observation
 
@@ -57,7 +58,12 @@ def _row_to_observation(row: pd.Series) -> Observation:
         latitude=float(row["latitude"]),
         longitude=float(row["longitude"]),
         source_url=str(row["source_url"]),
-        source_file_checksum=str(row.get("source_file_checksum") or "raw-partition"),
+        # Placeholder digest marks partitions that carry no file lineage.
+        source_file_checksum=(
+            str(row["source_file_checksum"])
+            if pd.notna(row.get("source_file_checksum"))
+            else hashlib.sha256(b"raw-partition").hexdigest()
+        ),
         wind=float(row["wind"]) if pd.notna(row["wind"]) else None,
         wind_unit=str(row["wind_unit"]) if pd.notna(row["wind_unit"]) else None,
         pressure_hpa=(

@@ -15,8 +15,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from typhoon_vn.contracts.track import TrackSchema
 from typhoon_vn.features.cleaning import normalise_intensity_labels
-from typhoon_vn.features.schema import TrackSchema
 
 KNOT_TO_MS = 0.514444
 
@@ -35,6 +35,14 @@ WIND_UNIT_TO_MS: dict[str, float] = {
 #: JMA RSMC best-track archive starts in 1951; earlier IBTrACS rows come from
 #: other agencies and must not be dropped by a JMA-coverage rule.
 JMA_ARCHIVE_START_YEAR = 1951
+
+#: Project IBTrACS thresholds in canonical m/s. Boundary values belong to the
+#: stronger category: TD <17, TS [17,25), STS [25,33), TY >=33.
+IBTRACS_INTENSITY_THRESHOLDS_MS: tuple[tuple[float, str], ...] = (
+    (17.0, "TD"),
+    (25.0, "TS"),
+    (33.0, "STS"),
+)
 
 #: JMA grade codes (RSMC Tokyo best track) mapped onto the fixed intensity list.
 JMA_GRADE_TO_INTENSITY: dict[str, str] = {
@@ -59,6 +67,21 @@ def _wind_to_ms(values: pd.Series, units: pd.Series) -> pd.Series:
         raise ValueError(f"unsupported wind units: {labels}")
     factor = normalised.map(WIND_UNIT_TO_MS).astype(float)
     return numeric * factor
+
+
+def intensity_from_wind_ms(wind_ms: pd.Series) -> np.ndarray:
+    """Map canonical wind speed to TD/TS/STS/TY; invalid values are UNK."""
+
+    wind = pd.to_numeric(wind_ms, errors="coerce").to_numpy(dtype=float)
+    valid = np.isfinite(wind) & (wind >= 0.0)
+    return np.select(
+        [
+            valid & (wind < threshold)
+            for threshold, _ in IBTRACS_INTENSITY_THRESHOLDS_MS
+        ],
+        [label for _, label in IBTRACS_INTENSITY_THRESHOLDS_MS],
+        default=np.where(valid, "TY", "UNK"),
+    )
 
 
 def _map_intensity(frame: pd.DataFrame) -> np.ndarray:
@@ -89,7 +112,13 @@ def _map_intensity(frame: pd.DataFrame) -> np.ndarray:
         .to_numpy()
     )
 
-    return np.select([is_jma & pd.notna(mapped)], [mapped], default=fallback)
+    is_ibtracs = sources.astype(str).str.strip().str.lower().eq("ibtracs").to_numpy()
+    from_wind = intensity_from_wind_ms(frame["wind_ms"])
+    return np.select(
+        [is_jma & pd.notna(mapped), is_ibtracs],
+        [mapped, from_wind],
+        default=fallback,
+    )
 
 
 def _filter_jma_archive_coverage(
@@ -173,11 +202,13 @@ def to_canonical_frame(
 
 
 __all__ = [
+    "IBTRACS_INTENSITY_THRESHOLDS_MS",
     "JMA_ARCHIVE_START_YEAR",
     "JMA_GRADE_TO_INTENSITY",
     "KNOT_TO_MS",
     "SCHEMA",
     "WIND_UNIT_TO_MS",
+    "intensity_from_wind_ms",
     "load_raw_observations",
     "to_canonical_frame",
 ]

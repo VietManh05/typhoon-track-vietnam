@@ -7,6 +7,8 @@ variant that can focus on historical fixes.
 
 from __future__ import annotations
 
+import math
+
 import torch
 from torch import nn
 
@@ -31,10 +33,9 @@ def _validate_sequence(
     lengths = valid.sum(dim=1)
     if (lengths < 1).any():
         raise ValueError("each sequence must contain at least one valid timestep")
-    expected = (
-        torch.arange(x.shape[1], device=x.device).unsqueeze(0)
-        < lengths.unsqueeze(1)
-    )
+    expected = torch.arange(x.shape[1], device=x.device).unsqueeze(
+        0
+    ) < lengths.unsqueeze(1)
     if not torch.equal(valid, expected):
         raise ValueError("mask must describe right-padded contiguous sequences")
     return valid, lengths
@@ -45,11 +46,28 @@ def _last_valid(sequence: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
     return sequence[batch, lengths - 1]
 
 
+def _validate_model_config(
+    *,
+    n_features: int,
+    n_horizons: int,
+    n_classes: int,
+    hidden_size: int,
+    num_layers: int,
+    dropout: float,
+) -> None:
+    if min(n_features, n_horizons, n_classes, hidden_size, num_layers) < 1:
+        raise ValueError("model dimensions and num_layers must be positive")
+    if not 0 <= dropout < 1:
+        raise ValueError("dropout must lie inside [0, 1)")
+
+
 class LSTMTrackForecaster(TrackForecaster):
     """Baseline LSTM adapted from the sample repo, extended to multi-horizon.
 
     A single LSTM reads the input window and a fully-connected head emits
-    ``n_horizons`` lat/lon pairs plus intensity logits.
+    ``n_horizons`` lat/lon pairs plus intensity logits. Real-data bundles may
+    anchor positions to the latest fix and a bounded recent-motion estimate;
+    the head then learns a correction in WGS84 degrees.
     """
 
     def __init__(
@@ -60,12 +78,80 @@ class LSTMTrackForecaster(TrackForecaster):
         hidden_size: int = 128,
         num_layers: int = 2,
         dropout: float = 0.2,
+        anchor_indices: tuple[int, int] | None = None,
+        anchor_mean: tuple[float, float] | None = None,
+        anchor_scale: tuple[float, float] | None = None,
+        anchor_horizon_steps: tuple[int, ...] | None = None,
     ) -> None:
         super().__init__()
+        _validate_model_config(
+            n_features=n_features,
+            n_horizons=n_horizons,
+            n_classes=n_classes,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            dropout=dropout,
+        )
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self._n_horizons = n_horizons
         self._n_classes = n_classes
+        anchored = (anchor_indices, anchor_mean, anchor_scale)
+        if any(value is not None for value in anchored):
+            if any(value is None or len(value) != 2 for value in anchored):
+                raise ValueError("anchor indices, mean and scale must be paired")
+            if any(
+                not isinstance(index, int) or not 0 <= index < n_features
+                for index in anchor_indices
+            ):
+                raise ValueError("anchor indices must identify input features")
+            if (
+                len(set(anchor_indices)) != 2
+                or any(
+                    not math.isfinite(value) for value in (*anchor_mean, *anchor_scale)
+                )
+                or any(value <= 0 for value in anchor_scale)
+            ):
+                raise ValueError("anchor statistics must be finite and scales positive")
+        self.anchor_indices = (
+            tuple(anchor_indices) if anchor_indices is not None else None
+        )
+        if anchor_horizon_steps is not None and (
+            self.anchor_indices is None
+            or len(anchor_horizon_steps) != n_horizons
+            or any(
+                not isinstance(step, int) or step < 1 for step in anchor_horizon_steps
+            )
+        ):
+            raise ValueError("anchor horizon steps must match the model horizons")
+        self.anchor_horizon_steps = (
+            tuple(anchor_horizon_steps) if anchor_horizon_steps is not None else None
+        )
+        self.register_buffer(
+            "anchor_mean",
+            torch.tensor(anchor_mean or (0.0, 0.0), dtype=torch.float32),
+            persistent=False,
+        )
+        self.register_buffer(
+            "anchor_scale",
+            torch.tensor(anchor_scale or (1.0, 1.0), dtype=torch.float32),
+            persistent=False,
+        )
+        self.register_buffer(
+            "motion_factors",
+            torch.tensor(
+                (
+                    [
+                        3.0 * (1.0 - math.exp(-step / 3.0))
+                        for step in anchor_horizon_steps
+                    ]
+                    if anchor_horizon_steps is not None
+                    else []
+                ),
+                dtype=torch.float32,
+            ),
+            persistent=False,
+        )
         self.lstm = nn.LSTM(
             input_size=n_features,
             hidden_size=hidden_size,
@@ -84,6 +170,19 @@ class LSTMTrackForecaster(TrackForecaster):
         # x: (B, T, F)
         context = self.encode(x, mask)  # (B, hidden_size)
         reg = self.reg_head(context).view(-1, self.n_horizons, 2)
+        if self.anchor_indices is not None:
+            _, lengths = _validate_sequence(x, mask)
+            last = _last_valid(x, lengths)[:, list(self.anchor_indices)]
+            origin = last * self.anchor_scale + self.anchor_mean
+            reg = reg + origin.unsqueeze(1)
+            if self.anchor_horizon_steps is not None:
+                if (lengths < 2).any():
+                    raise ValueError("motion anchor requires two valid timesteps")
+                previous = x[torch.arange(x.shape[0], device=x.device), lengths - 2]
+                velocity = (
+                    last - previous[:, list(self.anchor_indices)]
+                ) * self.anchor_scale
+                reg = reg + velocity.unsqueeze(1) * self.motion_factors.view(1, -1, 1)
         cls = self.cls_head(context).view(-1, self.n_horizons, self.n_classes)
         wind = self.wind_head(context).view(-1, self.n_horizons, 1)
         pressure = self.pressure_head(context).view(-1, self.n_horizons, 1)
@@ -129,6 +228,16 @@ class Seq2SeqLSTMTrackForecaster(TrackForecaster):
                 Pass a different slice if you customise ``feature_cols``.
         """
         super().__init__()
+        _validate_model_config(
+            n_features=n_features,
+            n_horizons=n_horizons,
+            n_classes=n_classes,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            dropout=dropout,
+        )
+        if not 0 <= teacher_forcing_ratio <= 1:
+            raise ValueError("teacher_forcing_ratio must lie inside [0, 1]")
         self.n_features = n_features
         self._n_horizons = n_horizons
         self._n_classes = n_classes
@@ -243,6 +352,14 @@ class AttentionLSTMTrackForecaster(TrackForecaster):
         dropout: float = 0.2,
     ) -> None:
         super().__init__()
+        _validate_model_config(
+            n_features=n_features,
+            n_horizons=n_horizons,
+            n_classes=n_classes,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            dropout=dropout,
+        )
         self.hidden_size = hidden_size
         self._n_horizons = n_horizons
         self._n_classes = n_classes

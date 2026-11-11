@@ -108,3 +108,31 @@
 - Targeted Phase-2 data suite: 41 passed. Full regression: 105 passed, 2 dependency deprecation warnings.
 - Plan validator pass: 818/818 checkbox, 731 nodes, 2.977 links, roadmap unchanged. Flake8/isort/Black pass trên phạm vi Phase 2.
 - Phase 2 đóng với 256/256 task G00–G06 complete; không commit/push mới. Phase 3 chưa bắt đầu.
+
+## 2026-09-19 — Phase 4 backend local-ready
+
+- G16 complete; G17–G20 local-ready với Alembic/audit, API/OpenAPI, Redis và worker idempotent/retry.
+- S09/S15 local-ready một phần; S24 complete với CLI raw→clean→features giữ hash/provenance.
+- Focused 20 passed, coverage Phase 4 83%; full regression 148 passed, 1 skip; flake8/Black/compile pass, isort file Phase 4 pass.
+- Skip/blocker duy nhất: không có Docker executable hoặc `POSTGIS_TEST_URL`, nên chưa chạy test PostGIS thật. Không đánh dấu Phase 4 complete/production-ready.
+- Sau reboot: Docker engine chạy; PostGIS container `typhoon-vn-postgres-1` healthy. Integration migration/spatial acceptance `1 passed`; full regression với PostGIS `149 passed`. S09 đã đóng, Phase 4 complete.
+
+## 2026-09-20 - Phase 6 local/testable operations
+
+- Implemented Phase 6 operational layer: Prometheus-style API metrics, monitoring/drift helpers, backup/restore manifests, checkpoint retention, retrain/capacity/release policies.
+- Added production-oriented Dockerfiles, docker-compose.prod.yml, Prometheus/Grafana starter config, GitHub Actions CI, deployment guide and runbook.
+- Added Phase 6 executable contracts in tests/test_phase6_operations.py.
+- Evidence: docs/planning/evidence/PHASE-6.md. Real production deploy remains gated by hosting credentials, domain, secret manager and release approval.
+
+
+
+## 2026-09-20 - Phase 7 documentation/demo acceptance
+
+- Completed Phase 7 local/testable handover: model card, user guide, acceptance matrix, demo script, project DoD mapping, post-season report template and handover slide outline.
+- Added tests/test_phase7_documentation.py for Phase 7 docs, A29 coverage and demo surfaces.
+- Generated evidence for T27-001..T27-015, T28-001..T28-023, S21/S22 and A29-001..A29-028.
+- External gates remain explicit: hosting, production secrets, official data permissions, alert recipients, domains and release approval.
+- Evidence: docs/planning/evidence/PHASE-7.md.
+- 2026-09-21 — Nghiệm thu local/testable được kiểm chứng lại: plan validator pass 818/818; Python lint/format pass; backend 232 passed, 1 skipped; PostGIS gate riêng 1 passed; frontend 4/4 test, type-check và production build pass; `pip check` sạch; npm audit 0 vulnerability.
+- Đã đồng bộ `task_plan.md` và header G29: Phase 4 complete theo PostGIS evidence, Phase 5 complete ở mức local-ready. External production gates vẫn chờ hosting, secrets, quyền dữ liệu, recipient và release approval; không suy diễn thành production-ready.
+- 2026-09-21 — Cloudflare Pages frontend đã deploy thành công tại `https://baoviet2026.pages.dev/`, deployment `db6bfde8-a61b-411b-985b-3c639f3148c3`; HTTP/browser QA pass cho static UI/map/assets. Backend FastAPI chưa có public HTTPS origin nên UI đang dùng chế độ Demo có cảnh báo rõ ràng.

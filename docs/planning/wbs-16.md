@@ -1,6 +1,6 @@
 # G16 — Dịch vụ inference
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: complete; bằng chứng tại [G16-inference.md](evidence/G16-inference.md).
 - Hiện trạng: Vừa viết bản nháp; baseline có, trained path thiếu load_bundle/predict_bundle.
 - Đầu vào: Artifact đã kiểm tra, chuỗi fixes có source và thời gian.
 - Gate phụ thuộc: G15.
@@ -17,7 +17,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 <a id="t16-001"></a>
 ## T16-001 — Load model một lần.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [968](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:968).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -31,12 +31,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-001.md](evidence/T16-001.md).
 
 <a id="t16-002"></a>
 ## T16-002 — Load scaler.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [969](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:969).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -50,12 +50,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fit train-only; val/test cực trị không đổi stats; save/load giữ order/fill; finite round-trip <=1e-6.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-002.md](evidence/T16-002.md).
 
 <a id="t16-003"></a>
 ## T16-003 — Load feature schema.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [970](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:970).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -69,12 +69,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-003.md](evidence/T16-003.md).
 
 <a id="t16-004"></a>
 ## T16-004 — Validate input.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [971](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:971).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -88,12 +88,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-004.md](evidence/T16-004.md).
 
 <a id="t16-005"></a>
 ## T16-005 — Build features.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [972](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:972).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -107,12 +107,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Build/config exit 0; smoke service; secrets/raw/checkpoints ngoài build context trừ artifact được chọn.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-005.md](evidence/T16-005.md).
 
 <a id="t16-006"></a>
 ## T16-006 — Predict.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [973](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:973).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -126,12 +126,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-006.md](evidence/T16-006.md).
 
 <a id="t16-007"></a>
 ## T16-007 — Denormalize.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [974](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:974).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -145,12 +145,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-007.md](evidence/T16-007.md).
 
 <a id="t16-008"></a>
 ## T16-008 — Generate uncertainty.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [975](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:975).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -164,12 +164,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-008.md](evidence/T16-008.md).
 
 <a id="t16-009"></a>
 ## T16-009 — Generate impact.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [976](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:976).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -183,12 +183,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-009.md](evidence/T16-009.md).
 
 <a id="t16-010"></a>
 ## T16-010 — Return standardized result.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.1 Forecaster; dòng [977](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:977).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.1 Forecaster.
@@ -202,12 +202,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So tensor training và serving từ cùng chuỗi lịch sử; bundle sai schema/hash phải fail; inference không fit lại scaler.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-010.md](evidence/T16-010.md).
 
 <a id="t16-011"></a>
 ## T16-011 — Lấy observations gần nhất.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.2 Rolling Forecast; dòng [980](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:980).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.2 Rolling Forecast.
@@ -221,12 +221,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So direct multi-horizon với rolling; không giả target +24 là bước +6; feature môi trường tương lai không được lấy observation thật.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-011.md](evidence/T16-011.md).
 
 <a id="t16-012"></a>
 ## T16-012 — Tạo input window.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.2 Rolling Forecast; dòng [981](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:981).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.2 Rolling Forecast.
@@ -240,12 +240,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Cửa sổ chỉ chứa một storm, input_len đúng; fixture ngắn hơn window không tạo sample; timestamps không đảo hoặc trùng.
 - **Kịch bản tiểu mục:** So direct multi-horizon với rolling; không giả target +24 là bước +6; feature môi trường tương lai không được lấy observation thật.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-012.md](evidence/T16-012.md).
 
 <a id="t16-013"></a>
 ## T16-013 — Predict bước tiếp.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.2 Rolling Forecast; dòng [982](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:982).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.2 Rolling Forecast.
@@ -259,12 +259,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So direct multi-horizon với rolling; không giả target +24 là bước +6; feature môi trường tương lai không được lấy observation thật.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-013.md](evidence/T16-013.md).
 
 <a id="t16-014"></a>
 ## T16-014 — Sinh multi-horizon.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.2 Rolling Forecast; dòng [983](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:983).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.2 Rolling Forecast.
@@ -278,12 +278,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** So direct multi-horizon với rolling; không giả target +24 là bước +6; feature môi trường tương lai không được lấy observation thật.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-014.md](evidence/T16-014.md).
 
 <a id="t16-015"></a>
 ## T16-015 — Kiểm soát autoregressive error.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.2 Rolling Forecast; dòng [984](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:984).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.2 Rolling Forecast.
@@ -297,12 +297,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** So direct multi-horizon với rolling; không giả target +24 là bước +6; feature môi trường tương lai không được lấy observation thật.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-015.md](evidence/T16-015.md).
 
 <a id="t16-016"></a>
 ## T16-016 — Validate output.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.2 Rolling Forecast; dòng [985](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:985).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.2 Rolling Forecast.
@@ -316,12 +316,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** So direct multi-horizon với rolling; không giả target +24 là bước +6; feature môi trường tương lai không được lấy observation thật.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-016.md](evidence/T16-016.md).
 
 <a id="t16-017"></a>
 ## T16-017 — Phát hiện thiếu environmental feature.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.3 Fallback; dòng [988](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:988).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.3 Fallback.
@@ -335,12 +335,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fixture thiếu đầu/cuối chuỗi, gap dài và hai storm; không dùng future observations; missing không tự đổi thành 0.
 - **Kịch bản tiểu mục:** Missing SST/shear dùng giá trị fit train đã lưu; response có fallback_used và missing_features; từ chối nếu feature bắt buộc không khôi phục.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-017.md](evidence/T16-017.md).
 
 <a id="t16-018"></a>
 ## T16-018 — Dùng fallback hợp lệ.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.3 Fallback; dòng [989](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:989).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.3 Fallback.
@@ -354,12 +354,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fixture thiếu đầu/cuối chuỗi, gap dài và hai storm; không dùng future observations; missing không tự đổi thành 0.
 - **Kịch bản tiểu mục:** Missing SST/shear dùng giá trị fit train đã lưu; response có fallback_used và missing_features; từ chối nếu feature bắt buộc không khôi phục.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-018.md](evidence/T16-018.md).
 
 <a id="t16-019"></a>
 ## T16-019 — Gắn cờ `fallback_used`.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.3 Fallback; dòng [990](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:990).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.3 Fallback.
@@ -373,12 +373,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Missing SST/shear dùng giá trị fit train đã lưu; response có fallback_used và missing_features; từ chối nếu feature bắt buộc không khôi phục.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-019.md](evidence/T16-019.md).
 
 <a id="t16-020"></a>
 ## T16-020 — Log fallback.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** 16.3 Fallback; dòng [991](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:991).
 - **Loại:** kiểm chứng rồi bổ sung phần thiếu.
 - **Phụ thuộc:** G15; contract/fixture của tiểu mục 16.3 Fallback.
@@ -392,4 +392,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fixture thiếu đầu/cuối chuỗi, gap dài và hai storm; không dùng future observations; missing không tự đổi thành 0.
 - **Kịch bản tiểu mục:** Missing SST/shear dùng giá trị fit train đã lưu; response có fallback_used và missing_features; từ chối nếu feature bắt buộc không khôi phục.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T16-020.md](evidence/T16-020.md).

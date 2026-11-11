@@ -1,152 +1,188 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
-  CloudLightning,
-  Clock,
-  Globe2,
-  Moon,
-  Sun,
-  Bell,
-  Activity,
-  RefreshCw,
-} from 'lucide-react';
-import { Language, translations } from '../i18n';
+    Bell,
+    Clock3,
+    FlaskConical,
+    Globe2,
+    MoreHorizontal,
+    Moon,
+    Radio,
+    RefreshCw,
+    Sun,
+} from "lucide-react";
+import { Language, translations } from "../i18n";
+import { formatClock, formatUtcStamp } from "../lib/format";
+import { AuthControl } from "./AuthControl";
 
 interface HeaderProps {
-  lang: Language;
-  onToggleLang: () => void;
-  isDark: boolean;
-  onToggleTheme: () => void;
-  isLive: boolean;
-  onRefresh: () => void;
-  onOpenAlerts: () => void;
+    lang: Language;
+    onToggleLang: () => void;
+    isDark: boolean;
+    onToggleTheme: () => void;
+    isLive: boolean;
+    isDemoMode: boolean;
+    onToggleDemo: () => void | Promise<void>;
+    onRefresh: () => void | Promise<void>;
+    onOpenAlerts: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  lang,
-  onToggleLang,
-  isDark,
-  onToggleTheme,
-  isLive,
-  onRefresh,
-  onOpenAlerts,
+    lang,
+    onToggleLang,
+    isDark,
+    onToggleTheme,
+    isLive,
+    isDemoMode,
+    onToggleDemo,
+    onRefresh,
+    onOpenAlerts,
 }) => {
-  const [time, setTime] = useState<Date>(new Date());
-  const t = translations[lang];
+    const [time, setTime] = useState(() => new Date());
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const optionsRef = useRef<HTMLDetailsElement>(null);
+    const t = translations[lang];
 
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+    useEffect(() => {
+        const timer = window.setInterval(() => setTime(new Date()), 1000);
+        return () => window.clearInterval(timer);
+    }, []);
 
-  const formatUtc = (d: Date) => {
-    return d.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-  };
+    const refresh = async () => {
+        optionsRef.current?.removeAttribute("open");
+        setIsRefreshing(true);
+        try {
+            await onRefresh();
+        } finally {
+            window.setTimeout(() => setIsRefreshing(false), 300);
+        }
+    };
 
-  const formatVn = (d: Date) => {
     return (
-      d.toLocaleString('vi-VN', {
-        timeZone: 'Asia/Ho_Chi_Minh',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }) + ' (GMT+7)'
+        <header
+            className="sticky top-0 z-header border-b border-line bg-page/95 px-3 backdrop-blur-md sm:px-4"
+            role="banner"
+        >
+            <div className="mx-auto flex min-h-[64px] max-w-[1920px] items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                    <img src="/favicon.svg" className="brand-mark h-10 w-10 shrink-0" alt="" aria-hidden="true" />
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                            <h1 className="truncate text-base font-bold tracking-[0.04em] text-fg sm:text-lg">
+                                TYPHOON <span className="text-primary">VN</span>
+                            </h1>
+                            <span className="hidden rounded-badge border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] font-medium text-fg-faint sm:inline">
+                                WEATHER
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    className="header-clocks hidden items-center gap-5 rounded-control border border-line bg-surface/70 px-3 py-1.5 xl:flex"
+                    aria-label={`${t.time_utc}; ${t.time_vn}`}
+                >
+                    <div className="header-utc flex items-center gap-2">
+                        <Clock3
+                            className="h-3.5 w-3.5 text-fg-faint"
+                            aria-hidden="true"
+                        />
+                        <div>
+                            <div className="text-[9px] font-semibold uppercase tracking-wider text-fg-faint">
+                                UTC
+                            </div>
+                            <time className="clock-full font-mono text-[11px] text-fg-muted">
+                                {formatUtcStamp(time)}
+                            </time>
+                            <time className="clock-short hidden font-mono text-[11px] text-fg-muted">
+                                {time.toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-GB", { timeZone: "UTC", hour: "2-digit", minute: "2-digit" })}
+                            </time>
+                        </div>
+                    </div>
+                    <div className="header-clock-divider h-7 w-px bg-line" aria-hidden="true" />
+                    <div>
+                        <div className="text-[9px] font-semibold uppercase tracking-wider text-fg-faint">
+                            Việt Nam
+                        </div>
+                        <time className="clock-full font-mono text-[11px] font-medium text-primary">
+                            {formatClock(time, "Asia/Ho_Chi_Minh", lang)} GMT+7
+                        </time>
+                        <time className="clock-short hidden font-mono text-[11px] font-medium text-primary">
+                            {time.toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-GB", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" })} GMT+7
+                        </time>
+                    </div>
+                </div>
+
+                <nav
+                    className="header-actions flex shrink-0 items-center gap-2"
+                    aria-label={
+                        lang === "vi"
+                            ? "Điều khiển hệ thống"
+                            : "System controls"
+                    }
+                >
+                    <div
+                        className={`desktop-control hidden min-h-9 items-center gap-2 rounded-control border px-2.5 text-[11px] font-semibold sm:flex ${isLive ? "border-success/35 bg-success/10 text-success" : isDemoMode ? "border-warning/35 bg-warning/10 text-warning" : "border-line bg-surface-2 text-fg-muted"}`}
+                        role="status"
+                        aria-live="polite"
+                        title={
+                            isLive
+                                ? (lang === "vi" ? "Nguồn dữ liệu bão trực tuyến; dịch vụ gửi cảnh báo được kiểm tra riêng" : "Live storm feed; alert delivery has a separate status")
+                                : isDemoMode ? t.system_status_mock : (lang === "vi" ? "Chưa kết nối dữ liệu bão trực tuyến" : "Live storm data is unavailable")
+                        }
+                    >
+                        <span
+                            className={`h-1.5 w-1.5 rounded-full ${isLive ? "bg-success" : isDemoMode ? "bg-warning" : "bg-fg-muted"}`}
+                            aria-hidden="true"
+                        />
+                        {isLive ? (lang === "vi" ? "BÃO LIVE" : "STORM LIVE") : isDemoMode ? "DEMO" : (lang === "vi" ? "CHƯA KẾT NỐI" : "OFFLINE")}
+                    </div>
+                    <button
+                        type="button"
+                        className="inline-flex min-h-11 w-11 items-center justify-center gap-1.5 rounded-control border border-transparent bg-transparent text-[11px] font-semibold text-fg hover:border-primary hover:bg-white/10 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary sm:min-h-9 sm:w-auto sm:px-2.5"
+                        onClick={() => { void onToggleDemo(); }}
+                        aria-pressed={isDemoMode}
+                        title={isDemoMode ? (lang === "vi" ? "Tải lại dữ liệu trực tuyến" : "Reload live data") : (lang === "vi" ? "Chuyển sang dữ liệu demo" : "Switch to demo data")}
+                    >
+                        {isDemoMode ? <Radio size={15} aria-hidden="true" /> : <FlaskConical size={15} aria-hidden="true" />}
+                        <span className="hidden sm:inline">{isDemoMode ? (lang === "vi" ? "Dữ liệu trực tuyến" : "Live data") : (lang === "vi" ? "Chế độ demo" : "Demo mode")}</span>
+                    </button>
+                    <button
+                        className="btn-icon header-alert-trigger"
+                        onClick={onOpenAlerts}
+                        aria-label={t.subscribe_alerts}
+                        title={t.subscribe_alerts}
+                    >
+                        <Bell
+                            className="h-[18px] w-[18px]"
+                            aria-hidden="true"
+                        />
+                    </button>
+                    <details ref={optionsRef} className="header-options">
+                        <summary aria-label={lang === "vi" ? "Tùy chọn hiển thị" : "Display options"} title={lang === "vi" ? "Tùy chọn" : "Options"}>
+                            <MoreHorizontal size={20} aria-hidden="true" />
+                        </summary>
+                        <div className="header-options-menu">
+                            <button type="button" onClick={() => { void onToggleDemo(); optionsRef.current?.removeAttribute("open"); }} aria-pressed={isDemoMode}>
+                                {isDemoMode ? <Radio size={17} aria-hidden="true" /> : <FlaskConical size={17} aria-hidden="true" />}
+                                {isDemoMode ? (lang === "vi" ? "Dữ liệu trực tuyến" : "Live data") : (lang === "vi" ? "Chế độ demo" : "Demo mode")}
+                            </button>
+                            <button type="button" onClick={() => { onOpenAlerts(); optionsRef.current?.removeAttribute("open"); }}>
+                                <Bell size={17} aria-hidden="true" />{t.subscribe_alerts}
+                            </button>
+                            <button type="button" onClick={refresh} disabled={isRefreshing} title={lang === "vi" ? "Làm mới dữ liệu từ máy chủ" : "Refresh data from the server"}>
+                                <RefreshCw size={17} className={isRefreshing ? "animate-spin" : ""} aria-hidden="true" />{lang === "vi" ? "Làm mới dữ liệu" : "Refresh data"}
+                            </button>
+                            <button type="button" onClick={() => { onToggleLang(); optionsRef.current?.removeAttribute("open"); }}>
+                                <Globe2 size={17} aria-hidden="true" />{lang === "vi" ? "English" : "Tiếng Việt"}
+                            </button>
+                            <button type="button" onClick={() => { onToggleTheme(); optionsRef.current?.removeAttribute("open"); }}>
+                                {isDark ? <Sun size={17} aria-hidden="true" /> : <Moon size={17} aria-hidden="true" />}{isDark ? (lang === "vi" ? "Giao diện sáng" : "Light theme") : (lang === "vi" ? "Giao diện tối" : "Dark theme")}
+                            </button>
+                        </div>
+                    </details>
+                    <AuthControl lang={lang} onAuthenticated={onRefresh} />
+                </nav>
+            </div>
+        </header>
     );
-  };
-
-  return (
-    <header role="banner" className="w-full bg-slate-900/95 backdrop-blur-md border-b border-cyan-500/20 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-lg z-50">
-      {/* Brand Logo & Title */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-700 shadow-md shadow-cyan-500/20 border border-cyan-400/30">
-          <CloudLightning className="w-6 h-6 text-cyan-200 animate-pulse" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg md:text-xl font-bold tracking-tight text-white font-display flex items-center gap-2">
-              TYPHOON<span className="text-cyan-400">VN</span>
-              <span className="text-xs px-2 py-0.5 rounded-full font-mono font-medium tracking-normal bg-cyan-950/80 text-cyan-300 border border-cyan-700/50">
-                v1.0-STAGING
-              </span>
-            </h1>
-          </div>
-          <p className="text-xs text-slate-400 font-medium hidden sm:block">
-            {t.app_title}
-          </p>
-        </div>
-      </div>
-
-      {/* Clocks & Connection Badge */}
-      <div className="hidden lg:flex items-center gap-4 bg-slate-950/70 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-mono" aria-label={t.time_utc}>
-        <div className="flex items-center gap-1.5 text-slate-300">
-          <Clock className="w-3.5 h-3.5 text-cyan-400" aria-hidden="true" />
-          <time>{formatUtc(time)}</time>
-        </div>
-        <span className="text-slate-600" aria-hidden="true">|</span>
-        <div className="text-cyan-300 font-semibold">
-          <time>{formatVn(time)}</time>
-        </div>
-      </div>
-
-      {/* Action Controls */}
-      <nav className="flex items-center gap-2" aria-label={lang === 'vi' ? 'Điều khiển hệ thống' : 'System controls'}>
-        {/* Live / Mock Status Badge */}
-        <div
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
-            isLive
-              ? 'bg-emerald-950/70 text-emerald-400 border-emerald-500/40 shadow-sm shadow-emerald-500/20'
-              : 'bg-amber-950/70 text-amber-300 border-amber-500/40'
-          }`}
-          role="status"
-          aria-live="polite"
-          title={isLive ? t.system_status_live : t.system_status_mock}
-        >
-          <Activity className={`w-3.5 h-3.5 ${isLive ? 'animate-pulse text-emerald-400' : 'text-amber-400'}`} aria-hidden="true" />
-          <span className="hidden sm:inline">
-            {isLive ? t.system_status_live : t.system_status_mock}
-          </span>
-        </div>
-
-        {/* Subscribe Alerts Button */}
-        <button
-          onClick={onOpenAlerts}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 transition hover:border-cyan-500/40 focus-ring"
-          aria-label={t.subscribe_alerts}
-        >
-          <Bell className="w-3.5 h-3.5 text-amber-400" aria-hidden="true" />
-          <span className="hidden md:inline">{t.subscribe_alerts}</span>
-        </button>
-
-        {/* Refresh */}
-        <button
-          onClick={onRefresh}
-          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition active:scale-95 focus-ring touch-target"
-          aria-label={t.aria_refresh}
-        >
-          <RefreshCw className="w-4 h-4" aria-hidden="true" />
-        </button>
-
-        {/* Language Switcher */}
-        <button
-          onClick={onToggleLang}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition focus-ring"
-          aria-label={t.aria_lang_toggle}
-        >
-          <Globe2 className="w-3.5 h-3.5" aria-hidden="true" />
-          <span>{lang === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}</span>
-        </button>
-
-        {/* Theme Switcher */}
-        <button
-          onClick={onToggleTheme}
-          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition focus-ring touch-target"
-          aria-label={t.aria_theme_toggle}
-        >
-          {isDark ? <Sun className="w-4 h-4 text-amber-300" aria-hidden="true" /> : <Moon className="w-4 h-4 text-slate-600" aria-hidden="true" />}
-        </button>
-      </nav>
-    </header>
-  );
 };

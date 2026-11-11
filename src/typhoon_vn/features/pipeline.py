@@ -10,10 +10,10 @@ from typing import Iterable
 
 import pandas as pd
 
+from typhoon_vn.contracts.track import CleaningReport
 from typhoon_vn.features.bridge import to_canonical_frame
 from typhoon_vn.features.build import FeatureBuilder
 from typhoon_vn.features.cleaning import clean_tracks, quality_summary
-from typhoon_vn.features.schema import CleaningReport
 
 
 @dataclass(slots=True)

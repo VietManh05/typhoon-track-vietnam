@@ -1,6 +1,6 @@
 # G20 — Redis và invalidation
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: in_progress; bằng chứng tại [G20-cache.md](evidence/G20-cache.md).
 - Hiện trạng: API nháp mới setex; chưa đọc Redis, chưa invalidation tests.
 - Đầu vào: Forecast/input/model revision và Redis configuration.
 - Gate phụ thuộc: G17.

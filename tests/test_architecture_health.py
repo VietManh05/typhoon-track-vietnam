@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 from pydantic import ValidationError
 
+from typhoon_vn.contracts.track import TrackSchema
 from typhoon_vn.datasets.typhoon_dataset import DatasetConfig, TyphoonDataset
 from typhoon_vn.features.bridge import to_canonical_frame
 from typhoon_vn.features.geo import bearing_deg, destination_point, haversine_km
@@ -22,6 +23,21 @@ from typhoon_vn.ingestion.providers.strategies import (
 )
 from typhoon_vn.settings import Settings
 from typhoon_vn.training.config_loader import PipelineConfig
+
+LEGACY_ROOT_MODULES = (
+    "data_clean.py",
+    "data_loader.py",
+    "model.py",
+    "train.py",
+    "predict.py",
+    "draw_map.py",
+    "share_func.py",
+)
+
+
+def test_legacy_root_modules_are_removed() -> None:
+    root = Path(__file__).resolve().parents[1]
+    assert not [name for name in LEGACY_ROOT_MODULES if (root / name).exists()]
 
 
 class EmptyProvider(ProviderStrategy):
@@ -134,3 +150,24 @@ def test_schema_drift_fails_before_feature_or_training_work() -> None:
         to_canonical_frame(pd.DataFrame({"storm_id": ["S"]}))
     with pytest.raises(ValueError, match="canonical track schema missing"):
         TyphoonDataset(pd.DataFrame({"storm_id": ["S"]}))
+    with pytest.raises(ValueError, match="duplicate columns"):
+        TrackSchema().validate_columns(
+            ["storm_id", "storm_id", "timestamp", "lat", "lon"]
+        )
+
+
+def test_observation_rejects_invalid_identity_and_checksum() -> None:
+    values = {
+        "source": "jma",
+        "source_storm_id": "2401",
+        "storm_id": "WP012024",
+        "timestamp": datetime(2024, 7, 1, tzinfo=timezone.utc),
+        "latitude": 10.0,
+        "longitude": 120.0,
+        "source_url": "https://example.test/jma",
+        "source_file_checksum": "a" * 64,
+    }
+    with pytest.raises(ValueError, match="source_storm_id"):
+        Observation(**{**values, "source_storm_id": " "})
+    with pytest.raises(ValueError, match="SHA-256"):
+        Observation(**{**values, "source_file_checksum": "not-a-digest"})

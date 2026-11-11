@@ -7,6 +7,7 @@ __pycache__/
 venv/
 .pytest_cache/
 .pytest-*/
+.pytest_tmp*/
 .coverage
 coverage.xml
 htmlcov/
@@ -15,6 +16,7 @@ build/
 dist/
 
 # Local configuration and secrets
+secrets/
 .env
 .env.*
 !.env.example
@@ -28,6 +30,7 @@ data/processed/*
 !data/processed/.gitkeep
 data/external/*
 !data/external/.gitkeep
+data/operational/*.db
 checkpoints/*.pth
 checkpoints/*.pt
 checkpoints/*.ckpt
@@ -49,4 +52,34 @@ _pip.log
 .vscode/
 .DS_Store
 Thumbs.db
+node_modules/
+.tmp-video-frame-*.jpg
+.tmp-video-frames/
+.local-server.pid
 %USERPROFILE%/
+
+# Local tooling, browser QA profiles and build by-products
+.agent/
+.agents/
+.ocr-review.json
+.review-wheel/
+.wrangler/
+.pytest-temp/
+reports/chrome-qa-profile*/
+reports/*.zip
+# LaTeX intermediates
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.loa
+*.out
+*.toc
+*.xdv
+*.nav
+*.snm
+baocao/**/*.log
+src/typhoon_vn/dashboard/assets/*.js.map

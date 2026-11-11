@@ -13,7 +13,7 @@ from typhoon_vn.models.lstm import LSTMTrackForecaster
 from typhoon_vn.training.pipeline import export_bundle, load_bundle, predict_bundle
 
 
-def make_bundle(tmp_path):
+def make_bundle(tmp_path, *, anchored=False):
     frame = generate_storm_track("WP012024", n_fixes=20)
     matrix = FeatureBuilder().feature_matrix(frame)
     scaler = FeatureScaler(list(FEATURE_COLUMNS)).fit(matrix)
@@ -25,6 +25,14 @@ def make_bundle(tmp_path):
         "num_layers": 1,
         "dropout": 0.0,
     }
+    if anchored:
+        indices = [FEATURE_COLUMNS.index(name) for name in ("lat", "lon")]
+        config.update(
+            anchor_indices=indices,
+            anchor_mean=[float(scaler._scaler.mean_[index]) for index in indices],
+            anchor_scale=[float(scaler._scaler.scale_[index]) for index in indices],
+            anchor_horizon_steps=[1, 2, 4, 8, 12],
+        )
     model = LSTMTrackForecaster(**config)
     export_bundle(
         tmp_path / "bundle",
@@ -67,6 +75,27 @@ def test_bundle_round_trip_and_horizon_mapping(tmp_path) -> None:
     assert len(coords) == len(classes) == 3
     assert bundle["manifest"]["synthetic"] is True
     assert bundle["scaler"].feature_columns == list(FEATURE_COLUMNS)
+
+
+def test_anchored_bundle_matches_fitted_scaler(tmp_path) -> None:
+    root, _ = make_bundle(tmp_path, anchored=True)
+    assert load_bundle(root)["model"].anchor_indices == (0, 1)
+    manifest_path = root / "manifest.json"
+    manifest = __import__("json").loads(manifest_path.read_text())
+    manifest["model"]["constructor"]["anchor_mean"][0] += 1
+    manifest_path.write_text(__import__("json").dumps(manifest))
+    with pytest.raises(ValueError, match="anchor does not match"):
+        load_bundle(root)
+
+
+def test_bundle_rejects_invalid_horizon_schedule(tmp_path) -> None:
+    root, _ = make_bundle(tmp_path)
+    manifest_path = root / "manifest.json"
+    manifest = __import__("json").loads(manifest_path.read_text())
+    manifest["time_step_hours"] = 0
+    manifest_path.write_text(__import__("json").dumps(manifest))
+    with pytest.raises(ValueError, match="horizon schedule"):
+        load_bundle(root)
 
 
 def test_corrupt_payload_and_schema_mismatch_fail_closed(tmp_path) -> None:

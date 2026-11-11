@@ -20,7 +20,13 @@ from typhoon_vn.datasets.typhoon_dataset import (
 )
 from typhoon_vn.features.build import FEATURE_COLUMNS, FeatureBuilder
 from typhoon_vn.features.scaling import FeatureScaler
-from typhoon_vn.models.lstm import LSTMTrackForecaster
+from typhoon_vn.models.base import TrackForecaster
+from typhoon_vn.models.lstm import (
+    AttentionLSTMTrackForecaster,
+    LSTMTrackForecaster,
+    Seq2SeqLSTMTrackForecaster,
+)
+from typhoon_vn.models.transformer import TransformerTrackForecaster
 from typhoon_vn.training.config_loader import PipelineConfig, load_config
 from typhoon_vn.training.experiment import ExperimentTracker
 from typhoon_vn.training.losses import MultiHorizonLoss
@@ -36,8 +42,71 @@ def _frame_hash(frame: pd.DataFrame) -> str:
     return hashlib.sha256(stable.encode()).hexdigest()
 
 
+def _source_hash() -> str:
+    digest = hashlib.sha256()
+    source_root = Path(__file__).resolve().parents[1]
+    for path in sorted(source_root.rglob("*.py")):
+        digest.update(path.relative_to(source_root).as_posix().encode())
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
 def _ids(frame: pd.DataFrame) -> list[str]:
     return sorted(map(str, frame["storm_id"].unique()))
+
+
+def _build_model(
+    config: PipelineConfig,
+    *,
+    n_features: int,
+    n_horizons: int,
+    n_classes: int,
+    anchor: dict[str, list[float] | list[int]] | None = None,
+) -> tuple[TrackForecaster, dict[str, Any]]:
+    common = {
+        "n_features": n_features,
+        "n_horizons": n_horizons,
+        "n_classes": n_classes,
+    }
+    if config.model.type == "LSTMTrackForecaster":
+        constructor = {
+            **common,
+            "hidden_size": config.model.hidden_size,
+            "num_layers": config.model.num_layers,
+            "dropout": config.model.dropout,
+            **(anchor or {}),
+        }
+        return LSTMTrackForecaster(**constructor), constructor
+    if config.model.type == "Seq2SeqLSTMTrackForecaster":
+        constructor = {
+            **common,
+            "hidden_size": config.model.hidden_size,
+            "num_layers": config.model.num_layers,
+            "dropout": config.model.dropout,
+            "teacher_forcing_ratio": (
+                0.5
+                if config.model.teacher_forcing_ratio is None
+                else config.model.teacher_forcing_ratio
+            ),
+        }
+        return Seq2SeqLSTMTrackForecaster(**constructor), constructor
+    if config.model.type == "AttentionLSTMTrackForecaster":
+        constructor = {
+            **common,
+            "hidden_size": config.model.hidden_size,
+            "num_layers": config.model.num_layers,
+            "dropout": config.model.dropout,
+        }
+        return AttentionLSTMTrackForecaster(**constructor), constructor
+    constructor = {
+        **common,
+        "d_model": config.model.d_model or 64,
+        "nhead": config.model.nhead or 4,
+        "n_layers": config.model.n_layers or 2,
+        "dim_feedforward": config.model.dim_feedforward or 128,
+        "dropout": config.model.dropout,
+    }
+    return TransformerTrackForecaster(**constructor), constructor
 
 
 def run_training(
@@ -97,15 +166,32 @@ def run_training(
     val_loader = DataLoader(
         val_ds, batch_size=config.training.batch_size, collate_fn=collate_fn
     )
-    model_config = {
-        "n_features": len(FEATURE_COLUMNS),
-        "n_horizons": len(config.dataset.horizon),
-        "n_classes": train_ds.n_classes,
-        "hidden_size": config.model.hidden_size,
-        "num_layers": config.model.num_layers,
-        "dropout": config.model.dropout,
-    }
-    model = LSTMTrackForecaster(**model_config)
+    model, model_config = _build_model(
+        config,
+        n_features=len(FEATURE_COLUMNS),
+        n_horizons=len(config.dataset.horizon),
+        n_classes=train_ds.n_classes,
+        anchor=(
+            {
+                "anchor_indices": [
+                    FEATURE_COLUMNS.index("lat"),
+                    FEATURE_COLUMNS.index("lon"),
+                ],
+                "anchor_mean": [
+                    float(scaler._scaler.mean_[FEATURE_COLUMNS.index(name)])
+                    for name in ("lat", "lon")
+                ],
+                "anchor_scale": [
+                    float(scaler._scaler.scale_[FEATURE_COLUMNS.index(name)])
+                    for name in ("lat", "lon")
+                ],
+                "anchor_horizon_steps": list(config.dataset.horizon),
+            }
+            if config.model.type == "LSTMTrackForecaster"
+            and not dataset_version.startswith("synthetic")
+            else None
+        ),
+    )
     loss = MultiHorizonLoss(
         len(config.dataset.horizon),
         train_ds.n_classes,
@@ -115,6 +201,7 @@ def run_training(
         cls_weight=config.loss.cls_weight,
     )
     output_dir = Path(output_dir)
+    checkpoint_dir = output_dir / config.checkpoint.dir
     trainer = Trainer(
         model,
         TrainingConfig(
@@ -126,12 +213,19 @@ def run_training(
             gradient_clip=config.training.gradient_clip,
             scheduler=config.training.scheduler,
             device=config.experiment.device,
-            checkpoint_dir=output_dir / "checkpoints",
+            checkpoint_dir=checkpoint_dir,
             log_every=config.training.log_every,
         ),
         loss,
     )
     result = trainer.fit(train_loader, val_loader)
+    # Export the selected validation checkpoint, without rewinding trainer/RNG state.
+    best = torch.load(
+        checkpoint_dir / "best.pt",
+        map_location="cpu",
+        weights_only=False,  # Trusted checkpoint just generated by this run.
+    )
+    model.load_state_dict(best["model_state_dict"])
     # Smoke artifact: radii are explicitly illustrative, not a real calibration claim.
     horizons_hours = [
         step * dataset_config.time_step_hours for step in config.dataset.horizon
@@ -150,6 +244,7 @@ def run_training(
         validation_radius_km=radii,
         split_manifest=split_manifest,
         synthetic=dataset_version.startswith("synthetic"),
+        uncertainty_method="illustrative heuristic; not calibrated coverage",
     )
     load_bundle(manifest)
     tracker = ExperimentTracker(
@@ -162,7 +257,11 @@ def run_training(
     with tracker:
         tracker.log_params(config.model_dump(mode="json"))
         tracker.log_params(
-            {"dataset_version": dataset_version, "dataset_sha256": split_manifest["dataset_sha256"]}
+            {
+                "dataset_version": dataset_version,
+                "dataset_sha256": split_manifest["dataset_sha256"],
+                "source_sha256": _source_hash(),
+            }
         )
         for record in result["history"]:
             epoch = int(record["epoch"])

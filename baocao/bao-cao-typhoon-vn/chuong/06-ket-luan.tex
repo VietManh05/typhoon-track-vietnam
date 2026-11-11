@@ -1,0 +1,60 @@
+% ---------------------------------------------------------------------
+%  CHƯƠNG 6 — KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+% ---------------------------------------------------------------------
+\chapter{Kết luận và hướng phát triển}
+\label{ch:ketluan}
+
+\begin{muctieu}
+Chương này tổng kết những gì đồ án đã làm được, rút ra bài học và đề xuất
+hướng phát triển tiếp theo.
+\end{muctieu}
+
+\section{Kết luận}
+
+Đồ án đã xây dựng một hệ thống trí tuệ nhân tạo gợi ý đường đi của cơn bão
+ảnh hưởng Việt Nam, đi trọn từ dữ liệu IBTrACS 1980--2024, tạo đặc trưng,
+huấn luyện và so sánh bảy phương pháp, đến triển khai API và bản đồ web. Bốn
+trên năm mục tiêu đạt đầy đủ (Bảng~\ref{tab:muctieu}): các phương pháp học giảm
+sai số 72 giờ khoảng 200~km so với persistence với ý nghĩa thống kê, và nón bất
+định phủ 82--86\% vị trí thực. Mục tiêu triển khai mới đạt một phần vì mô hình
+tốt nhất, có dòng dẫn đường, chưa được đưa vào phục vụ.
+
+Về mặt huấn luyện, đồ án rút ra ba kết quả chính: dự báo độ dịch chuyển tốt hơn
+hẳn dự báo tọa độ tuyệt đối ở hạn ngắn; với dữ liệu chỉ có quỹ đạo, LSTM,
+Transformer, k-NN và gradient boosting tương đương nhau; và bổ sung thông tin
+dòng dẫn đường khí quyển là thay đổi duy nhất cải thiện có ý nghĩa (giảm 35~km
+tại 72 giờ).
+
+\section{Bài học rút ra}
+
+Bài học lớn nhất là \textbf{thông tin đầu vào quan trọng hơn kiến trúc mô hình}.
+Chúng em đã thử nhiều cách làm mạng phức tạp hơn mà không cải thiện; chỉ khi
+đưa vào dữ liệu phản ánh đúng nguyên nhân vật lý của chuyển động bão thì sai số
+mới giảm. Nếu làm lại, chúng em sẽ tìm hiểu về khí tượng trước để chọn đặc trưng, thay vì
+bắt đầu từ việc thử kiến trúc.
+
+Bài học thứ hai là về \textbf{kỷ luật đánh giá}: chia tập theo năm, chọn mô hình
+chỉ trên validation, chạy nhiều seed và kiểm định bootstrap. Nhiều khác biệt vài
+chục km trông có vẻ đáng kể hoá ra không có ý nghĩa thống kê. Chúng em cũng phải
+bỏ qua một cấu hình có điểm test tốt nhất vì nó không được chọn trên validation.
+
+Về vai trò của trí tuệ nhân tạo: AI học được các kiểu quỹ đạo phổ biến và giảm
+sai số rõ rệt so với ngoại suy đơn giản, nhưng vẫn thất bại ở các cơn bão đi
+khác thường như YAGI, đúng những trường hợp nguy hiểm nhất. Vì vậy hệ thống chỉ
+nên là công cụ gợi ý bổ sung, có giải thích (bão tương tự) và có vùng bất định,
+không thay thế bản tin của cơ quan khí tượng có thẩm quyền.
+
+\section{Hướng phát triển}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Đưa mô hình kết hợp có dòng dẫn đường vào vận hành, lấy đặc trưng từ
+        phân tích GFS tại thời điểm dự báo, khắc phục hạn chế mô hình đang phục
+        vụ chỉ dùng quỹ đạo.
+  \item Dùng tái phân tích ERA5 độ phân giải 0,25° và đặc trưng dạng ảnh (mạng
+        CNN trên trường gió) để nhận diện áp cao cận nhiệt, nhắm vào các ca khó
+        như YAGI.
+  \item Thay nón tròn bằng nón bất đối xứng theo hướng dọc và ngang quỹ đạo,
+        hiệu chỉnh riêng theo cường độ bão.
+  \item Kiểm định chéo theo nhiều cách chia năm và theo dõi sai số trên các cơn
+        bão mới 2025--2026.
+\end{itemize}

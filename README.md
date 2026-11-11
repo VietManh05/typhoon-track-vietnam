@@ -4,11 +4,15 @@ Vietnam-focused tropical-cyclone track forecasting research and decision-support
 
 > **Safety:** forecasts are decision support only, not official weather warnings. Follow NCHMF and competent authorities for operational decisions.
 
+This research/demo deployment is **not production-ready** without validated forecast models, live-provider configuration and operational acceptance.
+
 ## Verified status
 
 The local test path currently covers ingestion, feature contracts, storm-safe splitting, train-only scaling, deterministic checkpoint/resume, model-bundle integrity, synthetic training smoke, trained/baseline inference, and API validation/auth/rate limiting.
 
-This repository is **not production-ready**. PostGIS/Alembic migrations, Redis read/invalidation, a live-provider worker, subscription ownership, and alert delivery remain backlog items. Synthetic smoke results and the constant-motion baseline are not evidence of real-storm forecast skill.
+The 2026-09-26 code review passed 262 Python tests and 25 frontend tests; the real PostGIS test still requires `POSTGIS_TEST_URL` and was skipped on this machine. The public [Pages dashboard](https://baoviet2026.pages.dev/) shows recent JMA storm guidance and Open-Meteo weather. Its model forecast and alert delivery remain unavailable. Container runtime validation, a promoted model that passes independent evaluation, and a real alert channel are required before operational acceptance. See the [customer review and acceptance record](docs/acceptance/customer-review-2026-09-26.md).
+
+See the [Vietnamese deployment guide](docs/deploy-vi.md) for Windows, Docker preview and production deployment.
 
 ## Architecture
 

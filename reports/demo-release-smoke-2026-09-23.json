@@ -1,0 +1,123 @@
+{
+  "url": "https://baoviet2026.pages.dev",
+  "checkedAt": "2026-09-23T13:50:43.679317+00:00",
+  "localIndexSha256": "99f18c0d95f31f25cd7da8136cac84fbd6bb52d93824332e24e4e40d05775551",
+  "passed": true,
+  "results": [
+    {
+      "check": "homepage",
+      "pass": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "check": "release-assets-match",
+      "pass": true,
+      "detail": "['/assets/index-6hKCiF9o.js', '/assets/vendor-react-DJ1oPbzn.js', '/assets/vendor-map-DGnrNSO-.js', '/assets/index-CWSxAr3C.css']"
+    },
+    {
+      "check": "asset:/assets/index-6hKCiF9o.js",
+      "pass": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "check": "asset:/assets/vendor-react-DJ1oPbzn.js",
+      "pass": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "check": "asset:/assets/vendor-map-DGnrNSO-.js",
+      "pass": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "check": "asset:/assets/index-CWSxAr3C.css",
+      "pass": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "check": "health",
+      "pass": true,
+      "detail": "HTTP 200, application/json"
+    },
+    {
+      "check": "no-storm-feed",
+      "pass": true,
+      "detail": "{'weather': True, 'ai': True, 'stormFeed': False, 'alertDelivery': False}"
+    },
+    {
+      "check": "no-alert-delivery",
+      "pass": true,
+      "detail": "{'weather': True, 'ai': True, 'stormFeed': False, 'alertDelivery': False}"
+    },
+    {
+      "check": "ready",
+      "pass": true,
+      "detail": "HTTP 503, application/json"
+    },
+    {
+      "check": "not-operational",
+      "pass": true,
+      "detail": "not_ready"
+    },
+    {
+      "check": "auth-capabilities",
+      "pass": true,
+      "detail": "HTTP 200, application/json"
+    },
+    {
+      "check": "no-demo-login",
+      "pass": true,
+      "detail": "False"
+    },
+    {
+      "check": "auth-session",
+      "pass": true,
+      "detail": "HTTP 503, application/json"
+    },
+    {
+      "check": "no-false-session",
+      "pass": true,
+      "detail": "False"
+    },
+    {
+      "check": "active-storms",
+      "pass": true,
+      "detail": "HTTP 200, application/json"
+    },
+    {
+      "check": "storm-state-honest",
+      "pass": true,
+      "detail": "False"
+    },
+    {
+      "check": "alerts-unavailable",
+      "pass": true,
+      "detail": "HTTP 503, application/json"
+    },
+    {
+      "check": "nchmf-unavailable-on-pages",
+      "pass": true,
+      "detail": "HTTP 503, application/json"
+    },
+    {
+      "check": "token-unavailable",
+      "pass": true,
+      "detail": "HTTP 503"
+    },
+    {
+      "check": "weather-bundle",
+      "pass": true,
+      "detail": "HTTP 200, application/json"
+    },
+    {
+      "check": "weather-has-data",
+      "pass": true,
+      "detail": "fields=3"
+    },
+    {
+      "check": "weather-source-labelled",
+      "pass": true,
+      "detail": "open-meteo"
+    }
+  ]
+}

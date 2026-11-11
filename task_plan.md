@@ -6,11 +6,11 @@ Hoàn thiện hệ thống theo ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md: dữ li
 
 ## Next Step
 
-Phase 2 đã hoàn tất. Bước kế tiếp khi bắt đầu Phase 3 là **T07-001 — Implement persistence**; chưa chuyển task này sang `in_progress`.
+Phạm vi local/testable đã hoàn tất và được kiểm chứng lại ngày 2026-09-21. Bước tiếp theo chỉ là external production gates khi operator cung cấp hosting/credentials/approval.
 
 ## Current Phase
 
-Phase 2 — Kiểm chứng nền tảng và dữ liệu (complete); không có task đang `in_progress`.
+Nghiệm thu local/testable (`complete`): Phase 2–7 và A29-001..A29-028 có evidence; production release vẫn phụ thuộc operator.
 
 ## Nơi lưu kế hoạch
 
@@ -41,29 +41,30 @@ Phase 2 — Kiểm chứng nền tảng và dữ liệu (complete); không có t
 
 ### Phase 3: Training, đánh giá, uncertainty và registry
 - [x] R10–R12: checkpoint/resume, bundle, CLI smoke.
-- [ ] G07–G15 và S02/S04/S05/S06: baseline/model, loss, training, backtest, tuning, calibration, registry.
-- [ ] S07: forecast môi trường tùy chọn, ghi quyết định theo dữ liệu/quyền truy cập.
-- **Status:** pending
+- [x] G07–G15 và S02/S04/S05/S06: baseline/model, loss, training, backtest, tuning, calibration, registry.
+- [x] S07: forecast môi trường tùy chọn, ghi quyết định theo dữ liệu/quyền truy cập.
+- **Status:** complete — [evidence](docs/planning/evidence/PHASE-3.md)
 
 ### Phase 4: Inference, API và vận hành dữ liệu
 - [x] R13–R14: kiểm thử API/inference và đối chiếu gap vận hành.
-- [ ] G16–G20, S09/S15/S24: PostGIS/migration, cache đọc/ghi, live worker, impact, CLI clean-data.
-- **Status:** pending
+- [x] G16 và S24: inference contract + CLI clean-data/provenance.
+- [x] G17–G20 và S09/S15: implementation/test local đạt; PostGIS migration/geometry gate được kiểm chứng lại ngày 2026-09-21.
+- **Status:** complete — [evidence](docs/planning/evidence/PHASE-4.md)
 
 ### Phase 5: Dashboard và cảnh báo
-- [ ] G21/G22: React/Leaflet, actual/forecast/cone, timeline, location, mobile.
-- [ ] S10–S14: official comparison, VI/EN, theme, alert adapters và webhook tùy chọn.
-- **Status:** pending
+- [x] G21/G22: React/Leaflet, actual/forecast/cone, timeline, location, mobile trong phạm vi local/testable.
+- [x] S10–S14: comparison contract, VI/EN, theme, alert adapters và fake/draft delivery; không gửi cảnh báo thật khi chưa có approval.
+- **Status:** complete (local-ready) — [evidence](docs/planning/evidence/PHASE-5.md)
 
 ### Phase 6: Kiểm thử hệ thống, deployment và monitoring
-- [ ] G23–G26: integration/load/container/CI-CD/monitoring.
-- [ ] S16–S20/S23: retention, retrain, capacity, backup/restore, drift, hosting/release.
-- **Status:** pending
+- [x] G23-G26: integration/load/container/CI-CD/monitoring local/testable scope.
+- [x] S16-S20/S23: retention, retrain, capacity, backup/restore, drift, hosting/release policy local/testable scope.
+- **Status:** complete - [evidence](docs/planning/evidence/PHASE-6.md)
 
 ### Phase 7: Tài liệu, demo và nghiệm thu
-- [ ] G27/G28, S21/S22: runbook/model card/post-season report/demo.
-- [ ] A29-001 đến A29-028: mỗi tiêu chí có evidence gắn version.
-- **Status:** pending
+- [x] G27/G28, S21/S22: runbook/model card/post-season report/demo.
+- [x] A29-001 đến A29-028: mỗi tiêu chí có evidence gắn version.
+- **Status:** complete — [evidence](docs/planning/evidence/PHASE-7.md)
 
 ## Quy tắc cập nhật
 

@@ -1,0 +1,250 @@
+{
+  "url": "https://baoviet2026.pages.dev/",
+  "checkedAt": "2026-09-23T13:50:47.175559+00:00",
+  "passed": true,
+  "results": [
+    {
+      "check": "demo-capabilities",
+      "pass": true,
+      "status": {
+        "badge": "DEMO",
+        "alertDisabled": true,
+        "loginHidden": true
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 320,
+      "expanded": false,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 8,
+          "right": 152.078125,
+          "top": 70,
+          "bottom": 116
+        },
+        ".map-location-search": {
+          "left": 8,
+          "right": 253,
+          "top": 138,
+          "bottom": 180
+        },
+        ".map-navigation": {
+          "left": 262,
+          "right": 312,
+          "top": 122,
+          "bottom": 274
+        }
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 320,
+      "expanded": true,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 8,
+          "right": 260,
+          "top": 70,
+          "bottom": 173
+        },
+        ".map-location-search": {
+          "left": 8,
+          "right": 253,
+          "top": 244,
+          "bottom": 286
+        },
+        ".map-navigation": {
+          "left": 262,
+          "right": 312,
+          "top": 122,
+          "bottom": 274
+        }
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 390,
+      "expanded": false,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 8,
+          "right": 152.078125,
+          "top": 70,
+          "bottom": 116
+        },
+        ".map-location-search": {
+          "left": 8,
+          "right": 253,
+          "top": 138,
+          "bottom": 180
+        },
+        ".map-navigation": {
+          "left": 332,
+          "right": 382,
+          "top": 122,
+          "bottom": 274
+        }
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 390,
+      "expanded": true,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 8,
+          "right": 330,
+          "top": 70,
+          "bottom": 172
+        },
+        ".map-location-search": {
+          "left": 8,
+          "right": 253,
+          "top": 244,
+          "bottom": 286
+        },
+        ".map-navigation": {
+          "left": 332,
+          "right": 382,
+          "top": 122,
+          "bottom": 274
+        }
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 430,
+      "expanded": false,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 8,
+          "right": 152.078125,
+          "top": 70,
+          "bottom": 116
+        },
+        ".map-location-search": {
+          "left": 8,
+          "right": 253,
+          "top": 138,
+          "bottom": 180
+        },
+        ".map-navigation": {
+          "left": 372,
+          "right": 422,
+          "top": 122,
+          "bottom": 274
+        }
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 430,
+      "expanded": true,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 8,
+          "right": 370,
+          "top": 70,
+          "bottom": 172
+        },
+        ".map-location-search": {
+          "left": 8,
+          "right": 253,
+          "top": 244,
+          "bottom": 286
+        },
+        ".map-navigation": {
+          "left": 372,
+          "right": 422,
+          "top": 122,
+          "bottom": 274
+        }
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 768,
+      "expanded": true,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 16,
+          "right": 287.796875,
+          "top": 90,
+          "bottom": 154
+        },
+        ".map-location-search": {
+          "left": 16,
+          "right": 276,
+          "top": 164,
+          "bottom": 206
+        },
+        ".map-navigation": {
+          "left": 16,
+          "right": 66,
+          "top": 212,
+          "bottom": 418
+        }
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 1024,
+      "expanded": true,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 16,
+          "right": 287.796875,
+          "top": 90,
+          "bottom": 154
+        },
+        ".map-location-search": {
+          "left": 16,
+          "right": 276,
+          "top": 164,
+          "bottom": 206
+        },
+        ".map-navigation": {
+          "left": 16,
+          "right": 66,
+          "top": 212,
+          "bottom": 418
+        }
+      }
+    },
+    {
+      "check": "map-controls",
+      "width": 1440,
+      "expanded": true,
+      "pass": true,
+      "geometry": {
+        ".map-layer-toolbar": {
+          "left": 16,
+          "right": 287.796875,
+          "top": 90,
+          "bottom": 154
+        },
+        ".map-location-search": {
+          "left": 16,
+          "right": 276,
+          "top": 164,
+          "bottom": 206
+        },
+        ".map-navigation": {
+          "left": 16,
+          "right": 66,
+          "top": 212,
+          "bottom": 418
+        }
+      }
+    }
+  ]
+}

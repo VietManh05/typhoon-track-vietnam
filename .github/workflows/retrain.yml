@@ -1,0 +1,36 @@
+name: IBTrACS candidate retraining
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 3 15 1 *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ibtracs-candidate-retraining
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install training and ingestion dependencies
+        run: python -m pip install -e ".[train,ingestion]"
+      - name: Train candidate from completed seasons
+        run: python scripts/auto_retrain_ibtracs.py --config configs/ibtracs_candidate.yaml
+      - name: Preserve candidate and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ibtracs-candidate-${{ github.run_id }}
+          path: data/processed/retraining/
+          if-no-files-found: warn
+          retention-days: 14

@@ -97,6 +97,44 @@ def test_trained_bundle_forecast_has_provenance_and_loads_once(
     assert first.uncertainty_method
 
 
+def test_bundle_runtime_is_injectable_without_training_imports() -> None:
+    calls = []
+    bundle = {
+        "manifest": {
+            "version": "injected-v1",
+            "dataset_version": "d1",
+            "validation_radius_km": {str(h): float(h) for h in [6, 12, 24, 48, 72]},
+        }
+    }
+
+    def loader(path):
+        calls.append(("load", path))
+        return bundle
+
+    def predictor(loaded, observations, horizons):
+        calls.append(("predict", loaded, len(observations), tuple(horizons)))
+        last = observations[-1]
+        return (
+            [(last.lat, last.lon) for _ in horizons],
+            [last.intensity] * len(horizons),
+        )
+
+    service = TyphoonForecaster(
+        "virtual-bundle",
+        allow_baseline=False,
+        bundle_loader=loader,
+        bundle_predictor=predictor,
+    )
+    result = service.forecast(
+        ForecastRequest(storm_id="WP012024", observations=fixes())
+    )
+
+    assert calls[0] == ("load", "virtual-bundle")
+    assert calls[1][0] == "predict"
+    assert result.model_version == "injected-v1"
+    assert result.model_kind == "trained-model"
+
+
 def test_missing_artifact_and_time_freshness_fail_or_warn(tmp_path) -> None:
     with pytest.raises(FileNotFoundError):
         TyphoonForecaster(tmp_path / "missing", allow_baseline=False)

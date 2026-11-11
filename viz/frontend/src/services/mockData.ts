@@ -232,6 +232,28 @@ export const MOCK_TRACK_YAGI: StormTrackResponse = {
   },
 };
 
+// Demo-only post-issue best-track verification. It intentionally diverges
+// from the trained forecast so both tracks remain easy to distinguish.
+const yagiActualCoordinates: Array<[number, number]> = [
+  [20.8, 106.6],
+  [20.9, 105.4],
+  [21.0, 103.8],
+  [20.6, 101.9],
+  [20.2, 100.4],
+];
+MOCK_TRACK_YAGI.actual_track = (MOCK_TRACK_YAGI.forecast?.points ?? []).map(
+  (point, index) => ({
+    horizon_hours: point.horizon_hours,
+    valid_time: point.valid_time,
+    lat: yagiActualCoordinates[index]?.[0] ?? point.lat,
+    lon: yagiActualCoordinates[index]?.[1] ?? point.lon,
+    intensity: point.intensity,
+    wind_ms: point.wind_ms ?? null,
+    pressure_hpa: point.pressure_hpa ?? null,
+    source: 'Demo best-track verification',
+  }),
+);
+
 // 2. Active East Sea Simulation: Typhoon TRAMI (Bão mô phỏng Biển Đông)
 export const MOCK_STORM_SIM: ActiveTyphoonItem = {
   id: 'WP202601',
@@ -393,6 +415,26 @@ export const MOCK_TRACK_SIM: StormTrackResponse = {
     ],
   },
 };
+
+const simActualCoordinates: Array<[number, number]> = [
+  [16.3, 112.4],
+  [16.3, 110.8],
+  [16.1, 109.0],
+  [15.8, 107.5],
+  [15.4, 105.7],
+];
+MOCK_TRACK_SIM.actual_track = (MOCK_TRACK_SIM.forecast?.points ?? []).map(
+  (point, index) => ({
+    horizon_hours: point.horizon_hours,
+    valid_time: point.valid_time,
+    lat: simActualCoordinates[index]?.[0] ?? point.lat,
+    lon: simActualCoordinates[index]?.[1] ?? point.lon,
+    intensity: point.intensity,
+    wind_ms: point.wind_ms ?? null,
+    pressure_hpa: point.pressure_hpa ?? null,
+    source: 'Demo simulated verification',
+  }),
+);
 
 // 3. Official Comparison Data (S10: Compare AI Model vs NCHMF Official Guidance)
 export const MOCK_OFFICIAL_COMPARISON = [

@@ -1,6 +1,6 @@
 # G19 — Worker thời gian thực
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: in_progress; bằng chứng tại [G19-worker.md](evidence/G19-worker.md).
 - Hiện trạng: Worker hiện chỉ đọc snapshot JSON và sinh forecast; chưa có scheduler/provider live.
 - Đầu vào: Provider adapter đã kiểm thử, freshness window và cấu hình lịch.
 - Gate phụ thuộc: G01, G17, G20.

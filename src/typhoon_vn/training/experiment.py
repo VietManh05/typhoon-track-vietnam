@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import csv
 import json
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 
 def flatten_params(payload: dict[str, Any], prefix: str = "") -> dict[str, Any]:
@@ -39,7 +41,7 @@ class ExperimentTracker:
         self.enabled = enabled
         self.tracking_uri = tracking_uri
         self.experiment_name = experiment_name
-        self.run_id: str | None = None
+        self.run_id: str = f"local-{uuid4().hex}"
         self._mlflow: Any = None
         self._params: dict[str, Any] = {}
         self._metrics: list[dict[str, Any]] = []
@@ -51,7 +53,9 @@ class ExperimentTracker:
             try:
                 import mlflow
             except ImportError as exc:
-                raise RuntimeError("MLflow tracking requires the experiment extra") from exc
+                raise RuntimeError(
+                    "MLflow tracking requires the experiment extra"
+                ) from exc
             mlflow.set_tracking_uri(self.tracking_uri)
             mlflow.set_experiment(self.experiment_name)
             active = mlflow.start_run(run_name=self.name)
@@ -65,7 +69,9 @@ class ExperimentTracker:
         if self._mlflow is not None:
             self._mlflow.log_params(values)
 
-    def log_metrics(self, payload: dict[str, float], *, step: int | None = None) -> None:
+    def log_metrics(
+        self, payload: dict[str, float], *, step: int | None = None
+    ) -> None:
         values = {key: float(value) for key, value in payload.items()}
         record: dict[str, Any] = {"values": values}
         if step is not None:
@@ -93,8 +99,39 @@ class ExperimentTracker:
             "metrics": self._metrics,
             "artifacts": self._artifacts,
         }
-        (self.output_dir / "experiment.json").write_text(
+        destination = self.output_dir / "experiment.json"
+        temporary = destination.with_suffix(".json.tmp")
+        temporary.write_text(
             json.dumps(record, indent=2, sort_keys=True), encoding="utf-8"
         )
+        temporary.replace(destination)
+        index_path = self.output_dir / "experiment-index.csv"
+        write_header = not index_path.exists()
+        with index_path.open("a", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=(
+                    "run_id",
+                    "name",
+                    "status",
+                    "tracking_uri",
+                    "params_json",
+                    "metrics_json",
+                    "artifacts_json",
+                ),
+            )
+            if write_header:
+                writer.writeheader()
+            writer.writerow(
+                {
+                    "run_id": self.run_id,
+                    "name": self.name,
+                    "status": status,
+                    "tracking_uri": record["tracking_uri"] or "",
+                    "params_json": json.dumps(self._params, sort_keys=True),
+                    "metrics_json": json.dumps(self._metrics, sort_keys=True),
+                    "artifacts_json": json.dumps(self._artifacts, sort_keys=True),
+                }
+            )
         if self._mlflow is not None:
             self._mlflow.end_run(status=status)

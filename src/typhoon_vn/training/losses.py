@@ -62,6 +62,32 @@ class HaversineLoss(nn.Module):
         return dist
 
 
+class PinballLoss(nn.Module):
+    """Quantile-regression loss for outputs shaped (B, H, 2, Q)."""
+
+    def __init__(self, quantiles: Sequence[float] = (0.1, 0.5, 0.9)) -> None:
+        super().__init__()
+        values = tuple(float(value) for value in quantiles)
+        if not values or tuple(sorted(set(values))) != values:
+            raise ValueError("quantiles must be unique and increasing")
+        if any(not 0 < value < 1 for value in values):
+            raise ValueError("quantiles must lie inside (0, 1)")
+        self.quantiles = values
+
+    def forward(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        if pred.ndim != 4 or target.shape != pred.shape[:-1]:
+            raise ValueError("pred must be (B,H,2,Q) and target must be (B,H,2)")
+        if pred.shape[-1] != len(self.quantiles):
+            raise ValueError("prediction quantile dimension does not match quantiles")
+        if not torch.isfinite(pred).all() or not torch.isfinite(target).all():
+            raise ValueError("quantile loss inputs must be finite")
+        quantiles = torch.tensor(
+            self.quantiles, dtype=pred.dtype, device=pred.device
+        ).view(1, 1, 1, -1)
+        error = target.unsqueeze(-1) - pred
+        return torch.maximum(quantiles * error, (quantiles - 1.0) * error).mean()
+
+
 class MultiHorizonLoss(nn.Module):
     """Combined regression and classification loss with horizon weights.
 
@@ -118,6 +144,8 @@ class MultiHorizonLoss(nn.Module):
         pred_cls: torch.Tensor,
         target_reg: torch.Tensor,
         target_cls: torch.Tensor,
+        reg_mask: torch.Tensor,
+        cls_mask: torch.Tensor,
     ) -> None:
         batch_size = pred_reg.shape[0] if pred_reg.ndim else 0
         if pred_reg.ndim != 3 or tuple(pred_reg.shape[1:]) != (self.n_horizons, 2):
@@ -128,6 +156,10 @@ class MultiHorizonLoss(nn.Module):
             raise ValueError("pred_cls has an invalid shape")
         if tuple(target_cls.shape) != (batch_size, self.n_horizons):
             raise ValueError("target_cls has an invalid shape")
+        if reg_mask.shape != (batch_size, self.n_horizons):
+            raise ValueError("reg_mask has an invalid shape")
+        if cls_mask.shape != (batch_size, self.n_horizons):
+            raise ValueError("cls_mask has an invalid shape")
         if batch_size == 0:
             raise ValueError("loss inputs must contain at least one sample")
         # Validate model outputs here so invalid predictions fail at the loss
@@ -141,10 +173,17 @@ class MultiHorizonLoss(nn.Module):
                 raise ValueError(f"{name} must contain only finite values")
         if target_cls.dtype == torch.bool or target_cls.is_floating_point():
             raise TypeError("target_cls must use an integer dtype")
-        if (target_cls < 0).any() or (target_cls >= self.n_classes).any():
+        selected_cls = target_cls[cls_mask]
+        if (selected_cls < 0).any() or (selected_cls >= self.n_classes).any():
             raise ValueError(
                 f"target_cls values must be within [0, {self.n_classes - 1}]"
             )
+        if reg_mask.any() and not torch.isfinite(target_reg[reg_mask]).all():
+            raise ValueError("selected target_reg values must be finite")
+        if self.reg_weight > 0 and not reg_mask.any():
+            raise ValueError("regression loss has no valid targets")
+        if self.cls_weight > 0 and not cls_mask.any():
+            raise ValueError("classification loss has no valid targets")
 
     def forward(
         self,
@@ -152,18 +191,50 @@ class MultiHorizonLoss(nn.Module):
         pred_cls: torch.Tensor,
         target_reg: torch.Tensor,
         target_cls: torch.Tensor,
+        *,
+        reg_mask: torch.Tensor | None = None,
+        cls_mask: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
-        self._validate_inputs(pred_reg, pred_cls, target_reg, target_cls)
+        batch_size = pred_reg.shape[0] if pred_reg.ndim else 0
+        expected_mask_shape = (batch_size, self.n_horizons)
+        if reg_mask is None:
+            reg_mask = torch.ones(
+                expected_mask_shape, dtype=torch.bool, device=pred_reg.device
+            )
+        else:
+            reg_mask = reg_mask.to(device=pred_reg.device, dtype=torch.bool)
+        if cls_mask is None:
+            cls_mask = torch.ones(
+                expected_mask_shape, dtype=torch.bool, device=pred_cls.device
+            )
+        else:
+            cls_mask = cls_mask.to(device=pred_cls.device, dtype=torch.bool)
+        self._validate_inputs(
+            pred_reg, pred_cls, target_reg, target_cls, reg_mask, cls_mask
+        )
         weights = self.horizon_weights.to(device=pred_reg.device, dtype=pred_reg.dtype)
         if self.reg_loss_name == "smooth_l1":
-            reg_per_step = self.reg_criterion(pred_reg, target_reg).mean(dim=-1)
+            safe_target_reg = torch.where(
+                reg_mask.unsqueeze(-1), target_reg, pred_reg.detach()
+            )
+            reg_per_step = self.reg_criterion(pred_reg, safe_target_reg).mean(dim=-1)
         else:
-            reg_per_step = self.reg_criterion(pred_reg, target_reg)
-        reg_loss = (reg_per_step * weights).mean()
+            reg_per_step = torch.zeros_like(reg_mask, dtype=pred_reg.dtype)
+            reg_per_step[reg_mask] = self.reg_criterion(
+                pred_reg[reg_mask], target_reg[reg_mask]
+            )
+        reg_loss = (reg_per_step * weights * reg_mask).sum() / reg_mask.sum().clamp_min(
+            1
+        )
+        safe_target_cls = torch.where(
+            cls_mask, target_cls, torch.zeros_like(target_cls)
+        )
         cls_per_step = self.cls_criterion(
-            pred_cls.reshape(-1, self.n_classes), target_cls.reshape(-1)
+            pred_cls.reshape(-1, self.n_classes), safe_target_cls.reshape(-1)
         ).view(-1, self.n_horizons)
-        cls_loss = (cls_per_step * weights.to(pred_cls)).mean()
+        cls_loss = (
+            cls_per_step * weights.to(pred_cls) * cls_mask
+        ).sum() / cls_mask.sum().clamp_min(1)
         total = self.reg_weight * reg_loss + self.cls_weight * cls_loss
         # Trainer performs the final component check so its error identifies
         # whether a non-finite target came from training or validation data.

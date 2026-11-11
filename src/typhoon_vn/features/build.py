@@ -12,9 +12,9 @@ import math
 import numpy as np
 import pandas as pd
 
+from typhoon_vn.contracts.track import TrackSchema
 from typhoon_vn.features import constants as C
 from typhoon_vn.features.geo import bearing_change_deg, bearing_deg, haversine_km
-from typhoon_vn.features.schema import TrackSchema
 
 SCHEMA = TrackSchema()
 

@@ -100,7 +100,26 @@ class Trainer:
                 if training:
                     self.optimizer.zero_grad()
                 out = self.model(x, mask)
-                loss, metrics = self.loss_fn(out["reg"], out["cls"], y_reg, y_cls)
+                reg_mask = batch.get("y_reg_mask")
+                cls_mask = batch.get("y_cls_mask")
+                try:
+                    loss, metrics = self.loss_fn(
+                        out["reg"],
+                        out["cls"],
+                        y_reg,
+                        y_cls,
+                        reg_mask=(
+                            reg_mask.to(self.device) if reg_mask is not None else None
+                        ),
+                        cls_mask=(
+                            cls_mask.to(self.device) if cls_mask is not None else None
+                        ),
+                    )
+                except ValueError as exc:
+                    if "target_reg values must be finite" not in str(exc):
+                        raise
+                    kind = "training" if training else "validation"
+                    raise ValueError(f"{kind} metrics must be finite") from exc
                 metric_values = {
                     name: float(metrics[name].detach().item()) for name in totals
                 }

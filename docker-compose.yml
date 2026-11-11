@@ -6,13 +6,16 @@ services:
       context: .
       dockerfile: infra/docker/Dockerfile
     command: uvicorn typhoon_vn.api.app:app --host 0.0.0.0 --port 8000 --reload
-    env_file: .env
+    env_file: ["${TYPHOON_ENV_FILE:-.env}"]
     environment:
       PYTHONPATH: /app/src
       OPERATIONAL_DATABASE_URL: postgresql+psycopg://typhoon:typhoon@postgres:5432/typhoon
       DATABASE_URL: postgresql+psycopg://typhoon:typhoon@postgres:5432/typhoon
       REDIS_URL: redis://redis:6379/0
+      CACHE_ENABLED: "true"
       MINIO_ENDPOINT: minio:9000
+      API_KEY: ${API_KEY:?Set API_KEY in .env}
+      REQUIRE_API_KEY: "true"
     volumes:
       - .:/app
     ports:

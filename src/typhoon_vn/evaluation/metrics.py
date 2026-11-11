@@ -31,6 +31,8 @@ def _matching_arrays(
     actual_array = _to_numpy(actual)
     if pred_array.shape != actual_array.shape:
         raise ValueError("prediction and target shapes must match")
+    if pred_array.size == 0:
+        raise ValueError("prediction and target arrays must not be empty")
     if last_size is not None and (
         pred_array.ndim == 0 or pred_array.shape[-1] != last_size
     ):
@@ -115,6 +117,10 @@ def intensity_accuracy(
         pred = np.argmax(pred, axis=-1)
     if pred.shape != target.shape:
         raise ValueError("class predictions and targets must have compatible shapes")
+    if pred.size == 0:
+        raise ValueError("class predictions and targets must not be empty")
+    if not np.isfinite(pred).all() or not np.isfinite(target).all():
+        raise ValueError("class predictions and targets must be finite")
     horizons = pred.shape[1] if pred.ndim > 1 else 1
     if pred.ndim == 1:
         pred = pred.reshape(-1, 1)
@@ -138,11 +144,26 @@ def regression_mae(
     return np.mean(np.abs(pred_array - actual_array), axis=0)
 
 
+def regression_rmse(
+    pred: torch.Tensor | np.ndarray,
+    actual: torch.Tensor | np.ndarray,
+) -> np.ndarray:
+    """Per-horizon RMSE; empty or non-finite arrays are rejected."""
+    pred_array, actual_array = _matching_arrays(pred, actual)
+    if pred_array.ndim == 3 and pred_array.shape[-1] == 1:
+        pred_array = pred_array[..., 0]
+        actual_array = actual_array[..., 0]
+    if pred_array.ndim != 2:
+        raise ValueError("scalar regression inputs must have shape (B, H) or (B, H, 1)")
+    return np.sqrt(np.mean(np.square(pred_array - actual_array), axis=0))
+
+
 def intensity_classification_scores(
     pred_cls: torch.Tensor | np.ndarray,
     target_cls: torch.Tensor | np.ndarray,
     *,
     n_classes: int | None = None,
+    unknown_label: int | None = None,
 ) -> dict[str, np.ndarray]:
     """Return per-horizon accuracy and macro precision/recall/F1."""
 
@@ -152,7 +173,12 @@ def intensity_classification_scores(
         inferred_classes = pred.shape[-1]
         pred = np.argmax(pred, axis=-1)
     else:
-        inferred_classes = int(max(pred.max(initial=0), target.max(initial=0))) + 1
+        known_target = (
+            target[target != unknown_label] if unknown_label is not None else target
+        )
+        inferred_classes = (
+            int(max(pred.max(initial=0), known_target.max(initial=0))) + 1
+        )
     if pred.shape != target.shape:
         raise ValueError("class predictions and targets must have compatible shapes")
     if pred.ndim == 1:
@@ -168,33 +194,48 @@ def intensity_classification_scores(
     precision: list[float] = []
     recall: list[float] = []
     f1: list[float] = []
+    support: list[list[int]] = []
     for horizon in range(pred.shape[1]):
         p_h = pred[:, horizon]
         t_h = target[:, horizon]
+        if unknown_label is not None:
+            valid = t_h != unknown_label
+            p_h = p_h[valid]
+            t_h = t_h[valid]
+        if t_h.size == 0:
+            raise ValueError("classification horizon has no known labels")
         accuracy.append(float(np.mean(p_h == t_h)))
         per_class: list[tuple[float, float, float]] = []
+        horizon_support: list[int] = []
         for class_id in range(class_count):
             true_positive = np.sum((p_h == class_id) & (t_h == class_id))
             false_positive = np.sum((p_h == class_id) & (t_h != class_id))
             false_negative = np.sum((p_h != class_id) & (t_h == class_id))
-            p_score = float(true_positive / (true_positive + false_positive)) if (
-                true_positive + false_positive
-            ) else 0.0
-            r_score = float(true_positive / (true_positive + false_negative)) if (
-                true_positive + false_negative
-            ) else 0.0
+            p_score = (
+                float(true_positive / (true_positive + false_positive))
+                if (true_positive + false_positive)
+                else 0.0
+            )
+            r_score = (
+                float(true_positive / (true_positive + false_negative))
+                if (true_positive + false_negative)
+                else 0.0
+            )
             f_score = (
                 2 * p_score * r_score / (p_score + r_score)
                 if p_score + r_score
                 else 0.0
             )
             per_class.append((p_score, r_score, f_score))
+            horizon_support.append(int(np.sum(t_h == class_id)))
         precision.append(float(np.mean([value[0] for value in per_class])))
         recall.append(float(np.mean([value[1] for value in per_class])))
         f1.append(float(np.mean([value[2] for value in per_class])))
+        support.append(horizon_support)
     return {
         "accuracy": np.asarray(accuracy),
         "precision_macro": np.asarray(precision),
         "recall_macro": np.asarray(recall),
         "f1_macro": np.asarray(f1),
+        "support": np.asarray(support),
     }

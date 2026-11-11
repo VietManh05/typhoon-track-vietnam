@@ -1,3 +1,28 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "makefile.configureOnOpen": false,
+    "explorer.excludeGitIgnore": true,
+    "explorer.compactFolders": true,
+    "explorer.sortOrder": "foldersNestsFiles",
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "pyproject.toml": ".python-version, .flake8, .pre-commit-config.yaml, requirements*.txt, conftest.py",
+        "README.md": "CONTRIBUTING.md, LICENSE",
+        "docker-compose.yml": "docker-compose.*.yml, .dockerignore",
+        "dvc.yaml": "dvc.lock, .dvcignore",
+        "task_plan.md": "progress.md, findings.md",
+        ".gitignore": ".editorconfig"
+    },
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest-*": true,
+        "**/.pytest_tmp*": true,
+        "**/.mypy_cache": true,
+        "**/.ruff_cache": true,
+        "**/.venv": true,
+        "**/node_modules": true,
+        "checkpoints": true,
+        "notebooks": true
+    }
 }

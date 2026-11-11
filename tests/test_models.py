@@ -1,5 +1,7 @@
 """Tests for Phase-3 model architectures and uncertainty helpers."""
 
+import math
+
 import pytest
 import torch
 
@@ -39,6 +41,29 @@ def test_baseline_lstm_forward_shape(sample_batch: dict[str, torch.Tensor]) -> N
     out = model(x, mask)
     assert out["reg"].shape == (1, 5, 2)
     assert out["cls"].shape == (1, 5, 7)
+
+
+def test_anchored_lstm_predicts_displacement_from_latest_fix() -> None:
+    model = LSTMTrackForecaster(
+        n_features=3,
+        n_horizons=2,
+        n_classes=2,
+        hidden_size=4,
+        num_layers=1,
+        anchor_indices=(0, 1),
+        anchor_mean=(20.0, 120.0),
+        anchor_scale=(10.0, 5.0),
+        anchor_horizon_steps=(1, 2),
+    )
+    torch.nn.init.zeros_(model.reg_head.weight)
+    torch.nn.init.zeros_(model.reg_head.bias)
+    x = torch.tensor([[[0.0, 0.0, 1.0], [0.5, -1.0, 1.0], [0.0, 0.0, 0.0]]])
+    mask = torch.tensor([[1, 1, 0]])
+    factors = [3.0 * (1.0 - math.exp(-step / 3.0)) for step in (1, 2)]
+    expected = torch.tensor(
+        [[[25.0 + 5.0 * factor, 115.0 - 5.0 * factor] for factor in factors]]
+    )
+    assert torch.allclose(model(x, mask)["reg"], expected)
 
 
 def test_seq2seq_lstm_forward_shape(sample_batch: dict[str, torch.Tensor]) -> None:

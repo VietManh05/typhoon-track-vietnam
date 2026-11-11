@@ -1,194 +1,251 @@
-import React, { useState, useMemo } from 'react';
-import { ProvinceImpact } from '../types';
-import { Language, translations } from '../i18n';
-import { MapPin, Search, AlertCircle, ArrowRight } from 'lucide-react';
+import React, { useDeferredValue, useMemo, useState } from "react";
+import { Clock3, MapPin, Navigation, Search, ShieldAlert } from "lucide-react";
+import { Language, translations } from "../i18n";
+import { formatHours, formatKm } from "../lib/format";
+import { getRiskLevel, RISK_LABEL_KEYS, RISK_TOKENS } from "../lib/storm";
+import { ProvinceImpact } from "../types";
 
 interface ProvinceImpactPanelProps {
-  impacts: ProvinceImpact[];
-  selectedProvinceId: string | null;
-  onSelectProvince: (id: string) => void;
-  lang: Language;
+    impacts: ProvinceImpact[];
+    selectedProvinceId: string | null;
+    onSelectProvince: (id: string) => void;
+    lang: Language;
 }
 
-const getImpactBadge = (level: ProvinceImpact['impact_level'], lang: Language) => {
-  const t = translations[lang];
-  switch (level) {
-    case 'critical':
-      return {
-        label: t.impact_critical,
-        className: 'bg-purple-950/80 text-purple-300 border-purple-600/60 shadow-sm shadow-purple-500/20',
-      };
-    case 'high':
-      return {
-        label: t.impact_high,
-        className: 'bg-rose-950/80 text-rose-300 border-rose-600/60 shadow-sm shadow-rose-500/20',
-      };
-    case 'moderate':
-      return {
-        label: t.impact_moderate,
-        className: 'bg-amber-950/80 text-amber-300 border-amber-600/60',
-      };
-    case 'low':
-      return {
-        label: t.impact_low,
-        className: 'bg-emerald-950/80 text-emerald-300 border-emerald-600/60',
-      };
-    default:
-      return {
-        label: t.impact_none,
-        className: 'bg-slate-900/60 text-slate-400 border-slate-800',
-      };
-  }
-};
+type Filter = "all" | "danger" | "near" | "cone";
 
 export const ProvinceImpactPanel: React.FC<ProvinceImpactPanelProps> = ({
-  impacts,
-  selectedProvinceId,
-  onSelectProvince,
-  lang,
+    impacts,
+    selectedProvinceId,
+    onSelectProvince,
+    lang,
 }) => {
-  const [search, setSearch] = useState('');
-  const t = translations[lang];
-
-  const filteredProvinces = useMemo(() => {
-    return impacts.filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase())
+    const [search, setSearch] = useState("");
+    const [filter, setFilter] = useState<Filter>("all");
+    const deferredSearch = useDeferredValue(
+        search.trim().toLocaleLowerCase(lang === "vi" ? "vi" : "en"),
     );
-  }, [impacts, search]);
+    const t = translations[lang];
 
-  const selectedProvince = useMemo(() => {
-    return impacts.find((p) => p.id === selectedProvinceId) || impacts[0];
-  }, [impacts, selectedProvinceId]);
+    const filtered = useMemo(
+        () =>
+            impacts.filter((impact) => {
+                if (
+                    deferredSearch &&
+                    !impact.name
+                        .toLocaleLowerCase(lang === "vi" ? "vi" : "en")
+                        .includes(deferredSearch)
+                )
+                    return false;
+                if (filter === "danger")
+                    return (
+                        impact.impact_level === "critical" ||
+                        impact.impact_level === "high"
+                    );
+                if (filter === "near")
+                    return impact.min_forecast_distance_km <= 150;
+                if (filter === "cone") return impact.within_cone;
+                return true;
+            }),
+        [deferredSearch, filter, impacts, lang],
+    );
 
-  return (
-    <div className="glass-panel p-4 flex flex-col gap-3 animate-fade-in-up" role="region" aria-label={t.province_impact_title}>
-      {/* Title */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-        <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-cyan-400" aria-hidden="true" />
-          <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider font-display">
-            {t.province_impact_title}
-          </h3>
-        </div>
-      </div>
+    const selected =
+        impacts.find((impact) => impact.id === selectedProvinceId) ??
+        impacts[0];
+    const filterLabels: Record<Filter, string> = {
+        all: lang === "vi" ? "Tất cả" : "All",
+        danger: lang === "vi" ? "Nguy hiểm" : "Danger",
+        near: lang === "vi" ? "Gần tâm bão" : "Near center",
+        cone: lang === "vi" ? "Trong nón" : "In cone",
+    };
 
-      {/* Search Input */}
-      <div className="relative" role="search">
-        <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" aria-hidden="true" />
-        <input
-          type="text"
-          placeholder={t.select_province}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-slate-900/90 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition focus-ring"
-          aria-label={t.select_province}
-        />
-      </div>
-
-      {/* Selected Province Highlights */}
-      {selectedProvince && (
-        <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <h4 className="text-base font-bold font-display text-white flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-rose-400" aria-hidden="true" />
-              {selectedProvince.name}
-            </h4>
-            <span className="text-[11px] font-mono text-slate-400">
-              {selectedProvince.centroid[0].toFixed(2)}°{lang === 'vi' ? 'B' : 'N'}, {selectedProvince.centroid[1].toFixed(2)}°{lang === 'vi' ? 'Đ' : 'E'}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-            <div className="p-2 rounded bg-slate-900/60 border border-slate-800">
-              <div className="text-[11px] text-slate-400">{t.distance_to_center}</div>
-              <div className="text-base font-bold text-cyan-300 mt-0.5">
-                {selectedProvince.current_distance_km} km
-              </div>
-            </div>
-
-            <div className="p-2 rounded bg-slate-900/60 border border-slate-800">
-              <div className="text-[11px] text-slate-400">{t.closest_forecast_dist}</div>
-              <div className="text-base font-bold text-amber-300 mt-0.5">
-                {selectedProvince.min_forecast_distance_km} km
-              </div>
-            </div>
-          </div>
-
-          {/* ETA & Impact Level */}
-          <div className="flex flex-col gap-1.5 pt-1 border-t border-slate-850">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400 font-medium">{t.eta_label}:</span>
-              <span className="font-mono font-bold text-slate-200">
-                {selectedProvince.closest_horizon_hours === 0
-                  ? t.eta_now
-                  : `+${selectedProvince.closest_horizon_hours} ${t.eta_hours_suffix} (${new Date(
-                      selectedProvince.closest_valid_time
-                    ).toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      day: '2-digit',
-                      month: '2-digit',
-                    })})`}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400 font-medium">{t.impact_level_label}:</span>
-              <span
-                className={`px-2 py-0.5 rounded text-[11px] font-bold border ${
-                  getImpactBadge(selectedProvince.impact_level, lang).className
-                }`}
-              >
-                {getImpactBadge(selectedProvince.impact_level, lang).label}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Top 5 Most Threatened Provinces Quick List */}
-      <div className="flex flex-col gap-1.5 mt-1">
-        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
-          {t.top_provinces_label}
-        </span>
-        <div className="flex flex-col gap-1" role="listbox" aria-label={t.top_provinces_label}>
-          {impacts.slice(0, 5).map((p) => {
-            const isSel = p.id === (selectedProvince?.id || '');
-            return (
-              <button
-                key={p.id}
-                onClick={() => onSelectProvince(p.id)}
-                role="option"
-                aria-selected={isSel}
-                className={`flex items-center justify-between p-2 rounded-lg text-xs font-mono border transition focus-ring ${
-                  isSel
-                    ? 'bg-slate-800 text-cyan-300 border-cyan-500'
-                    : 'bg-slate-900/50 text-slate-300 border-slate-800 hover:bg-slate-850'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-slate-200">{p.name}</span>
-                  {p.within_cone && (
-                    <span className="text-[10px] px-1 py-0.2 rounded bg-rose-950 text-rose-300 border border-rose-800">
-                      {t.in_cone}
-                    </span>
-                  )}
+    return (
+        <section
+            className="panel overflow-hidden"
+            aria-labelledby="province-risk-title"
+        >
+            <div className="panel-head">
+                <div>
+                    <div className="mb-1 flex items-center gap-2 text-primary">
+                        <MapPin className="h-4 w-4" aria-hidden="true" />
+                        <span className="section-label">
+                            {lang === "vi"
+                                ? "Phân tích tác động"
+                                : "Impact intelligence"}
+                        </span>
+                    </div>
+                    <h2
+                        id="province-risk-title"
+                        className="text-sm font-semibold text-fg"
+                    >
+                        {t.province_impact_title}
+                    </h2>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-400">{p.min_forecast_distance_km} km</span>
-                  <ArrowRight className="w-3 h-3 text-slate-500" aria-hidden="true" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+                <span className="badge border-line bg-surface-2 font-mono text-fg-muted">
+                    {impacts.length}
+                </span>
+            </div>
 
-      {/* Caveat note */}
-      <div className="flex items-start gap-1.5 text-[11px] text-slate-500 italic mt-1">
-        <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" aria-hidden="true" />
-        <p>{t.impact_note}</p>
-      </div>
-    </div>
-  );
+            <div className="space-y-3 p-3">
+                {selected
+                    ? (() => {
+                          const level = getRiskLevel(selected.impact_level);
+                          const token = RISK_TOKENS[level];
+                          return (
+                              <div
+                                  className={`rounded-card border p-3 ${token.border} ${token.bg}`}
+                              >
+                                  <div className="flex items-start justify-between gap-3">
+                                      <div>
+                                          <div className="text-base font-semibold text-fg">
+                                              {selected.name}
+                                          </div>
+                                          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[10px] text-fg-muted">
+                                              <span>
+                                                  {formatKm(
+                                                      selected.min_forecast_distance_km,
+                                                  )}
+                                                  &nbsp;km
+                                              </span>
+                                              <span>
+                                                  ETA{" "}
+                                                  {formatHours(
+                                                      selected.eta_hours,
+                                                  )}
+                                              </span>
+                                              {selected.within_cone ? (
+                                                  <span className="text-warning">
+                                                      {t.in_cone}
+                                                  </span>
+                                              ) : null}
+                                          </div>
+                                      </div>
+                                      <span
+                                          className={`badge ${token.border} ${token.bg} ${token.text}`}
+                                      >
+                                          <ShieldAlert
+                                              className="h-3 w-3"
+                                              aria-hidden="true"
+                                          />
+                                          {t[RISK_LABEL_KEYS[level]] as string}
+                                      </span>
+                                  </div>
+                              </div>
+                          );
+                      })()
+                    : null}
+
+                <div className="relative" role="search">
+                    <label htmlFor="province-search" className="sr-only">
+                        {t.select_province}
+                    </label>
+                    <Search
+                        className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-fg-faint"
+                        aria-hidden="true"
+                    />
+                    <input
+                        id="province-search"
+                        type="search"
+                        className="input pl-9"
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                        placeholder={
+                            lang === "vi"
+                                ? "Tìm tỉnh/thành phố..."
+                                : "Search province/city..."
+                        }
+                    />
+                </div>
+
+                <div
+                    className="flex gap-1.5 overflow-x-auto pb-0.5"
+                    role="group"
+                    aria-label={
+                        lang === "vi" ? "Bộ lọc rủi ro" : "Risk filters"
+                    }
+                >
+                    {(Object.keys(filterLabels) as Filter[]).map((value) => (
+                        <button
+                            key={value}
+                            className={`chip min-h-8 px-2.5 ${filter === value ? "chip-active" : ""}`}
+                            onClick={() => setFilter(value)}
+                            aria-pressed={filter === value}
+                        >
+                            {filterLabels[value]}
+                        </button>
+                    ))}
+                </div>
+
+                <div
+                    className="scroll-area max-h-64 space-y-1 overflow-y-auto pr-1"
+                    role="list"
+                    aria-label={t.province_impact_title}
+                >
+                    {filtered.map((impact) => {
+                        const level = getRiskLevel(impact.impact_level);
+                        const token = RISK_TOKENS[level];
+                        const active = selected?.id === impact.id;
+                        return (
+                            <button
+                                key={impact.id}
+                                role="listitem"
+                                onClick={() => onSelectProvince(impact.id)}
+                                className={`content-auto flex min-h-[58px] w-full items-center gap-3 rounded-control border px-3 py-2 text-left transition-colors duration-fast ${
+                                    active
+                                        ? "border-primary/45 bg-primary/[0.07]"
+                                        : "border-transparent hover:border-line hover:bg-surface-2/70"
+                                }`}
+                            >
+                                <span
+                                    className={`h-2.5 w-2.5 shrink-0 rounded-full ${token.dot}`}
+                                    aria-hidden="true"
+                                />
+                                <span className="min-w-0 flex-1">
+                                    <span className="block truncate text-xs font-semibold text-fg">
+                                        {impact.name}
+                                    </span>
+                                    <span className="mt-0.5 flex items-center gap-3 font-mono text-[10px] text-fg-faint">
+                                        <span className="flex items-center gap-1">
+                                            <Navigation
+                                                className="h-3 w-3"
+                                                aria-hidden="true"
+                                            />
+                                            {formatKm(
+                                                impact.min_forecast_distance_km,
+                                            )}
+                                            &nbsp;km
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <Clock3
+                                                className="h-3 w-3"
+                                                aria-hidden="true"
+                                            />
+                                            {formatHours(impact.eta_hours)}
+                                        </span>
+                                    </span>
+                                </span>
+                                <span
+                                    className={`badge shrink-0 ${token.border} ${token.bg} ${token.text}`}
+                                >
+                                    {t[RISK_LABEL_KEYS[level]] as string}
+                                </span>
+                            </button>
+                        );
+                    })}
+                    {filtered.length === 0 ? (
+                        <p className="py-8 text-center text-xs text-fg-muted">
+                            {lang === "vi"
+                                ? "Không tìm thấy tỉnh/thành phù hợp."
+                                : "No matching province found."}
+                        </p>
+                    ) : null}
+                </div>
+
+                <p className="border-t border-line pt-2 text-[10px] leading-4 text-fg-faint">
+                    {t.impact_note}
+                </p>
+            </div>
+        </section>
+    );
 };

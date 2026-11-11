@@ -34,6 +34,9 @@ def test_train_cli_exports_reloadable_bundle(tmp_path, capsys) -> None:
     assert payload["data_kind"] == "synthetic-demo"
     bundle = load_bundle(output / "bundle")
     assert bundle["manifest"]["synthetic"] is True
+    assert (output / "ignored" / "best.pt").is_file()
+    assert (output / "ignored" / "last.pt").is_file()
+    assert not (output / "checkpoints").exists()
     split = json.loads((output / "bundle" / "split-manifest.json").read_text())
     assert not set(split["train"]) & set(split["val"])
 
@@ -43,3 +46,31 @@ def test_invalid_config_is_nonzero_at_process_boundary(tmp_path) -> None:
     write_config(config, extra="unknown_section: true")
     with pytest.raises(Exception):
         main(["train", "--config", str(config), "--output-dir", str(tmp_path / "out")])
+
+
+@pytest.mark.parametrize(
+    "model_type",
+    [
+        "Seq2SeqLSTMTrackForecaster",
+        "AttentionLSTMTrackForecaster",
+        "TransformerTrackForecaster",
+    ],
+)
+def test_alternative_architectures_export_reloadable_bundle(
+    tmp_path, model_type
+) -> None:
+    config = tmp_path / f"{model_type}.yaml"
+    write_config(config)
+    content = config.read_text(encoding="utf-8").replace(
+        "type: LSTMTrackForecaster", f"type: {model_type}"
+    )
+    if model_type == "TransformerTrackForecaster":
+        content = content.replace(
+            "dropout: 0.0}",
+            "dropout: 0.0, d_model: 8, nhead: 2, n_layers: 1, dim_feedforward: 16}",
+        )
+    config.write_text(content, encoding="utf-8")
+    output = tmp_path / model_type
+    assert main(["train", "--config", str(config), "--output-dir", str(output)]) == 0
+    bundle = load_bundle(output / "bundle")
+    assert bundle["manifest"]["model"]["type"] == model_type

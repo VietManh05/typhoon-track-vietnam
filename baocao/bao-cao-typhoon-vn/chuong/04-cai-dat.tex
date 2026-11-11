@@ -1,0 +1,157 @@
+% ---------------------------------------------------------------------
+%  CHƯƠNG 4 — CÀI ĐẶT VÀ THỬ NGHIỆM
+% ---------------------------------------------------------------------
+\chapter{Cài đặt và thử nghiệm}
+\label{ch:caidat}
+
+\begin{muctieu}
+Chương này mô tả môi trường triển khai, các thành phần chính kèm mã nguồn
+minh hoạ, quy trình huấn luyện, giao diện demo và cách kiểm thử hệ thống.
+\end{muctieu}
+
+\section{Môi trường triển khai}
+
+Hệ thống được phát triển và huấn luyện trên máy tính cá nhân chạy Windows 11,
+Python 3.11, PyTorch bản CPU cùng các thư viện ở Bảng~\ref{tab:congcu}. Mạng
+nơ-ron có kích thước nhỏ (đầu vào 4 bước, 2 tầng LSTM 128 nơ-ron) nên huấn
+luyện được trên CPU, không cần GPU. Phụ thuộc được khai báo trong
+\code{pyproject.toml}, chia nhóm \code{train}, \code{api}, \code{ingestion},
+\code{dev}.
+
+Mã nguồn được quản lý bằng \code{git} và đặt tại kho:
+\begin{center}
+\url{https://github.com/VietManh05/typhoon-track-vietnam}
+\end{center}
+
+\textbf{Sử dụng công cụ trí tuệ nhân tạo hỗ trợ:} nhóm dùng trợ lý lập trình
+Claude (Anthropic) để hỗ trợ viết một phần mã nguồn và soạn thảo báo cáo LaTeX.
+Mọi số liệu trong báo cáo được sinh ra bằng cách chạy mã nguồn của dự án, và
+nhóm đã kiểm tra lại toàn bộ nội dung.
+
+\section{Các thành phần chính}
+
+\subsection{Mô hình LSTM dự báo độ dịch chuyển}
+
+Mã nguồn~\ref{lst:lstm} là hàm lan truyền xuôi của \code{LSTMTrackForecaster}
+(tệp \code{src/typhoon\_vn/models/lstm.py}). Đầu ra hồi quy được cộng với vị trí
+quan trắc cuối (đã đổi về độ thật), hiện thực hoá thiết kế dự báo độ dịch chuyển.
+
+\begin{lstlisting}[language=Python, caption={Lan truyền xuôi của mô hình LSTM (rút gọn, bỏ các đầu ra gió và khí áp).}, label={lst:lstm}]
+def forward(self, x, mask=None):
+    # x: (batch, time, features)
+    context = self.encode(x, mask)  # last hidden state
+    H = self.n_horizons
+    reg = self.reg_head(context).view(-1, H, 2)
+    if self.residual:
+        _, lengths = _validate_sequence(x, mask)
+        # last observed lat/lon, scaled
+        last = _last_valid(x[..., :2], lengths)
+        # back to physical degrees
+        anchor = (last * self.position_scale
+                  + self.position_mean)
+        # position + predicted displacement
+        reg = anchor.unsqueeze(1) + reg
+    cls = self.cls_head(context).view(-1, H, self.n_classes)
+    return {"reg": reg, "cls": cls}
+\end{lstlisting}
+
+\subsection{k-NN analog và lời giải thích}
+
+Mã nguồn~\ref{lst:knn} cài đặt Giải thuật~\ref{alg:knn}
+(tệp \code{src/typhoon\_vn/models/classical.py}): lấy $k$ láng giềng, đánh
+trọng số nghịch đảo khoảng cách, cộng độ dịch chuyển trung bình vào vị trí cuối.
+Hàm \code{explain} trả về các cơn bão lịch sử khác nhau gần nhất để hiển thị.
+
+\begin{lstlisting}[language=Python, caption={Dự báo của k-NN analog.}, label={lst:knn}]
+def predict(self, x_raw):
+    """Forecast positions (N, H, 2) in degrees."""
+    distance, index = self._neighbours(x_raw)
+    # inverse-distance weights, normalised per forecast
+    weight = 1.0 / (distance + 1e-6)
+    weight /= weight.sum(axis=1, keepdims=True)
+    targets = self._targets[index]
+    displacement = np.einsum("nk,nkhc->nhc", weight, targets)
+    return anchors(x_raw)[:, None, :] + displacement
+\end{lstlisting}
+
+\subsection{Vòng huấn luyện}
+
+Lớp \code{Trainer} (tệp \code{src/typhoon\_vn/training/trainer.py}) thực hiện
+vòng lặp epoch, cắt gradient, lịch học cosine, dừng sớm theo validation, lưu
+checkpoint và cho phép huấn luyện tiếp từ checkpoint (khôi phục cả trạng thái
+bộ sinh số ngẫu nhiên để tái lập kết quả).
+
+\subsection{Đóng gói mô hình}
+
+Sau huấn luyện, mô hình được đóng gói thành thư mục gồm \code{weights.pt},
+\code{scaler.json}, \code{split-manifest.json} và \code{manifest.json}. Tệp
+manifest lưu phiên bản, mã băm SHA-256 của tập dữ liệu, cấu hình mô hình, mã
+băm danh sách đặc trưng, bán kính nón và checksum từng tệp. Khi nạp, hệ thống
+kiểm tra toàn bộ checksum, số đặc trưng, số mốc dự báo và nạp trọng số với
+\code{weights\_only=True}; gói bị sửa hoặc sai định dạng sẽ bị từ chối.
+
+\subsection{Chạy các thí nghiệm}
+
+Mã nguồn~\ref{lst:run} là các lệnh tái lập toàn bộ kết quả ở
+Chương~\ref{ch:ketqua}.
+
+\begin{lstlisting}[language=bash, caption={Các lệnh tái lập thí nghiệm.}, label={lst:run}]
+# Benchmark on IBTrACS and uncertainty-cone calibration
+python scripts/run_ibtracs_benchmark.py --data-root data \
+    --output-dir runs/ibtracs-benchmark
+# Compare all methods with three seeds
+python scripts/run_model_comparison.py --data-root data \
+    --output-dir runs/model-comparison --seeds 0 1 2
+# Error-by-horizon figure and case studies
+python scripts/plot_error_analysis.py --run runs/model-comparison \
+    --data-root data
+# Build the analog library used by the API
+python scripts/build_analog_artifact.py --data-root data \
+    --output runs/analog/analog-wp.npz
+\end{lstlisting}
+
+\section{Giao diện và demo}
+
+Mô hình được phục vụ qua FastAPI với các điểm cuối chính \code{/forecast},
+\code{/typhoons/active} và \code{/typhoons/\{id\}/track} (quỹ đạo dự báo kèm
+nón bất định). Giao diện bản đồ web hiển thị quỹ đạo thực, quỹ đạo dự báo của
+LSTM, nón bất định, quỹ đạo gợi ý của k-NN analog (đường màu tím) và khung
+``Gợi ý theo bão tương tự'' liệt kê 5 cơn bão lịch sử giống nhất. Thư viện
+analog chỉ gồm bão 1980--2020, không chứa bão kiểm thử.
+
+Bản demo công khai tại \url{https://baoviet2026.pages.dev} phát lại 20 cơn bão
+thật giai đoạn 2021--2024 ảnh hưởng Việt Nam, tại thời điểm vị trí +72 giờ gần
+bờ biển nhất, kèm quỹ đạo thực tế và sai số. Hình~\ref{fig:yagi} là ví dụ cho
+bão YAGI 2024.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{case_WP122024.png}
+\caption{Quỹ đạo dự báo của các phương pháp cho bão YAGI (phát lúc 06Z 04/09/2024).}
+\label{fig:yagi}
+\end{figure}
+
+\begin{luuy}
+Khi phát lại một cơn bão cũ với thời gian dời về hiện tại, đặc trưng mùa của
+k-NN thay đổi (ví dụ YAGI tháng 9 thành tháng 11) và cho ra bão tương tự khác
+hẳn. Vì vậy bản demo giữ đúng ngày lịch sử của cơn bão.
+\end{luuy}
+
+\section{Kiểm thử}
+
+Dự án có bộ kiểm thử tự động bằng \code{pytest} (thư mục \code{tests/}), chia
+thành ba nhóm:
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item \textbf{Dữ liệu:} parser các nguồn, chuẩn hóa mã bão, gộp đa nguồn, ghi
+        Parquet; dữ liệu biên như tọa độ ngoài phạm vi, thời điểm thiếu múi giờ,
+        giá trị gió không hữu hạn đều bị từ chối.
+  \item \textbf{Học máy:} bộ chuẩn hóa chỉ fit trên train, chia tập không trùng
+        cơn bão, kích thước đầu ra mô hình, huấn luyện tiếp từ checkpoint, gói mô
+        hình bị sửa checksum phải bị từ chối.
+  \item \textbf{API:} kiểm tra đầu vào (ít nhất 2 quan trắc, khoảng cách thời
+        gian hợp lệ, tốc độ suy ra không quá 150~km/h) và các điểm cuối.
+\end{itemize}
+
+Một lỗi phát hiện trong quá trình làm là timestamp trùng hoặc lùi trong dữ
+liệu gốc sinh ra tốc độ và gia tốc giả rất lớn; lỗi được khắc phục bằng cách
+không gán khoảng thời gian 6 giờ giả định cho các bước này.

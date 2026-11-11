@@ -21,14 +21,16 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 
+from typhoon_vn.contracts.track import DEFAULT_SCHEMA, TrackSchema
 from typhoon_vn.datasets.typhoon_dataset import (
     DatasetConfig,
     TyphoonDataset,
     collate_fn,
 )
 from typhoon_vn.evaluation.metrics import along_cross_track_errors, track_error_km
-from typhoon_vn.features.schema import DEFAULT_SCHEMA, TrackSchema
+from typhoon_vn.features.scaling import FeatureScaler
 from typhoon_vn.models.base import TrackForecaster
+from typhoon_vn.models.baselines import CLIPERForecaster, PersistenceForecaster
 
 
 def backtest_storm(
@@ -38,6 +40,8 @@ def backtest_storm(
     schema: TrackSchema | None = None,
     device: str | torch.device = "cpu",
     batch_size: int = 64,
+    *,
+    scaler: FeatureScaler | None = None,
 ) -> pd.DataFrame:
     """Run rolling-window inference over all valid anchor points of one storm.
 
@@ -61,8 +65,14 @@ def backtest_storm(
         config = DatasetConfig()
     schema = schema or DEFAULT_SCHEMA
     device = torch.device(device) if isinstance(device, str) else device
+    if schema.storm_id not in storm_df or storm_df[schema.storm_id].nunique() != 1:
+        raise ValueError("backtest_storm requires observations from a single storm")
+    if scaler is None and not isinstance(
+        model, (PersistenceForecaster, CLIPERForecaster)
+    ):
+        raise ValueError("trained-model backtest requires its fitted bundle scaler")
 
-    ds = TyphoonDataset(storm_df, config=config, schema=schema)
+    ds = TyphoonDataset(storm_df, config=config, schema=schema, scaler=scaler)
     if len(ds) == 0:
         return pd.DataFrame()
 
@@ -131,6 +141,8 @@ def backtest_catalogue(
     schema: TrackSchema | None = None,
     device: str | torch.device = "cpu",
     batch_size: int = 64,
+    *,
+    scaler: FeatureScaler | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Run backtest over all storms in ``df`` and aggregate metrics.
 
@@ -166,6 +178,7 @@ def backtest_catalogue(
             schema=schema,
             device=device,
             batch_size=batch_size,
+            scaler=scaler,
         )
         if not result.empty:
             all_frames.append(result)
@@ -194,8 +207,7 @@ def backtest_catalogue(
                 ),
                 "intensity_accuracy": float(
                     np.mean(
-                        group["pred_intensity_class"]
-                        == group["actual_intensity_class"]
+                        group["pred_intensity_class"] == group["actual_intensity_class"]
                     )
                 ),
                 "n_forecasts": len(errs),
@@ -206,3 +218,21 @@ def backtest_catalogue(
     )
 
     return detail_df, summary_df
+
+
+def backtest_bundle(bundle: dict[str, Any], df: pd.DataFrame, **kwargs):
+    """Evaluate a loaded bundle using the exact fitted preprocessing contract."""
+    manifest = bundle["manifest"]
+    step = int(manifest["time_step_hours"])
+    horizons = manifest["horizons_hours"]
+    if any(hour % step for hour in horizons):
+        raise ValueError("bundle horizons must be multiples of its time step")
+    config = DatasetConfig(
+        input_len=int(manifest["input_len"]),
+        horizon=tuple(hour // step for hour in horizons),
+        time_step_hours=step,
+        feature_cols=tuple(manifest["feature_columns"]),
+    )
+    return backtest_catalogue(
+        bundle["model"], df, config=config, scaler=bundle["scaler"], **kwargs
+    )

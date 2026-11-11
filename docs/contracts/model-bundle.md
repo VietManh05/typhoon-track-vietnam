@@ -2,6 +2,18 @@
 
 A promoted bundle is a directory containing `manifest.json`, `weights.pt`, `scaler.json`, and `split-manifest.json`.
 
+The current bundle schema is **2**. Regression targets and outputs are unscaled
+WGS84 degrees; the persisted scaler transforms inputs only. Schema 1 bundles
+are rejected because the previous dataset path could scale regression targets.
+Retrain and reevaluate those artifacts; changing the manifest version alone is
+not a migration. Export selects `best.pt`, while `last.pt` remains available for
+training resume. Cache identity includes the manifest so retraining under the
+same display version cannot serve a previous bundle's predictions.
+
+For learned-model evaluation, use `backtest_bundle(load_bundle(path), frame)`.
+The lower-level backtest functions require the fitted scaler for learned models;
+classical persistence/CLIPER baselines continue to consume raw features.
+
 ## Validation and trust boundary
 
 `load_bundle` validates a strict manifest schema, an allowlisted model constructor, the canonical feature vocabulary/order, dimensions, horizon/calibration coverage, and SHA-256 for every payload **before deserializing weights**. PyTorch weights are loaded with `weights_only=True`; scaler state is strict JSON rather than joblib/pickle.

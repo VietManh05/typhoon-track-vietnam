@@ -58,6 +58,7 @@ dev = [
     "pre-commit>=4.0,<5",
     "pytest>=8.3,<9",
     "pytest-cov>=5.0,<7",
+    "websockets>=14,<18",
 ]
 
 [project.scripts]
@@ -85,4 +86,5 @@ extend-ignore = ["E203", "E402"]
 exclude = [".git", ".venv", "build", "dist"]
 
 [tool.setuptools.package-data]
-typhoon_vn = ["dashboard/*"]
+typhoon_vn = ["dashboard/*", "dashboard/assets/*", "dashboard/fonts/*", "dashboard/data/*"]
+"typhoon_vn.operations" = ["migrations/*.py", "migrations/*.mako", "migrations/versions/*.py", "legacy_migrations/*.py", "legacy_migrations/versions/*.py"]

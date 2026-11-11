@@ -1,0 +1,449 @@
+{
+  "observedAt": "2026-09-23T19:00:00+07:00",
+  "observations": [
+    {
+      "id": "tan-phong-lai-chau-w64",
+      "name": "Tân Phong (Lai Châu)",
+      "temperatureC": 23.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tan-phong-lai-chau-w64.html"
+    },
+    {
+      "id": "muong-thanh-dien-bien-w38",
+      "name": "Mường Thanh (Điện Biên)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/muong-thanh-dien-bien-w38.html"
+    },
+    {
+      "id": "to-hieu-son-la-w45",
+      "name": "Tô Hiệu (Sơn La)",
+      "temperatureC": 23.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/to-hieu-son-la-w45.html"
+    },
+    {
+      "id": "hoa-binh-phu-tho-w2",
+      "name": "Hòa Bình (Phú Thọ)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/hoa-binh-phu-tho-w2.html"
+    },
+    {
+      "id": "lao-cai-lao-cai-w37",
+      "name": "Lào Cai (Lào Cai)",
+      "temperatureC": 29.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/lao-cai-lao-cai-w37.html"
+    },
+    {
+      "id": "yen-bai-lao-cai-w53",
+      "name": "Yên Bái (Lào Cai)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/yen-bai-lao-cai-w53.html"
+    },
+    {
+      "id": "ha-giang-tuyen-quang-w36",
+      "name": "Hà Giang (Tuyên Quang)",
+      "temperatureC": 29.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/ha-giang-tuyen-quang-w36.html"
+    },
+    {
+      "id": "minh-xuan-tuyen-quang-w50",
+      "name": "Minh Xuân (Tuyên Quang)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/minh-xuan-tuyen-quang-w50.html"
+    },
+    {
+      "id": "bac-kan-thai-nguyen-w52",
+      "name": "Bắc Kạn (Thái Nguyên)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/bac-kan-thai-nguyen-w52.html"
+    },
+    {
+      "id": "phan-dinh-phung-thai-nguyen-w51",
+      "name": "Phan Đình Phùng (Thái Nguyên)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/phan-dinh-phung-thai-nguyen-w51.html"
+    },
+    {
+      "id": "viet-tri-phu-tho-w43",
+      "name": "Việt Trì (Phú Thọ)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/viet-tri-phu-tho-w43.html"
+    },
+    {
+      "id": "vinh-phuc-phu-tho-w44",
+      "name": "Vĩnh Phúc (Phú Thọ)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/vinh-phuc-phu-tho-w44.html"
+    },
+    {
+      "id": "thuc-phan-cao-bang-w49",
+      "name": "Thục Phán (Cao Bằng)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/thuc-phan-cao-bang-w49.html"
+    },
+    {
+      "id": "luong-van-tri-lang-son-w48",
+      "name": "Lương Văn Tri (Lạng Sơn)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/luong-van-tri-lang-son-w48.html"
+    },
+    {
+      "id": "ha-long-quang-ninh-w63",
+      "name": "Hạ Long (Quảng Ninh)",
+      "temperatureC": 30.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/ha-long-quang-ninh-w63.html"
+    },
+    {
+      "id": "bac-giang-bac-ninh-w46",
+      "name": "Bắc Giang (Bắc Ninh)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/bac-giang-bac-ninh-w46.html"
+    },
+    {
+      "id": "kinh-bac-bac-ninh-w47",
+      "name": "Kinh Bắc (Bắc Ninh)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/kinh-bac-bac-ninh-w47.html"
+    },
+    {
+      "id": "le-chan-tp-hai-phong-w54",
+      "name": "Lê Chân (Tp Hải Phòng)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/le-chan-tp-hai-phong-w54.html"
+    },
+    {
+      "id": "hoan-kiem-tp-ha-noi-w28",
+      "name": "Hoàn Kiếm (Tp Hà Nội)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/hoan-kiem-tp-ha-noi-w28.html"
+    },
+    {
+      "id": "hai-duong-tp-hai-phong-w19",
+      "name": "Hải Dương (Tp Hải Phòng)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/hai-duong-tp-hai-phong-w19.html"
+    },
+    {
+      "id": "pho-hien-hung-yen-w33",
+      "name": "Phố Hiến (Hưng Yên)",
+      "temperatureC": 29.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/pho-hien-hung-yen-w33.html"
+    },
+    {
+      "id": "nam-dinh-ninh-binh-w34",
+      "name": "Nam Định (Ninh Bình)",
+      "temperatureC": 29.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/nam-dinh-ninh-binh-w34.html"
+    },
+    {
+      "id": "phu-ly-ninh-binh-w20",
+      "name": "Phủ Lý (Ninh Bình)",
+      "temperatureC": 30.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/phu-ly-ninh-binh-w20.html"
+    },
+    {
+      "id": "hoa-lu-ninh-binh-w17",
+      "name": "Hoa Lư (Ninh Bình)",
+      "temperatureC": 29.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/hoa-lu-ninh-binh-w17.html"
+    },
+    {
+      "id": "thai-binh-hung-yen-w18",
+      "name": "Thái Bình (Hưng Yên)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/thai-binh-hung-yen-w18.html"
+    },
+    {
+      "id": "hac-thanh-thanh-hoa-w61",
+      "name": "Hạc Thành (Thanh Hóa)",
+      "temperatureC": 29.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/hac-thanh-thanh-hoa-w61.html"
+    },
+    {
+      "id": "truong-vinh-nghe-an-w3",
+      "name": "Trường Vinh (Nghệ An)",
+      "temperatureC": 29.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/truong-vinh-nghe-an-w3.html"
+    },
+    {
+      "id": "thanh-sen-ha-tinh-w4",
+      "name": "Thành Sen (Hà Tĩnh)",
+      "temperatureC": 28.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/thanh-sen-ha-tinh-w4.html"
+    },
+    {
+      "id": "dong-hoi-quang-tri-w5",
+      "name": "Đồng Hới (Quảng Trị)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/dong-hoi-quang-tri-w5.html"
+    },
+    {
+      "id": "quang-tri-quang-tri-w6",
+      "name": "Quảng Trị (Quảng Trị)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/quang-tri-quang-tri-w6.html"
+    },
+    {
+      "id": "thuan-hoa-tp-hue-w7",
+      "name": "Thuận Hóa (Tp Huế)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/thuan-hoa-tp-hue-w7.html"
+    },
+    {
+      "id": "hai-chau-tp-da-nang-w55",
+      "name": "Hải Châu (Tp Đà Nẵng)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/hai-chau-tp-da-nang-w55.html"
+    },
+    {
+      "id": "tam-ky-tp-da-nang-w62",
+      "name": "Tam Kỳ (Tp Đà Nẵng)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tam-ky-tp-da-nang-w62.html"
+    },
+    {
+      "id": "cam-thanh-quang-ngai-w8",
+      "name": "Cẩm Thành (Quảng Ngãi)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/cam-thanh-quang-ngai-w8.html"
+    },
+    {
+      "id": "quy-nhon-gia-lai-w56",
+      "name": "Quy Nhơn (Gia Lai)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/quy-nhon-gia-lai-w56.html"
+    },
+    {
+      "id": "tuy-hoa-dak-lak-w59",
+      "name": "Tuy Hòa (Đắk Lắk)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tuy-hoa-dak-lak-w59.html"
+    },
+    {
+      "id": "nha-trang-khanh-hoa-w9",
+      "name": "Nha Trang (Khánh Hòa)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/nha-trang-khanh-hoa-w9.html"
+    },
+    {
+      "id": "phan-rang-khanh-hoa-w60",
+      "name": "Phan Rang (Khánh Hòa)",
+      "temperatureC": 25.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/phan-rang-khanh-hoa-w60.html"
+    },
+    {
+      "id": "phan-thiet-lam-dong-w10",
+      "name": "Phan Thiết (Lâm Đồng)",
+      "temperatureC": 25.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/phan-thiet-lam-dong-w10.html"
+    },
+    {
+      "id": "kon-tum-quang-ngai-w11",
+      "name": "Kon Tum (Quảng Ngãi)",
+      "temperatureC": 25.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/kon-tum-quang-ngai-w11.html"
+    },
+    {
+      "id": "pleiku-gia-lai-w12",
+      "name": "Pleiku (Gia Lai)",
+      "temperatureC": 22.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/pleiku-gia-lai-w12.html"
+    },
+    {
+      "id": "buon-ma-thuot-dak-lak-w13",
+      "name": "Buôn Ma Thuột (Đắk Lắk)",
+      "temperatureC": 24.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/buon-ma-thuot-dak-lak-w13.html"
+    },
+    {
+      "id": "bac-gia-nghia-lam-dong-w39",
+      "name": "Bắc Gia Nghĩa (Lâm Đồng)",
+      "temperatureC": 23.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/bac-gia-nghia-lam-dong-w39.html"
+    },
+    {
+      "id": "xuan-huong-da-lat-lam-dong-w14",
+      "name": "Xuân Hương - Đà Lạt (Lâm Đồng)",
+      "temperatureC": 19.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/xuan-huong-da-lat-lam-dong-w14.html"
+    },
+    {
+      "id": "phuoc-long-dong-nai-w30",
+      "name": "Phước Long (Đồng Nai)",
+      "temperatureC": 25.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/phuoc-long-dong-nai-w30.html"
+    },
+    {
+      "id": "tay-ninh-tay-ninh-w35",
+      "name": "Tây Ninh (Tây Ninh)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tay-ninh-tay-ninh-w35.html"
+    },
+    {
+      "id": "bien-hoa-dong-nai-w32",
+      "name": "Biên Hòa (Đồng Nai)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/bien-hoa-dong-nai-w32.html"
+    },
+    {
+      "id": "binh-duong-tp-ho-chi-minh-w16",
+      "name": "Bình Dương (Tp Hồ Chí Minh)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/binh-duong-tp-ho-chi-minh-w16.html"
+    },
+    {
+      "id": "sai-gon-tp-ho-chi-minh-w15",
+      "name": "Sài Gòn (Tp Hồ Chí Minh)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/sai-gon-tp-ho-chi-minh-w15.html"
+    },
+    {
+      "id": "vung-tau-tp-ho-chi-minh-w31",
+      "name": "Vũng Tàu (Tp Hồ Chí Minh)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/vung-tau-tp-ho-chi-minh-w31.html"
+    },
+    {
+      "id": "long-an-tay-ninh-w21",
+      "name": "Long An (Tây Ninh)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/long-an-tay-ninh-w21.html"
+    },
+    {
+      "id": "my-tho-dong-thap-w23",
+      "name": "Mỹ Tho (Đồng Tháp)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/my-tho-dong-thap-w23.html"
+    },
+    {
+      "id": "long-chau-vinh-long-w57",
+      "name": "Long Châu (Vĩnh Long)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/long-chau-vinh-long-w57.html"
+    },
+    {
+      "id": "ben-tre-vinh-long-w24",
+      "name": "Bến Tre (Vĩnh Long)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/ben-tre-vinh-long-w24.html"
+    },
+    {
+      "id": "cao-lanh-dong-thap-w22",
+      "name": "Cao Lãnh (Đồng Tháp)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/cao-lanh-dong-thap-w22.html"
+    },
+    {
+      "id": "tra-vinh-vinh-long-w25",
+      "name": "Trà Vinh (Vĩnh Long)",
+      "temperatureC": 25.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tra-vinh-vinh-long-w25.html"
+    },
+    {
+      "id": "long-xuyen-an-giang-w58",
+      "name": "Long Xuyên (An Giang)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/long-xuyen-an-giang-w58.html"
+    },
+    {
+      "id": "ninh-kieu-tp-can-tho-w26",
+      "name": "Ninh Kiều (Tp Cần Thơ)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/ninh-kieu-tp-can-tho-w26.html"
+    },
+    {
+      "id": "soc-trang-tp-can-tho-w27",
+      "name": "Sóc Trăng (Tp Cần Thơ)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/soc-trang-tp-can-tho-w27.html"
+    },
+    {
+      "id": "rach-gia-an-giang-w41",
+      "name": "Rạch Giá (An Giang)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/rach-gia-an-giang-w41.html"
+    },
+    {
+      "id": "bac-lieu-ca-mau-w29",
+      "name": "Bạc Liêu (Cà Mau)",
+      "temperatureC": 26.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/bac-lieu-ca-mau-w29.html"
+    },
+    {
+      "id": "tan-thanh-ca-mau-w42",
+      "name": "Tân Thành (Cà Mau)",
+      "temperatureC": 27.0,
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tan-thanh-ca-mau-w42.html"
+    }
+  ],
+  "bulletins": [
+    {
+      "id": "4341c44a902c96ea238a",
+      "title": "TIN CẢNH BÁO DÔNG, LỐC, SÉT, MƯA ĐÁ TRÊN KHU VỰC HÀ NỘI",
+      "issuedAt": "2026-09-23T16:54:58+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-canh-bao-dong-loc-set-mua-da-tren-khu-vuc-ha-noi-post55101.html"
+    },
+    {
+      "id": "6db689377f41687b739f",
+      "title": "DỰ BÁO THỜI TIẾT PHỤC VỤ DỊP LỄ TRUNG THU 2026 TỪ NGÀY 24-25 THÁNG 9 NĂM 2026 (từ ngày 14/8-15/8 âm lịch)",
+      "issuedAt": "2026-09-23T16:31:00+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/du-bao-thoi-tiet-phuc-vu-dip-le-trung-thu-2026-tu-ngay-24-25-thang-9-nam-2026-tu-ngay-14-8-15-8-am-lich-post55100.html"
+    },
+    {
+      "id": "5c98d9de6c6fd1b038a5",
+      "title": "TIN CẢNH BÁO LŨ QUÉT SẠT LỞ ĐẤT, SỤT LÚN ĐẤT DO MƯA LŨ HOẶC DÒNG CHẢY TRÊN KHU VỰC CÁC TỈNH/THÀNH PHỐ PHÚ THỌ, TỪ HUẾ ĐẾN ĐẮK LẮK VÀ LÂM ĐỒNG",
+      "issuedAt": "2026-09-23T16:30:06+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-canh-bao-lu-quet-sat-lo-dat-sut-lun-dat-do-mua-lu-hoac-dong-chay-tren-khu-vuc-cac-tinh-thanh-pho-phu-tho-tu-hue-den-dak-lak-va-lam-dong-post55099.html"
+    },
+    {
+      "id": "040a3a933a6bc1fc5b7d",
+      "title": "TIN DỰ BÁO MƯA DÔNG, LỐC XOÁY VÀ GIÓ GIẬT MẠNH TRÊN BIỂN",
+      "issuedAt": "2026-09-23T16:00:00+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-du-bao-mua-dong-loc-xoay-va-gio-giat-manh-tren-bien-post54407.html"
+    },
+    {
+      "id": "223da4c1793c6ab3e531",
+      "title": "TIN DỰ BÁO MƯA LỚN Ở KHU VỰC TỪ HÀ TĨNH ĐẾN TP. ĐÀ NẴNG, PHÍA ĐÔNG CÁC TỈNH TỪ QUẢNG NGÃI ĐẾN ĐẮK LẮK, CÁC TỈNH KHÁNH HÒA, LÂM ĐỒNG VÀ NAM BỘ",
+      "issuedAt": "2026-09-23T15:30:00+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-du-bao-mua-lon-o-khu-vuc-tu-ha-tinh-den-tp-da-nang-phia-dong-cac-tinh-tu-quang-ngai-den-dak-lak-cac-tinh-khanh-hoa-lam-dong-va-nam-bo-post54989.html"
+    },
+    {
+      "id": "d0596510171861720e2c",
+      "title": "TIN LŨ TRÊN SÔNG ĐỒNG NAI",
+      "issuedAt": "2026-09-23T14:58:48+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-lu-tren-song-dong-nai-post55097.html"
+    },
+    {
+      "id": "256f6eacbc8ab4bb08f0",
+      "title": "TIN CẢNH BÁO LŨ QUÉT SẠT LỞ ĐẤT, SỤT LÚN ĐẤT DO MƯA LŨ HOẶC DÒNG CHẢY TRÊN KHU VỰC CÁC TỈNH/THÀNH PHỐ PHÚ THỌ, TỪ HUẾ ĐẾN ĐẮK LẮK VÀ LÂM ĐỒNG",
+      "issuedAt": "2026-09-23T11:30:11+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-canh-bao-lu-quet-sat-lo-dat-sut-lun-dat-do-mua-lu-hoac-dong-chay-tren-khu-vuc-cac-tinh-thanh-pho-phu-tho-tu-hue-den-dak-lak-va-lam-dong-post55086.html"
+    },
+    {
+      "id": "e5616d7eed679f9a2f0b",
+      "title": "TIN CẢNH BÁO LŨ PHỤC VỤ QUY TRÌNH VẬN HÀNH LIÊN HỒ CHỨA SÔNG TRÀ KHÚC",
+      "issuedAt": "2026-09-23T09:23:09+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-canh-bao-lu-phuc-vu-quy-trinh-van-hanh-lien-ho-chua-song-tra-khuc-post55082.html"
+    },
+    {
+      "id": "b21d1490f54fcce2fdf4",
+      "title": "TIN CẢNH BÁO LŨ PHỤC VỤ QUY TRÌNH VẬN HÀNH LIÊN HỒ CHỨA SÔNG VU GIA THU BỒN",
+      "issuedAt": "2026-09-23T09:22:19+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-canh-bao-lu-phuc-vu-quy-trinh-van-hanh-lien-ho-chua-song-vu-gia-thu-bon-post55081.html"
+    },
+    {
+      "id": "3bd9fb7c1ebefe6523cb",
+      "title": "TIN CẢNH BÁO LŨ PHỤC VỤ QUY TRÌNH VẬN HÀNH LIÊN HỒ CHỨA SÔNG HƯƠNG",
+      "issuedAt": "2026-09-23T09:21:29+07:00",
+      "sourceUrl": "https://nchmf.gov.vn/kttvsite/vi-VN/1/tin-canh-bao-lu-phuc-vu-quy-trinh-van-hanh-lien-ho-chua-song-huong-post55080.html"
+    }
+  ],
+  "metadata": {
+    "provider": "nchmf",
+    "source": "Trung tâm Dự báo KTTV quốc gia",
+    "sourceUrl": "https://nchmf.gov.vn/kttvsite/",
+    "retrievedAt": "2026-09-23T13:48:20.094311+00:00",
+    "timezone": "Asia/Ho_Chi_Minh",
+    "sha256": "efa120cc9a30865779280b4b036a95398841647f7237a7beb72a2a9a0fb44638",
+    "isStale": false,
+    "scope": "Public homepage observations and bulletin links"
+  }
+}

@@ -37,7 +37,12 @@ class DataConfig(StrictModel):
 
 
 class ModelConfig(StrictModel):
-    type: Literal["LSTMTrackForecaster"]
+    type: Literal[
+        "LSTMTrackForecaster",
+        "Seq2SeqLSTMTrackForecaster",
+        "AttentionLSTMTrackForecaster",
+        "TransformerTrackForecaster",
+    ]
     hidden_size: int = Field(default=128, ge=1)
     num_layers: int = Field(default=2, ge=1)
     dropout: float = Field(default=0.2, ge=0, lt=1)
@@ -46,6 +51,20 @@ class ModelConfig(StrictModel):
     nhead: int | None = None
     n_layers: int | None = None
     dim_feedforward: int | None = None
+
+    @model_validator(mode="after")
+    def validate_architecture(self) -> "ModelConfig":
+        if (
+            self.teacher_forcing_ratio is not None
+            and not 0 <= self.teacher_forcing_ratio <= 1
+        ):
+            raise ValueError("teacher_forcing_ratio must lie inside [0, 1]")
+        if self.type == "TransformerTrackForecaster":
+            d_model = self.d_model or 64
+            nhead = self.nhead or 4
+            if nhead < 1 or d_model % nhead:
+                raise ValueError("Transformer d_model must be divisible by nhead")
+        return self
 
 
 class TrainConfig(StrictModel):

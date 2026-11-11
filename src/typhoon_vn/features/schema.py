@@ -1,92 +1,9 @@
-"""Canonical schema shared by ingestion, features, datasets, and training."""
+"""Compatibility exports for the canonical track contract.
 
-from __future__ import annotations
+New code should import from :mod:`typhoon_vn.contracts.track`; this module is
+kept to avoid breaking external users during the package migration.
+"""
 
-from collections.abc import Iterable
-from dataclasses import dataclass, field
+from typhoon_vn.contracts.track import DEFAULT_SCHEMA, CleaningReport, TrackSchema
 
-
-@dataclass(frozen=True)
-class TrackSchema:
-    """Column contract for the cleaned storm-track DataFrame."""
-
-    storm_id: str = "storm_id"
-    timestamp: str = "timestamp"
-    lat: str = "lat"
-    lon: str = "lon"
-    wind_ms: str = "wind_ms"
-    pressure_hpa: str = "pressure_hpa"
-    intensity: str = "intensity"
-    end_flag: str = "end_flag"
-    source: str = "source"
-    source_url: str = "source_url"
-    source_file_checksum: str = "source_file_checksum"
-    dataset_version: str = "dataset_version"
-    downloaded_at: str = "downloaded_at"
-    interpolated: str = "interpolated"
-    suspicious: str = "suspicious"
-
-    @property
-    def required(self) -> tuple[str, ...]:
-        return (self.storm_id, self.timestamp, self.lat, self.lon)
-
-    @property
-    def numeric(self) -> tuple[str, ...]:
-        return (self.lat, self.lon, self.wind_ms, self.pressure_hpa)
-
-    def validate_columns(self, columns: Iterable[str]) -> None:
-        """Fail fast when a stage omits the canonical core contract."""
-        available = set(columns)
-        missing = [name for name in self.required if name not in available]
-        if missing:
-            raise ValueError(
-                f"canonical track schema missing required columns: {missing}"
-            )
-
-    def columns(self) -> list[str]:
-        return [
-            self.storm_id,
-            self.timestamp,
-            self.lat,
-            self.lon,
-            self.wind_ms,
-            self.pressure_hpa,
-            self.intensity,
-            self.end_flag,
-            self.source,
-            self.source_url,
-            self.source_file_checksum,
-            self.dataset_version,
-            self.downloaded_at,
-            self.interpolated,
-            self.suspicious,
-        ]
-
-
-DEFAULT_SCHEMA = TrackSchema()
-
-
-@dataclass
-class CleaningReport:
-    """Per-run quality summary emitted by the cleaning pipeline."""
-
-    n_input: int = 0
-    n_output: int = 0
-    n_dropped_invalid_coords: int = 0
-    n_dropped_invalid_physics: int = 0
-    n_duplicates_removed: int = 0
-    n_interpolated: int = 0
-    n_suspicious_flagged: int = 0
-    notes: list[str] = field(default_factory=list)
-
-    def as_dict(self) -> dict[str, object]:
-        return {
-            "n_input": self.n_input,
-            "n_output": self.n_output,
-            "n_dropped_invalid_coords": self.n_dropped_invalid_coords,
-            "n_dropped_invalid_physics": self.n_dropped_invalid_physics,
-            "n_duplicates_removed": self.n_duplicates_removed,
-            "n_interpolated": self.n_interpolated,
-            "n_suspicious_flagged": self.n_suspicious_flagged,
-            "notes": list(self.notes),
-        }
+__all__ = ["DEFAULT_SCHEMA", "CleaningReport", "TrackSchema"]

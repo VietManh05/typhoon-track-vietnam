@@ -22,8 +22,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from typhoon_vn.contracts.track import CleaningReport
 from typhoon_vn.features import build as features
 from typhoon_vn.features.bridge import JMA_ARCHIVE_START_YEAR, to_canonical_frame
+from typhoon_vn.features.cleaning import validate
 from typhoon_vn.features.geo import haversine_km
 from typhoon_vn.features.scaling import FeatureScaler
 from typhoon_vn.ingestion.models import Observation
@@ -102,6 +104,26 @@ def workdir() -> Iterator[Path]:
         yield path
     finally:
         shutil.rmtree(path, ignore_errors=True)
+
+
+# --------------------------------------------------------------------------- #
+# Data quality counters distinguish malformed coordinates from domain filtering
+# --------------------------------------------------------------------------- #
+def test_cleaning_counts_invalid_coordinates_and_outside_domain_separately() -> None:
+    frame = pd.DataFrame(
+        {
+            "lat": [10.0, 35.0, 95.0, np.nan],
+            "lon": [120.0, 120.0, 120.0, 120.0],
+        }
+    )
+    report = CleaningReport()
+
+    cleaned = validate(frame, report=report)
+
+    assert len(cleaned) == 1
+    assert report.n_dropped_invalid_coords == 2
+    assert report.n_dropped_outside_domain == 1
+    assert report.as_dict()["n_dropped_outside_domain"] == 1
 
 
 # --------------------------------------------------------------------------- #
@@ -238,6 +260,26 @@ def test_bridge_drops_only_pre_archive_jma_rows() -> None:
     # Pre-1951 JMA row dropped; the pre-1951 IBTrACS row is preserved.
     assert out["timestamp"].dt.year.tolist() == [1949, 1980]
     assert out["source"].tolist() == ["ibtracs", "jma"]
+
+
+def test_bridge_maps_ibtracs_intensity_from_canonical_wind_boundaries() -> None:
+    raw = _raw_frame([None] * 9, ["ibtracs"] * 9)
+    raw["wind"] = [None, -1.0, 0.0, 16.999, 17.0, 24.999, 25.0, 32.999, 33.0]
+    raw["wind_unit"] = "m/s"
+
+    out = to_canonical_frame(raw)
+
+    assert out["intensity"].tolist() == [
+        "UNK",
+        "UNK",
+        "TD",
+        "TD",
+        "TS",
+        "TS",
+        "STS",
+        "STS",
+        "TY",
+    ]
 
 
 def test_bridge_maps_intensity_per_source_and_code() -> None:

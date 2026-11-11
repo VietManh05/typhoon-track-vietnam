@@ -21,7 +21,10 @@ def test_calibrated_cone_round_trip_and_geojson(tmp_path) -> None:
     assert geojson["properties"]["calibrated_coverage"] == 0.75
     polygons = [f for f in geojson["features"] if f["geometry"]["type"] == "Polygon"]
     assert len(polygons) == 2
-    assert polygons[0]["geometry"]["coordinates"][0][0] == polygons[0]["geometry"]["coordinates"][0][-1]
+    assert (
+        polygons[0]["geometry"]["coordinates"][0][0]
+        == polygons[0]["geometry"]["coordinates"][0][-1]
+    )
 
 
 def test_quantile_calibration_reports_coverage_width_and_crossing() -> None:
@@ -41,8 +44,34 @@ def test_quantile_calibration_reports_coverage_width_and_crossing() -> None:
 def test_deep_ensemble_rejects_member_contract_mismatch() -> None:
     first = LSTMTrackForecaster(3, 2, 4, hidden_size=4, num_layers=1)
     second = LSTMTrackForecaster(3, 3, 4, hidden_size=4, num_layers=1)
+    third = LSTMTrackForecaster(3, 2, 4, hidden_size=4, num_layers=1)
     with pytest.raises(ValueError, match="contract"):
-        DeepEnsemble([first, second])
+        DeepEnsemble([first, second, third])
+
+
+def test_mc_dropout_activates_lstm_dropout_and_restores_mode() -> None:
+    from typhoon_vn.models.uncertainty import mc_dropout_predict
+
+    model = LSTMTrackForecaster(
+        3, 2, 4, hidden_size=8, num_layers=2, dropout=0.5
+    ).train()
+    result = mc_dropout_predict(
+        model, torch.randn(2, 4, 3), torch.ones(2, 4), n_samples=8
+    )
+    assert torch.any(result["reg_std"] > 0)
+    assert model.training is True
+
+
+def test_deep_ensemble_requires_three_versioned_members_and_restores_modes() -> None:
+    models = [
+        LSTMTrackForecaster(3, 2, 4, hidden_size=4, num_layers=1).train()
+        for _ in range(3)
+    ]
+    ensemble = DeepEnsemble(models, member_versions=("seed-1", "seed-2", "seed-3"))
+    ensemble.predict(torch.randn(1, 4, 3), torch.ones(1, 4))
+    assert all(model.training for model in models)
+    with pytest.raises(ValueError, match="at least three"):
+        DeepEnsemble(models[:2])
 
 
 def test_attention_rejects_fully_masked_sequence() -> None:

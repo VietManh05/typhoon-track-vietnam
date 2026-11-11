@@ -17,7 +17,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 <a id="t28-001"></a>
 ## T28-001 — Chọn một cơn bão.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 1 — Dữ liệu; dòng [1273](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1273).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 1 — Dữ liệu.
@@ -31,12 +31,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-001.md](evidence/T28-001.md).
 
 <a id="t28-002"></a>
 ## T28-002 — Hiển thị lịch sử.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 1 — Dữ liệu; dòng [1274](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1274).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 1 — Dữ liệu.
@@ -50,12 +50,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-002.md](evidence/T28-002.md).
 
 <a id="t28-003"></a>
 ## T28-003 — Chứng minh data pipeline.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 1 — Dữ liệu; dòng [1275](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1275).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 1 — Dữ liệu.
@@ -69,12 +69,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-003.md](evidence/T28-003.md).
 
 <a id="t28-004"></a>
 ## T28-004 — Load model.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 2 — Model; dòng [1278](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1278).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 2 — Model.
@@ -88,12 +88,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-004.md](evidence/T28-004.md).
 
 <a id="t28-005"></a>
 ## T28-005 — Nhập observation.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 2 — Model; dòng [1279](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1279).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 2 — Model.
@@ -107,12 +107,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-005.md](evidence/T28-005.md).
 
 <a id="t28-006"></a>
 ## T28-006 — Sinh 6/12/24/48/72h.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 2 — Model; dòng [1280](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1280).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 2 — Model.
@@ -126,12 +126,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-006.md](evidence/T28-006.md).
 
 <a id="t28-007"></a>
 ## T28-007 — Hiển thị metric.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 2 — Model; dòng [1281](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1281).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 2 — Model.
@@ -145,12 +145,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Output có giá trị/đơn vị/sample count/run ID/dataset/model version; expected được tính độc lập; không dùng test để tune.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-007.md](evidence/T28-007.md).
 
 <a id="t28-008"></a>
 ## T28-008 — Actual track.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 3 — Bản đồ; dòng [1284](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1284).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 3 — Bản đồ.
@@ -164,12 +164,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-008.md](evidence/T28-008.md).
 
 <a id="t28-009"></a>
 ## T28-009 — Forecast track.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 3 — Bản đồ; dòng [1285](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1285).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 3 — Bản đồ.
@@ -183,12 +183,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-009.md](evidence/T28-009.md).
 
 <a id="t28-010"></a>
 ## T28-010 — Cone.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 3 — Bản đồ; dòng [1286](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1286).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 3 — Bản đồ.
@@ -202,12 +202,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** GeoJSON [lon,lat], ring đóng/topology hợp lệ; dateline có xử lý; coverage thực nghiệm khác radius minh họa.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-010.md](evidence/T28-010.md).
 
 <a id="t28-011"></a>
 ## T28-011 — Province impact.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 3 — Bản đồ; dòng [1287](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1287).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 3 — Bản đồ.
@@ -221,12 +221,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-011.md](evidence/T28-011.md).
 
 <a id="t28-012"></a>
 ## T28-012 — Swagger.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 4 — API; dòng [1290](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1290).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 4 — API.
@@ -240,12 +240,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-012.md](evidence/T28-012.md).
 
 <a id="t28-013"></a>
 ## T28-013 — POST forecast.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 4 — API; dòng [1291](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1291).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 4 — API.
@@ -259,12 +259,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-013.md](evidence/T28-013.md).
 
 <a id="t28-014"></a>
 ## T28-014 — Response.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 4 — API; dòng [1292](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1292).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 4 — API.
@@ -278,12 +278,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-014.md](evidence/T28-014.md).
 
 <a id="t28-015"></a>
 ## T28-015 — Error handling.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 4 — API; dòng [1293](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1293).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 4 — API.
@@ -297,12 +297,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-015.md](evidence/T28-015.md).
 
 <a id="t28-016"></a>
 ## T28-016 — Mock observation mới.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 5 — Real-time; dòng [1296](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1296).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 5 — Real-time.
@@ -316,12 +316,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-016.md](evidence/T28-016.md).
 
 <a id="t28-017"></a>
 ## T28-017 — Worker nhận dữ liệu.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 5 — Real-time; dòng [1297](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1297).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 5 — Real-time.
@@ -335,12 +335,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-017.md](evidence/T28-017.md).
 
 <a id="t28-018"></a>
 ## T28-018 — Trigger inference.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 5 — Real-time; dòng [1298](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1298).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 5 — Real-time.
@@ -354,12 +354,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-018.md](evidence/T28-018.md).
 
 <a id="t28-019"></a>
 ## T28-019 — Dashboard cập nhật.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 5 — Real-time; dòng [1299](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1299).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 5 — Real-time.
@@ -373,12 +373,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-019.md](evidence/T28-019.md).
 
 <a id="t28-020"></a>
 ## T28-020 — Tạo subscription.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 6 — Alert; dòng [1302](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1302).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 6 — Alert.
@@ -392,12 +392,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-020.md](evidence/T28-020.md).
 
 <a id="t28-021"></a>
 ## T28-021 — Kích hoạt rule.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 6 — Alert; dòng [1303](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1303).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 6 — Alert.
@@ -411,12 +411,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-021.md](evidence/T28-021.md).
 
 <a id="t28-022"></a>
 ## T28-022 — Sinh cảnh báo.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 6 — Alert; dòng [1304](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1304).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 6 — Alert.
@@ -430,12 +430,12 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Kịch bản có input/version, bước thao tác, expected/actual và ảnh/log; chạy lại được trên release candidate.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-022.md](evidence/T28-022.md).
 
 <a id="t28-023"></a>
 ## T28-023 — Kiểm tra throttle.
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Nguồn:** Demo 6 — Alert; dòng [1305](D:/IT-Dev/python-projects/Typhoon_vn/ROADMAP_WBS_Typhoon_Vietnam_Chi_Tiet.md:1305).
 - **Loại:** demo bằng chứng.
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 6 — Alert.
@@ -449,4 +449,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fake transport không gửi trùng event qua restart/redelivery; cooldown đúng biên; không gửi tin thật trong test.
 - **Kịch bản tiểu mục:** Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** chưa ghi; không đánh complete.
+- **Bằng chứng hiện tại:** [T28-023.md](evidence/T28-023.md).

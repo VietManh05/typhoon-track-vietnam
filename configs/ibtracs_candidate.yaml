@@ -1,0 +1,8 @@
+# Bounded real-data candidate. Evaluation and promotion are separate gates.
+experiment: {name: ibtracs-wp-candidate-v1, seed: 42, device: cpu}
+dataset: {input_len: 4, horizon: [1, 2, 4, 8, 12], split_by_year: true, val_ratio: 0.2, test_ratio: 0.2, random_seed: 42}
+model: {type: LSTMTrackForecaster, hidden_size: 32, num_layers: 1, dropout: 0.0}
+training: {epochs: 12, batch_size: 64, learning_rate: 0.001, weight_decay: 0.00001, patience: 4, gradient_clip: 1.0, scheduler: cosine, log_every: 1}
+loss: {reg_loss: smooth_l1, reg_weight: 1.0, cls_weight: 0.3}
+checkpoint: {dir: checkpoints, save_last: true, save_best: true}
+mlflow: {enabled: false, tracking_uri: mlruns, experiment_name: ibtracs-candidate}

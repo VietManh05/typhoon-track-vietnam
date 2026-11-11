@@ -15,9 +15,15 @@ import torch
 from typhoon_vn.api.schemas import Fix
 from typhoon_vn.features.build import FEATURE_COLUMNS, FeatureBuilder
 from typhoon_vn.features.scaling import FeatureScaler
-from typhoon_vn.models.lstm import LSTMTrackForecaster
+from typhoon_vn.models.base import TrackForecaster
+from typhoon_vn.models.lstm import (
+    AttentionLSTMTrackForecaster,
+    LSTMTrackForecaster,
+    Seq2SeqLSTMTrackForecaster,
+)
+from typhoon_vn.models.transformer import TransformerTrackForecaster
 
-BUNDLE_SCHEMA_VERSION = 1
+BUNDLE_SCHEMA_VERSION = 2  # Targets are unscaled WGS84 degrees; v1 needs retraining.
 INTENSITY_LABELS = ("TD", "TS", "STS", "TY", "STY", "SUPERTY", "UNK")
 
 
@@ -79,7 +85,7 @@ def _scaler_from_state(state: dict[str, Any]) -> FeatureScaler:
 
 def export_bundle(
     directory: str | Path,
-    model: LSTMTrackForecaster,
+    model: TrackForecaster,
     scaler: FeatureScaler,
     *,
     version: str,
@@ -91,6 +97,7 @@ def export_bundle(
     validation_radius_km: dict[str, float],
     split_manifest: dict[str, Any],
     synthetic: bool = False,
+    uncertainty_method: str = "held-out validation radial error; not calibrated coverage",
 ) -> Path:
     """Export a deterministic, checksum-verified directory bundle."""
 
@@ -115,7 +122,7 @@ def export_bundle(
         "dataset_version": dataset_version,
         "dataset_sha256": dataset_sha256,
         "synthetic": synthetic,
-        "model": {"type": "LSTMTrackForecaster", "constructor": model_config},
+        "model": {"type": type(model).__name__, "constructor": model_config},
         "input_len": input_len,
         "time_step_hours": 6,
         "feature_columns": list(FEATURE_COLUMNS),
@@ -123,7 +130,7 @@ def export_bundle(
         "horizons_hours": list(horizons_hours),
         "intensity_labels": list(INTENSITY_LABELS),
         "validation_radius_km": validation_radius_km,
-        "uncertainty_method": "held-out validation radial error; not calibrated coverage",
+        "uncertainty_method": uncertainty_method,
         "split_manifest_sha256": _sha256(split_path),
         "files": {
             "weights.pt": _sha256(weights),
@@ -170,6 +177,16 @@ def load_bundle(path: str | Path) -> dict[str, Any]:
         raise ValueError("invalid bundle manifest schema")
     if manifest["bundle_schema_version"] != BUNDLE_SCHEMA_VERSION:
         raise ValueError("unsupported bundle schema version")
+    horizons = manifest["horizons_hours"]
+    step_hours = manifest["time_step_hours"]
+    if (
+        step_hours != 6
+        or not isinstance(horizons, list)
+        or not horizons
+        or any(not isinstance(hour, int) or hour < 1 or hour % 6 for hour in horizons)
+        or horizons != sorted(set(horizons))
+    ):
+        raise ValueError("invalid bundle horizon schedule")
     if manifest["feature_columns"] != list(FEATURE_COLUMNS):
         raise ValueError("bundle feature columns mismatch")
     if manifest["feature_schema_sha256"] != _feature_hash(FEATURE_COLUMNS):
@@ -182,18 +199,66 @@ def load_bundle(path: str | Path) -> dict[str, Any]:
             raise ValueError(f"bundle checksum mismatch: {name}")
     if manifest["split_manifest_sha256"] != manifest["files"]["split-manifest.json"]:
         raise ValueError("split manifest checksum mismatch")
-    if manifest["model"].get("type") != "LSTMTrackForecaster":
+    model_types = {
+        "LSTMTrackForecaster": (
+            LSTMTrackForecaster,
+            {
+                "n_features",
+                "n_horizons",
+                "n_classes",
+                "hidden_size",
+                "num_layers",
+                "dropout",
+            },
+        ),
+        "Seq2SeqLSTMTrackForecaster": (
+            Seq2SeqLSTMTrackForecaster,
+            {
+                "n_features",
+                "n_horizons",
+                "n_classes",
+                "hidden_size",
+                "num_layers",
+                "dropout",
+                "teacher_forcing_ratio",
+            },
+        ),
+        "AttentionLSTMTrackForecaster": (
+            AttentionLSTMTrackForecaster,
+            {
+                "n_features",
+                "n_horizons",
+                "n_classes",
+                "hidden_size",
+                "num_layers",
+                "dropout",
+            },
+        ),
+        "TransformerTrackForecaster": (
+            TransformerTrackForecaster,
+            {
+                "n_features",
+                "n_horizons",
+                "n_classes",
+                "d_model",
+                "nhead",
+                "n_layers",
+                "dim_feedforward",
+                "dropout",
+            },
+        ),
+    }
+    model_type = manifest["model"].get("type")
+    if model_type not in model_types:
         raise ValueError("model type is not allowlisted")
     constructor = manifest["model"].get("constructor")
-    allowed = {
-        "n_features",
-        "n_horizons",
-        "n_classes",
-        "hidden_size",
-        "num_layers",
-        "dropout",
-    }
-    if not isinstance(constructor, dict) or set(constructor) != allowed:
+    model_class, allowed = model_types[model_type]
+    anchor_fields = {"anchor_indices", "anchor_mean", "anchor_scale"}
+    valid_fields = [allowed]
+    if model_type == "LSTMTrackForecaster":
+        valid_fields.append(allowed | anchor_fields)
+        valid_fields.append(allowed | anchor_fields | {"anchor_horizon_steps"})
+    if not isinstance(constructor, dict) or set(constructor) not in valid_fields:
         raise ValueError("invalid model constructor schema")
     if constructor["n_features"] != len(FEATURE_COLUMNS):
         raise ValueError("model feature dimension mismatch")
@@ -210,7 +275,31 @@ def load_bundle(path: str | Path) -> dict[str, Any]:
     scaler = _scaler_from_state(scaler_state)
     if scaler.feature_columns != manifest["feature_columns"]:
         raise ValueError("scaler feature columns mismatch")
-    model = LSTMTrackForecaster(**constructor)
+    if anchor_fields <= set(constructor):
+        indices = [FEATURE_COLUMNS.index(name) for name in ("lat", "lon")]
+        if (
+            constructor["anchor_indices"] != indices
+            or not np.allclose(
+                constructor["anchor_mean"],
+                scaler._scaler.mean_[indices],
+                rtol=0,
+                atol=1e-6,
+            )
+            or not np.allclose(
+                constructor["anchor_scale"],
+                scaler._scaler.scale_[indices],
+                rtol=0,
+                atol=1e-6,
+            )
+        ):
+            raise ValueError("model anchor does not match fitted scaler")
+    if "anchor_horizon_steps" in constructor:
+        expected = [
+            hour // manifest["time_step_hours"] for hour in manifest["horizons_hours"]
+        ]
+        if constructor["anchor_horizon_steps"] != expected:
+            raise ValueError("model motion anchor does not match horizons")
+    model = model_class(**constructor)
     state = torch.load(root / "weights.pt", map_location="cpu", weights_only=True)
     model.load_state_dict(state, strict=True)
     model.eval()

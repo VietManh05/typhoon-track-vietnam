@@ -1,0 +1,281 @@
+% ---------------------------------------------------------------------
+%  CHƯƠNG 3 — PHÂN TÍCH VÀ THIẾT KẾ
+% ---------------------------------------------------------------------
+\chapter{Phân tích và thiết kế}
+\label{ch:thietke}
+
+\begin{muctieu}
+Chương này phân tích yêu cầu của bài toán, sau đó lần lượt trình bày thiết kế
+kiến trúc hệ thống, thiết kế dữ liệu và đặc trưng, thiết kế các mô hình học,
+thiết kế phần phục vụ và quy trình chọn mô hình.
+\end{muctieu}
+
+\section{Phân tích bài toán và yêu cầu}
+
+\subsection{Đầu vào và đầu ra}
+
+\textbf{Đầu vào} là 4 quan trắc gần nhất của một cơn bão, cách nhau 6 giờ,
+tức 24 giờ lịch sử. Mỗi quan trắc gồm thời điểm UTC, vĩ độ, kinh độ, gió, khí
+áp và cấp cường độ.
+
+\textbf{Đầu ra} gồm ba phần: vị trí tâm bão tại +6, +12, +24, +48 và +72 giờ;
+bán kính nón bất định tại từng mốc; và danh sách 5 cơn bão lịch sử tương tự
+nhất, dùng làm lời giải thích cho gợi ý.
+
+\subsection{Yêu cầu chức năng}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Nạp và làm sạch dữ liệu best-track, tạo đặc trưng, huấn luyện mô hình.
+  \item Dự báo quỹ đạo qua API cho bão đang hoạt động và cho chuỗi quan trắc
+        do người dùng gửi lên.
+  \item Hiển thị quỹ đạo dự báo, nón bất định và bão tương tự trên bản đồ.
+\end{itemize}
+
+\subsection{Yêu cầu phi chức năng}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item \textbf{Không rò rỉ dữ liệu} giữa huấn luyện và kiểm thử.
+  \item \textbf{Tái lập được}: cố định seed, lưu cấu hình và mã băm dữ liệu
+        của từng lần chạy.
+  \item \textbf{Toàn vẹn}: mô hình được đóng gói kèm mã băm, phần phục vụ từ
+        chối gói bị sửa đổi hoặc sai phiên bản.
+  \item \textbf{Minh bạch}: mọi kết quả hiển thị kèm phiên bản mô hình, nguồn
+        dữ liệu và cảnh báo ``chỉ mang tính tham khảo''.
+\end{itemize}
+
+\subsection{Tiêu chí chạy đúng}
+
+Hệ thống được coi là đạt khi sai số Haversine trên tập kiểm thử thấp hơn
+persistence có ý nghĩa thống kê, và nón 80\% phủ khoảng 80\% vị trí thực.
+
+\section{Thiết kế kiến trúc hệ thống}
+
+Kiến trúc tổng thể được trình bày ở Hình~\ref{fig:kientruc}. Hệ thống tách
+thành hai nửa có vòng đời khác nhau. Nửa huấn luyện chạy ngoại tuyến, đi từ
+dữ liệu thô đến gói mô hình. Nửa phục vụ chạy trực tuyến, nạp gói mô hình đó
+để trả lời yêu cầu dự báo. Hai nửa chỉ giao tiếp qua gói mô hình, nên có thể
+huấn luyện lại mà không sửa phần phục vụ.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[node distance=10mm and 9mm]
+  \node[objbox] (data) {IBTrACS WP\\ 1980--2024};
+  \node[clsbox, right=of data] (clean) {Làm sạch,\\ chuẩn hóa};
+  \node[clsbox, right=of clean] (feat) {Tạo đặc trưng\\ (47 + 11 biến)};
+  \node[clsbox, right=of feat] (split) {Cửa sổ chuỗi,\\ chia theo năm};
+  \node[clsbox, right=of split] (train) {Huấn luyện,\\ chọn trên val};
+  \node[objbox, right=of train] (bundle) {Gói mô hình\\ + thư viện analog};
+  \node[objbox, below=of feat] (env) {NCEP/NCAR R1\\ (dòng dẫn đường)};
+  \node[clsbox, below=of bundle] (api) {FastAPI\\ dự báo + nón};
+  \node[objbox, left=of api] (web) {Bản đồ web\\ + bão tương tự};
+  \draw[flowarr] (data) -- (clean);
+  \draw[flowarr] (clean) -- (feat);
+  \draw[flowarr] (feat) -- (split);
+  \draw[flowarr] (split) -- (train);
+  \draw[flowarr] (train) -- (bundle);
+  \draw[flowarr] (env) -- (feat);
+  \draw[flowarr] (bundle) -- (api);
+  \draw[flowarr] (api) -- (web);
+\end{tikzpicture}}
+\caption{Sơ đồ kiến trúc tổng thể của hệ thống.}
+\label{fig:kientruc}
+\end{figure}
+
+Mã nguồn chia thành các mô-đun độc lập, mỗi mô-đun ứng với một khối trong sơ
+đồ:
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item \code{ingestion}: tải và phân tích dữ liệu nguồn, ghi lại nguồn gốc.
+  \item \code{features}: làm sạch, tạo đặc trưng, chuẩn hóa.
+  \item \code{datasets}: cắt cửa sổ chuỗi và chia tập.
+  \item \code{models}, \code{training}: định nghĩa mô hình, vòng huấn luyện,
+        checkpoint và đóng gói.
+  \item \code{evaluation}: tính sai số và bootstrap.
+  \item \code{inference}: nạp gói mô hình, k-NN analog, nón bất định.
+  \item \code{api}: giao diện HTTP và phục vụ trang bản đồ.
+\end{itemize}
+
+\section{Thiết kế dữ liệu}
+
+\subsection{Nguồn và làm sạch}
+
+Nguồn chính là NOAA IBTrACS v04r01~\cite{Knapp2010}, lưu vực Tây Bắc Thái Bình
+Dương (WP), giai đoạn 1980--2024. Quy trình làm sạch gồm bốn bước: chuẩn hóa
+đơn vị gió từ knot sang m/s; khử bản ghi trùng lặp; chỉ giữ quan trắc synop 6
+giờ (00, 06, 12, 18 UTC); và giới hạn vùng 0--30°N, 100--140°E. Sau làm sạch
+còn \textbf{24.024 quan trắc của 1.089 cơn bão}. Mỗi quan trắc lưu nguồn, URL
+và mã băm SHA-256 của tệp gốc, nên có thể truy ngược bất kỳ con số nào về tệp
+dữ liệu đã sinh ra nó.
+
+\subsection{Chia tập không rò rỉ}
+
+Các quan trắc liên tiếp của cùng một cơn bão rất giống nhau. Nếu chia ngẫu
+nhiên theo quan trắc, mô hình sẽ gặp lại gần như cùng một tình huống ở cả
+huấn luyện lẫn kiểm thử và cho điểm số đẹp giả tạo. Vì vậy dữ liệu được chia
+\textbf{theo năm, giữ nguyên cả cơn bão} (Bảng~\ref{tab:chiatap}). Bộ chuẩn
+hóa đặc trưng chỉ được fit trên tập huấn luyện rồi dùng lại nguyên vẹn cho
+validation, test và khi suy luận.
+
+\begin{table}[H]
+\centering
+\caption{Chia tập dữ liệu theo năm.}
+\label{tab:chiatap}
+\begin{tabularx}{\textwidth}{>{\bfseries\color{daunavy}}l >{\color{daumaroon}}c c X}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Tập & \bfseries\color{daumaroon}Giai đoạn & \bfseries\color{daunavy}Số bão & \leavevmode\bfseries\color{daunavy}Mục đích \\
+\midrule
+Huấn luyện  & 1980--2016 & 895 & Học tham số ($\approx$7.800 cửa sổ) \\
+Validation  & 2017--2020 & 110 & Chọn mô hình, siêu tham số, bán kính nón \\
+Kiểm thử    & 2021--2024 & 84  & Đánh giá một lần (714 cửa sổ) \\
+Ảnh hưởng VN & 2021--2024 & 27 & Tập con của kiểm thử: đi vào trong 300~km bờ biển (278 cửa sổ) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Đặc trưng}
+
+Một bộ tạo đặc trưng duy nhất (\code{FeatureBuilder}) dùng chung cho huấn
+luyện và suy luận, nhờ đó hai giai đoạn không thể lệch nhau về cách tính. Mỗi
+quan trắc có 47 đặc trưng, tóm tắt ở Bảng~\ref{tab:dactrung}. Thí nghiệm mở
+rộng ở mục~\ref{sec:steering} bổ sung 11 đặc trưng dòng dẫn đường lấy từ tái
+phân tích NCEP/NCAR R1~\cite{Kalnay1996}.
+
+\begin{table}[H]
+\centering
+\caption{Các nhóm đặc trưng đầu vào.}
+\label{tab:dactrung}
+\begin{tabularx}{\textwidth}{>{\bfseries\color{daunavy}}l X}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Nhóm & \leavevmode\bfseries\color{daunavy}Đặc trưng \\
+\midrule
+Vị trí     & Vĩ độ, kinh độ, chênh lệch và độ trễ 1--3 bước \\
+Động học   & Quãng đường bước, hướng di chuyển, tốc độ (km/h), gia tốc, góc rẽ, tốc độ rẽ \\
+Thời gian  & sin/cos của giờ, ngày, tháng, ngày trong năm; cờ mùa bão \\
+Địa lý     & Khoảng cách, hướng tới bờ biển Việt Nam và các điểm tham chiếu (Hoàng Sa, Trường Sa, Đà Nẵng, \dots) \\
+Cường độ   & Gió (m/s), khí áp (hPa), biến thiên của chúng, mã one-hot cấp bão \\
+Dòng dẫn đường (mở rộng) & Dòng dẫn đường lớp sâu trong vành 200--800~km, gió 500~hPa, đứt gió 200--850~hPa, độ cao 500~hPa và chênh lệch 5° về bốn hướng \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Thiết kế mô hình}
+
+\subsection{Biểu diễn đầu ra: độ dịch chuyển}
+
+Thay vì để mạng dự báo trực tiếp tọa độ tuyệt đối, mô hình dự báo
+\term{độ dịch chuyển} so với vị trí quan trắc cuối $\mathbf{p}_t$:
+\begin{equation}
+\hat{\mathbf{p}}_{t+h} = \mathbf{p}_t + \Delta\hat{\mathbf{p}}_h .
+\end{equation}
+Vị trí hiện tại $\mathbf{p}_t$ là thông tin đã biết chính xác. Nếu học tọa độ
+tuyệt đối trên đầu vào đã chuẩn hóa, mạng phải tốn sức ``khôi phục'' lại chính
+vị trí này. Học độ dịch chuyển cho phép mạng tập trung vào phần thực sự cần
+dự báo là hướng và tốc độ di chuyển. Mục~\ref{sec:ablation} kiểm chứng lựa
+chọn này bằng thí nghiệm.
+
+\subsection{Các mô hình được so sánh}
+
+Bảy phương pháp thuộc bốn nhóm được đặt cạnh nhau (Bảng~\ref{tab:phuongphap}).
+Hai mốc so sánh không cần huấn luyện và cho biết mức sai số ``miễn phí''; mọi
+phương pháp học phải vượt qua mốc này mới có giá trị.
+
+\begin{table}[H]
+\centering
+\caption{Các phương pháp được huấn luyện và so sánh.}
+\label{tab:phuongphap}
+\begin{tabularx}{\textwidth}{>{\bfseries\color{daunavy}}l >{\color{daumaroon}}l X}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Nhóm & \bfseries\color{daumaroon}Phương pháp & \leavevmode\bfseries\color{daunavy}Cấu hình \\
+\midrule
+Mốc so sánh & Persistence & Giữ nguyên vận tốc 6 giờ gần nhất \\
+Mốc so sánh & CLIPER-proxy & Persistence có suy giảm \\
+AI cổ điển & k-NN analog & $k = 40$; trọng số quỹ đạo 1,0, vị trí 1,0, mùa 0,5 \\
+Học máy & Gradient boosting & HistGradientBoosting, hồi quy độ dịch chuyển \\
+Học sâu & LSTM & 2 tầng, 128 nơ-ron ẩn, dropout 0,2 \\
+Học sâu & Attention-LSTM & LSTM + attention cộng trên chuỗi đầu vào \\
+Học sâu & Transformer & Encoder self-attention + mã hóa vị trí \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Trong các phương pháp trên, k-NN analog có vai trò riêng: ngoài việc đưa ra
+gợi ý, nó chỉ ra những cơn bão lịch sử làm căn cứ cho gợi ý đó.
+Giải thuật~\ref{alg:knn} mô tả cách thực hiện.
+
+\begin{algorithm}[H]
+\caption{Gợi ý đường đi bằng k-NN analog}
+\label{alg:knn}
+\hspace*{\algorithmicindent}\textbf{Đầu vào:} cửa sổ quan trắc $q$; thư viện tình huống lịch sử $\mathcal{L}$; $k$; trọng số $w_g$\\
+\hspace*{\algorithmicindent}\textbf{Đầu ra:} quỹ đạo gợi ý $\hat{\mathbf{y}}$ và danh sách bão tương tự
+\begin{algorithmic}[1]
+\Function{GoiYAnalog}{$q, \mathcal{L}, k$}
+  \State $\mathbf{p}_t \gets$ vị trí cuối của $q$
+  \State Tính đặc trưng $\mathbf{z}_g(q)$: đoạn quỹ đạo tương đối so với $\mathbf{p}_t$, vị trí, mùa
+  \For{mỗi tình huống $c \in \mathcal{L}$}
+    \State Tính $D(q,c)$ theo công thức~\eqref{eq:knn-dist}
+  \EndFor
+  \State $N \gets k$ tình huống có $D$ nhỏ nhất
+  \State $\alpha_j \gets \dfrac{1/(D_j+\epsilon)}{\sum_{i \in N} 1/(D_i+\epsilon)}$ với mọi $j \in N$
+  \State $\hat{\mathbf{y}} \gets \mathbf{p}_t + \sum_{j \in N} \alpha_j \, \Delta\mathbf{y}_j$
+  \State \Return $\hat{\mathbf{y}}$, tên và năm của 5 cơn bão khác nhau gần $q$ nhất
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Cấu hình huấn luyện mạng nơ-ron}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Hàm mất mát Smooth~L1 trên độ dịch chuyển (đơn vị độ).
+  \item Adam, tốc độ học $10^{-3}$, weight decay $10^{-5}$, lịch cosine,
+        cắt gradient ở chuẩn 1,0.
+  \item Tối đa 100 epoch, dừng sớm khi validation không cải thiện sau 10 epoch,
+        giữ trọng số của epoch tốt nhất trên validation.
+  \item Mỗi mạng chạy 3 seed (0, 1, 2), báo cáo trung bình $\pm$ độ lệch chuẩn.
+\end{itemize}
+
+\section{Thiết kế phần phục vụ}
+
+\subsection{Gói mô hình}
+
+Kết quả huấn luyện được xuất thành một thư mục gồm trọng số, tham số của bộ
+chuẩn hóa, bản kê chia tập và một tệp \code{manifest} ghi phiên bản, cấu hình
+kiến trúc, danh sách đặc trưng, các mốc dự báo, bán kính nón và mã băm SHA-256
+của từng tệp. Khi nạp, phần phục vụ kiểm tra lần lượt phiên bản lược đồ, mã
+băm từng tệp, danh sách đặc trưng và kiểu mô hình thuộc danh sách cho phép;
+sai một bước là từ chối nạp. Trọng số chỉ được đọc ở chế độ dữ liệu thuần,
+không thực thi mã đi kèm tệp.
+
+\subsection{Giao diện API}
+
+Phần phục vụ là một ứng dụng FastAPI. Mỗi phản hồi dự báo mang theo phiên bản
+mô hình, phiên bản dữ liệu, nguồn quan trắc, phương pháp tính bất định, các
+cảnh báo (ví dụ quan trắc cũ hơn 24 giờ) và dòng tuyên bố miễn trừ. Các lỗi
+trả về theo một khuôn dạng thống nhất gồm mã lỗi, thông điệp và mã yêu cầu để
+tra nhật ký. Những đường dẫn ghi dữ liệu hoặc chạy mô hình yêu cầu khóa API
+hoặc token, và các đường dẫn dữ liệu đều bị giới hạn tần suất theo địa chỉ
+gọi.
+
+\subsection{Nguyên tắc an toàn khi phục vụ}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Ở chế độ vận hành, hệ thống từ chối khởi động nếu thiếu thông tin xác
+        thực hoặc vẫn cho phép phương pháp dự phòng, thay vì lặng lẽ chạy
+        không có mô hình đã duyệt.
+  \item Đầu vào bị từ chối nếu quan trắc không theo thứ tự thời gian, có
+        thời điểm ở tương lai hoặc cho tốc độ di chuyển phi thực tế.
+  \item Bộ nhớ đệm chỉ là phần tăng tốc: khi nó hỏng, dự báo vẫn được tính
+        lại từ đầu và kết quả không đổi.
+\end{itemize}
+
+\section{Quy trình chọn mô hình và nón bất định}
+
+Mọi lựa chọn, gồm kiến trúc, đặc trưng, siêu tham số và thành viên của mô
+hình kết hợp, chỉ dựa trên tập validation 2017--2020. Tập kiểm thử 2021--2024
+được chạy \textbf{một lần} sau khi đã chốt cấu hình. Bán kính nón bất định
+tại mỗi mốc lấy bằng phân vị 80\% của sai số trên validation.
+
+\begin{luuy}
+Gradient boosting có dòng dẫn đường đạt điểm test tốt nhất trong một thí
+nghiệm, nhưng kém hơn trên validation nên không được chọn. Chọn mô hình theo
+điểm test sẽ làm con số báo cáo lạc quan hơn thực tế.
+\end{luuy}

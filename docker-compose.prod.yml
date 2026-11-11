@@ -1,0 +1,123 @@
+services:
+  api:
+    image: ${TYPHOON_API_IMAGE:-typhoon-vn-api:local}
+    build:
+      context: .
+      dockerfile: infra/docker/backend.Dockerfile
+    env_file: ["${TYPHOON_ENV_FILE:-.env.production}"]
+    environment:
+      APP_ENV: production
+      ALLOW_BASELINE: "false"
+      REQUIRE_API_KEY: "true"
+      METRICS_TOKEN_FILE: /run/secrets/metrics_token
+      MODEL_ARTIFACT: /app/models/promoted
+      OPERATIONAL_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:?set}:${POSTGRES_PASSWORD:?set}@postgres:5432/${POSTGRES_DB:-typhoon}
+      REDIS_URL: redis://redis:6379/0
+      CACHE_ENABLED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+    secrets: [metrics_token]
+    volumes:
+      - ${MODEL_HOST_PATH:?set model bundle directory}:/app/models/promoted:ro
+    networks: [typhoon]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=3).read()\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  worker:
+    profiles: [worker]
+    image: ${TYPHOON_WORKER_IMAGE:-typhoon-vn-worker:local}
+    build:
+      context: .
+      dockerfile: infra/docker/worker.Dockerfile
+    env_file: ["${TYPHOON_ENV_FILE:-.env.production}"]
+    environment:
+      APP_ENV: production
+      ALLOW_BASELINE: "false"
+      MODEL_ARTIFACT: /app/models/promoted
+      OPERATIONAL_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:?set}:${POSTGRES_PASSWORD:?set}@postgres:5432/${POSTGRES_DB:-typhoon}
+      REDIS_URL: redis://redis:6379/0
+      CACHE_ENABLED: "true"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [typhoon]
+    restart: unless-stopped
+    command: ["python", "-m", "typhoon_vn.operations.worker", "--snapshot", "/app/snapshots/observations.json"]
+    volumes:
+      - ${MODEL_HOST_PATH:?set model bundle directory}:/app/models/promoted:ro
+      - ${SNAPSHOT_HOST_PATH:-./data/snapshots}:/app/snapshots:ro
+
+  frontend:
+    image: ${TYPHOON_FRONTEND_IMAGE:-typhoon-vn-frontend:local}
+    build:
+      context: .
+      dockerfile: infra/docker/frontend.Dockerfile
+      args:
+        VITE_WINDY_MAP_API_KEY: ${VITE_WINDY_MAP_API_KEY:-}
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [typhoon]
+    restart: unless-stopped
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-typhoon}
+      POSTGRES_USER: ${POSTGRES_USER:?set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks: [typhoon]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    networks: [typhoon]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    secrets: [metrics_token]
+    volumes:
+      - ./infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks: [typhoon]
+    ports:
+      - "127.0.0.1:9090:9090"
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+
+secrets:
+  metrics_token:
+    file: ${METRICS_TOKEN_HOST_FILE:-./secrets/metrics_token}
+
+networks:
+  typhoon:
+    driver: bridge

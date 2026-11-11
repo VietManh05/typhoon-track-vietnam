@@ -95,6 +95,11 @@ export interface TranslationStrings {
   eta_hours_suffix: string;
   top_provinces_label: string;
   in_cone: string;
+  risk_severe: string;
+  risk_very_high: string;
+  risk_high: string;
+  risk_moderate: string;
+  risk_low: string;
   // WS3: Compass bearings (16 directions)
   bearing_N: string;
   bearing_NNE: string;
@@ -253,6 +258,11 @@ export const translations: Record<Language, TranslationStrings> = {
     eta_hours_suffix: 'giờ',
     top_provinces_label: 'Top 5 Tỉnh thành gần tâm bão nhất:',
     in_cone: 'Trong nón',
+    risk_severe: 'Nguy hiểm',
+    risk_very_high: 'Rất cao',
+    risk_high: 'Cao',
+    risk_moderate: 'Trung bình',
+    risk_low: 'Thấp',
     // WS3: Compass bearings (16 directions)
     bearing_N: 'Bắc (N)',
     bearing_NNE: 'Bắc Đông Bắc (NNE)',
@@ -409,6 +419,11 @@ export const translations: Record<Language, TranslationStrings> = {
     eta_hours_suffix: 'hours',
     top_provinces_label: 'Top 5 Closest Provinces:',
     in_cone: 'In Cone',
+    risk_severe: 'Severe',
+    risk_very_high: 'Very high',
+    risk_high: 'High',
+    risk_moderate: 'Moderate',
+    risk_low: 'Low',
     // WS3: Compass bearings (16 directions)
     bearing_N: 'North (N)',
     bearing_NNE: 'North-Northeast (NNE)',

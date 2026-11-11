@@ -13,6 +13,8 @@ from collections.abc import Iterator, Mapping
 from typing import Any, Protocol
 from urllib.parse import quote
 
+from redis.exceptions import RedisError
+
 logger = logging.getLogger(__name__)
 
 
@@ -83,6 +85,9 @@ class ForecastCache:
         model = quote(model_revision.strip(), safe="")
         return f"{self.namespace}:forecast:{storm}:{model}:{digest}"
 
+    def active_key(self) -> str:
+        return f"{self.namespace}:active"
+
     def get(self, key: str) -> Any | None:
         """Return decoded JSON or a miss when Redis/payload is unavailable."""
         if self.client is None:
@@ -94,7 +99,13 @@ class ForecastCache:
             if isinstance(raw, bytes):
                 raw = raw.decode("utf-8")
             return json.loads(raw)
-        except (UnicodeDecodeError, json.JSONDecodeError, OSError, RuntimeError):
+        except (
+            UnicodeDecodeError,
+            json.JSONDecodeError,
+            OSError,
+            RuntimeError,
+            RedisError,
+        ):
             logger.warning("Cache read failed; continuing as a miss", exc_info=True)
             return None
 
@@ -106,7 +117,7 @@ class ForecastCache:
         try:
             self.client.setex(key, self.ttl_seconds, encoded)
             return True
-        except (OSError, RuntimeError):
+        except (OSError, RuntimeError, RedisError):
             logger.warning(
                 "Cache write failed; primary result remains valid", exc_info=True
             )
@@ -122,9 +133,28 @@ class ForecastCache:
         pattern = f"{self.namespace}:forecast:{storm}:*"
         try:
             keys = list(self.client.scan_iter(match=pattern))
+            if self.client.get(self.active_key()) is not None:
+                keys.append(self.active_key())
             return self.client.delete(*keys) if keys else 0
-        except (OSError, RuntimeError):
+        except (OSError, RuntimeError, RedisError):
             logger.warning(
                 "Cache invalidation failed; continuing safely", exc_info=True
+            )
+            return 0
+
+    def invalidate_model(self, model_revision: str) -> int:
+        """Delete forecasts for one promoted model revision across storms."""
+        if not model_revision.strip():
+            raise ValueError("model_revision must be non-empty")
+        if self.client is None:
+            return 0
+        model = quote(model_revision.strip(), safe="")
+        pattern = f"{self.namespace}:forecast:*:{model}:*"
+        try:
+            keys = list(self.client.scan_iter(match=pattern))
+            return self.client.delete(*keys) if keys else 0
+        except (OSError, RuntimeError, RedisError):
+            logger.warning(
+                "Model cache invalidation failed; continuing safely", exc_info=True
             )
             return 0

@@ -16,13 +16,13 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s02"></a>
 ## S02 — Lưu sổ thí nghiệm và MLflow run ID
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G12.
 - **Nguồn:** [REQ-014](traceability.md).
 - **File/đầu ra:** docs/experiment-log-template.md; training/pipeline.py.
 - **Thực hiện:** Mỗi run ghi config, git/source hash, dataset/split/scaler version, metrics và artifact URI; sinh JSON/CSV index.
 - **Kiểm thử/DoD:** Một run smoke có ID truy ngược artifact; log lỗi MLflow không âm thầm mất kết quả training.
-- **Bằng chứng:** evidence/S02.md — chưa thực hiện.
+- **Bằng chứng:** [S02.md](evidence/S02.md).
 
 <a id="s03"></a>
 ## S03 — Feature store có version và schema drift
@@ -38,46 +38,46 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s04"></a>
 ## S04 — Quantile regression 10/50/90%
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G09, G13.
 - **Nguồn:** [REQ-064](traceability.md).
 - **File/đầu ra:** models/uncertainty.py; training/losses.py; tests/test_quantiles.py.
 - **Thực hiện:** Thêm output quantile và pinball loss; kiểm tra crossing; so coverage/width trên calibration; không hiểu quantile lat/lon là xác suất polygon.
 - **Kiểm thử/DoD:** Synthetic distribution có test loss/ordering; báo cáo calibration độc lập; chỉ chọn nếu validation chứng minh hữu ích.
-- **Bằng chứng:** evidence/S04.md — chưa thực hiện.
+- **Bằng chứng:** [S04.md](evidence/S04.md).
 
 <a id="s05"></a>
 ## S05 — Leave-one-season-out validation
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G06, G12.
 - **Nguồn:** [REQ-082](traceability.md).
 - **File/đầu ra:** training/cross_validation.py; tests/test_cross_validation.py.
 - **Thực hiện:** Sinh folds theo mùa; storm qua năm thuộc một fold; fit scaler từng train fold; giữ final test riêng.
 - **Kiểm thử/DoD:** Không giao storm/season theo policy; aggregate metrics từng fold, không tái sử dụng scaler fit toàn bộ.
-- **Bằng chứng:** evidence/S05.md — chưa thực hiện.
+- **Bằng chứng:** [S05.md](evidence/S05.md).
 
 <a id="s06"></a>
 ## S06 — Thí nghiệm độ dài chuỗi 4/6/8
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G13, G14.
 - **Nguồn:** [REQ-084](traceability.md).
 - **File/đầu ra:** configs/ablation/; reports/evaluation/.
 - **Thực hiện:** Cố định split/seed/budget; chạy ba configs; thống kê số sample khả dụng để so sánh công bằng.
 - **Kiểm thử/DoD:** Báo cáo validation cùng horizon và mẫu chung; không chọn config theo final test.
-- **Bằng chứng:** evidence/S06.md — chưa thực hiện.
+- **Bằng chứng:** [S06.md](evidence/S06.md).
 
 <a id="s07"></a>
 ## S07 — Adapter forecast môi trường GFS/ECMWF tùy chọn
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G01, G04.
 - **Nguồn:** [REQ-028](traceability.md).
 - **File/đầu ra:** ingestion/providers/environment.py; tests/test_environment_forecast.py.
 - **Thực hiện:** Phân biệt forecast issuance/valid time và reanalysis; cache run/lead/grid; fallback khi field chưa phát hành.
 - **Kiểm thử/DoD:** Point-in-time join không chọn run sau issue_time; ghi optional nếu chưa có nguồn/quyền truy cập.
-- **Bằng chứng:** evidence/S07.md — chưa thực hiện.
+- **Bằng chứng:** [S07.md](evidence/S07.md).
 
 <a id="s08"></a>
 ## S08 — Import và chuẩn hóa nhãn thiệt hại/đổ bộ
@@ -93,13 +93,13 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s09"></a>
 ## S09 — Cắt/giao cone với tỉnh và bờ biển
 
-- **Trạng thái:** pending.
+- **Trạng thái:** in_progress.
 - **Phụ thuộc:** G02, G11, G18.
 - **Nguồn:** [REQ-023](traceability.md), [REQ-109](traceability.md), [REQ-113](traceability.md).
 - **File/đầu ra:** inference/impact.py; tests/test_impact_geometry.py.
 - **Thực hiện:** Dùng geodesic/polygon và spatial query; tách proximity, probability vùng tâm và hazard thật; định nghĩa ETA hoặc trả không đủ dữ liệu.
 - **Kiểm thử/DoD:** Fixture giao/không giao/chạm biên; endpoint không gọi tâm-cone là gió/lũ; UI nêu giới hạn.
-- **Bằng chứng:** evidence/S09.md — chưa thực hiện.
+- **Bằng chứng:** [S09.md](evidence/S09.md).
 
 <a id="s10"></a>
 ## S10 — Hiển thị so sánh dự báo chính thức
@@ -159,13 +159,13 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s15"></a>
 ## S15 — Lịch ingestion theo mùa bão
 
-- **Trạng thái:** pending.
+- **Trạng thái:** in_progress.
 - **Phụ thuộc:** G01, G19.
 - **Nguồn:** [REQ-031](traceability.md).
 - **File/đầu ra:** ingestion/schedule.py; infra/scheduler/.
 - **Thực hiện:** Tách lịch cập nhật lịch sử và live; định nghĩa timezone, mùa 6–11 theo roadmap; backfill checkpoint và retry tránh trùng.
 - **Kiểm thử/DoD:** Fake clock kiểm tra trong/ngoài mùa, qua năm, outage; task không tự tạo automation Codex.
-- **Bằng chứng:** evidence/S15.md — chưa thực hiện.
+- **Bằng chứng:** [S15.md](evidence/S15.md).
 
 <a id="s16"></a>
 ## S16 — Chính sách checkpoint retention
@@ -225,7 +225,7 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s21"></a>
 ## S21 — Báo cáo cuối mùa
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G13, G26, G27.
 - **Nguồn:** [REQ-148](traceability.md).
 - **File/đầu ra:** reports/post-season/; docs/model-card.md.
@@ -236,7 +236,7 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s22"></a>
 ## S22 — Slide/video bàn giao
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G28.
 - **Nguồn:** [REQ-150](traceability.md).
 - **File/đầu ra:** docs/acceptance/demo-script.md; reports/demo/.
@@ -258,10 +258,10 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 <a id="s24"></a>
 ## S24 — Đóng gói CLI clean-data và kiểm tra provenance
 
-- **Trạng thái:** pending.
+- **Trạng thái:** complete.
 - **Phụ thuộc:** G01, G03, G04, G05.
 - **Nguồn:** [REQ-009](traceability.md).
 - **File/đầu ra:** src/typhoon_vn/cli.py; scripts/run_phase2.py; tests/test_cli.py.
 - **Thực hiện:** Thay placeholder bằng orchestration callable; input/output/config flags; validate path; giữ metadata qua merge/bridge/export.
 - **Kiểm thử/DoD:** CLI fixture raw→clean→features có provenance; raw hash không đổi; config/path sai exit nonzero.
-- **Bằng chứng:** evidence/S24.md — chưa thực hiện.
+- **Bằng chứng:** [S24.md](evidence/S24.md).

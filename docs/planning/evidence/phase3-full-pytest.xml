@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="3" failures="0" skipped="0" tests="3" time="8.218" timestamp="2026-09-19T14:31:47.912536+07:00" hostname="DESKTOP-6FNMLL5"><testcase classname="" name="tests.test_frontend_build" time="0.000"><error message="collection failure">tests\test_frontend_build.py:5: in &lt;module&gt;
+    from typhoon_vn.api.app import create_app
+src\typhoon_vn\api\app.py:283: in &lt;module&gt;
+    app = create_app()
+          ^^^^^^^^^^^^
+src\typhoon_vn\api\app.py:42: in create_app
+    api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+                     ^^^^^^^^^^^^
+E   NameError: name 'APIKeyHeader' is not defined</error></testcase><testcase classname="" name="tests.test_health" time="0.000"><error message="collection failure">tests\test_health.py:3: in &lt;module&gt;
+    from typhoon_vn.api.app import create_app
+src\typhoon_vn\api\app.py:283: in &lt;module&gt;
+    app = create_app()
+          ^^^^^^^^^^^^
+src\typhoon_vn\api\app.py:42: in create_app
+    api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+                     ^^^^^^^^^^^^
+E   NameError: name 'APIKeyHeader' is not defined</error></testcase><testcase classname="" name="tests.test_inference_api" time="0.000"><error message="collection failure">tests\test_inference_api.py:9: in &lt;module&gt;
+    from typhoon_vn.api.app import create_app
+src\typhoon_vn\api\app.py:283: in &lt;module&gt;
+    app = create_app()
+          ^^^^^^^^^^^^
+src\typhoon_vn\api\app.py:42: in create_app
+    api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+                     ^^^^^^^^^^^^
+E   NameError: name 'APIKeyHeader' is not defined</error></testcase></testsuite></testsuites>

@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from typhoon_vn.ingestion.errors import OptionalDependencyError
@@ -17,6 +18,68 @@ DEFAULT_OISST_BASE_URL = (
     "interpolation/v2.1/access/avhrr"
 )
 DEFAULT_GFS_BASE_URL = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod"
+
+
+@dataclass(frozen=True, slots=True)
+class ForecastField:
+    """One immutable forecast field identified by run, lead, and grid."""
+
+    provider: str
+    issued_at: datetime
+    lead_hour: int
+    grid: str
+    source_ref: str
+
+    def __post_init__(self) -> None:
+        if self.issued_at.tzinfo is None or self.issued_at.utcoffset() is None:
+            raise ValueError("forecast issuance must be timezone-aware")
+        if self.lead_hour < 0:
+            raise ValueError("forecast lead_hour must be non-negative")
+        if not self.provider or not self.grid or not self.source_ref:
+            raise ValueError("forecast provider, grid, and source_ref are required")
+
+    @property
+    def valid_at(self) -> datetime:
+        return self.issued_at.astimezone(timezone.utc) + timedelta(hours=self.lead_hour)
+
+    @property
+    def cache_key(self) -> str:
+        issued = self.issued_at.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        return (
+            f"{self.provider}/{issued}/f{self.lead_hour:03d}/"
+            f"{self.grid}/{self.source_ref}"
+        )
+
+
+def select_forecast_field(
+    fields: Sequence[ForecastField],
+    *,
+    issue_time: datetime,
+    valid_time: datetime,
+    provider: str | None = None,
+    grid: str | None = None,
+    allow_missing: bool = False,
+) -> ForecastField | None:
+    """Select the newest run available at issue_time for exactly valid_time."""
+
+    for name, value in (("issue_time", issue_time), ("valid_time", valid_time)):
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError(f"{name} must be timezone-aware")
+    issue_utc = issue_time.astimezone(timezone.utc)
+    valid_utc = valid_time.astimezone(timezone.utc)
+    candidates = [
+        field
+        for field in fields
+        if field.issued_at.astimezone(timezone.utc) <= issue_utc
+        and field.valid_at == valid_utc
+        and (provider is None or field.provider == provider)
+        and (grid is None or field.grid == grid)
+    ]
+    if candidates:
+        return max(candidates, key=lambda field: field.issued_at)
+    if allow_missing:
+        return None
+    raise LookupError("no environmental forecast field was available point-in-time")
 
 
 def oisst_url(observation_date: date, base_url: str | None = None) -> str:

@@ -12,9 +12,9 @@ from collections.abc import Sequence
 
 import pandas as pd
 
+from typhoon_vn.contracts.track import CleaningReport, TrackSchema
 from typhoon_vn.features import constants as C
 from typhoon_vn.features.geo import haversine_km
-from typhoon_vn.features.schema import CleaningReport, TrackSchema
 
 #: Jump larger than this between consecutive fixes is physically implausible
 #: for a 6-hourly best track and gets flagged as suspicious.
@@ -53,20 +53,19 @@ def validate(
     schema: TrackSchema | None = None,
     report: CleaningReport | None = None,
 ) -> pd.DataFrame:
-    """Drop rows with invalid coordinates or unphysical wind/pressure values."""
+    """Drop invalid WGS84 fixes, fixes outside the project domain, and bad physics."""
 
     schema = schema or TrackSchema()
     out = df.copy()
-    before = len(out)
-
-    coord_ok = (
-        out[schema.lat].between(C.LAT_MIN, C.LAT_MAX)
-        & out[schema.lon].between(C.LON_MIN, C.LON_MAX)
-        & out[schema.lat].notna()
-        & out[schema.lon].notna()
+    wgs84_ok = out[schema.lat].between(-90.0, 90.0) & out[schema.lon].between(
+        -180.0, 180.0
     )
-    dropped_coords = int(before - coord_ok.sum())
-    out = out.loc[coord_ok].copy()
+    domain_ok = out[schema.lat].between(C.LAT_MIN, C.LAT_MAX) & out[schema.lon].between(
+        C.LON_MIN, C.LON_MAX
+    )
+    dropped_coords = int((~wgs84_ok).sum())
+    dropped_domain = int((wgs84_ok & ~domain_ok).sum())
+    out = out.loc[wgs84_ok & domain_ok].copy()
 
     physics_ok = pd.Series(True, index=out.index)
     if schema.wind_ms in out.columns:
@@ -82,6 +81,7 @@ def validate(
 
     if report is not None:
         report.n_dropped_invalid_coords += dropped_coords
+        report.n_dropped_outside_domain += dropped_domain
         report.n_dropped_invalid_physics += dropped_physics
     return out
 

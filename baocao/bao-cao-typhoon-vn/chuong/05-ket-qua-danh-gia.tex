@@ -1,0 +1,295 @@
+% ---------------------------------------------------------------------
+%  CHƯƠNG 5 — KẾT QUẢ VÀ ĐÁNH GIÁ
+% ---------------------------------------------------------------------
+\chapter{Kết quả và đánh giá}
+\label{ch:ketqua}
+
+\begin{muctieu}
+Chương này đối chiếu kết quả với các mục tiêu đã đặt ra, sau đó trình bày
+chi tiết sai số của từng phương pháp, kiểm định thống kê, độ phủ của nón bất
+định, hai nhóm thí nghiệm bổ sung, kết quả kiểm thử phần mềm, phần bàn luận
+và những hạn chế còn tồn tại.
+\end{muctieu}
+
+\section{Kết quả đạt được}
+
+Bảng~\ref{tab:muctieu} đối chiếu từng mục tiêu đã nêu ở Chương~\ref{ch:modau}.
+Bốn mục tiêu đầu đạt đầy đủ; mục tiêu triển khai đạt một phần vì mô hình tốt
+nhất trong thí nghiệm chưa phải là mô hình đang phục vụ. Các mục sau trình bày
+bằng chứng cho từng dòng của bảng.
+
+\begin{table}[H]
+\centering
+\caption{Đối chiếu mục tiêu đồ án.}
+\label{tab:muctieu}
+\begin{tabularx}{\textwidth}{>{\bfseries\color{daunavy}}l X >{\leavevmode\color{daumaroon}\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Mục tiêu & \leavevmode\bfseries\color{daunavy}Kết quả & \leavevmode\bfseries\color{daumaroon}Mức độ \\
+\midrule
+MT1 & Quy trình dữ liệu 24.024 quan trắc, chia theo năm, scaler fit trên train & Đạt \\
+MT2 & 7 phương pháp, 3 seed, bootstrap theo cơn bão & Đạt \\
+MT3 & 72 giờ: 676~km (persistence) xuống 462~km (k-NN), giảm 32\% & Đạt \\
+MT4 & Nón 80\% phủ 82--86\% vị trí thực trên test & Đạt \\
+MT5 & API, bản đồ web, demo công khai kèm bão tương tự; mô hình đang phục vụ chưa dùng dòng dẫn đường & Đạt một phần \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Độ đo đánh giá}
+
+Độ đo chính là sai số Haversine trung bình tại từng mốc dự báo, tính bằng
+kilômét theo công thức~\eqref{eq:haversine}. Đây là khoảng cách trên mặt cầu
+giữa vị trí gợi ý và vị trí thực, nên càng nhỏ càng tốt. Các mạng nơ-ron chạy
+3 seed và được báo cáo dưới dạng trung bình $\pm$ độ lệch chuẩn; persistence,
+CLIPER-proxy và k-NN là tất định nên chỉ có một giá trị.
+
+Kết quả được tính trên hai tập. Bảng~\ref{tab:ketqua-all} dùng toàn bộ 84 cơn
+bão kiểm thử (714 cửa sổ). Bảng~\ref{tab:ketqua-vn} chỉ dùng 27 cơn bão ảnh
+hưởng Việt Nam (278 cửa sổ), là nhóm mà đề tài quan tâm nhất.
+
+\begin{table}[H]
+\centering
+\caption{Sai số trung bình (km) trên toàn bộ tập kiểm thử 2021--2024.}
+\label{tab:ketqua-all}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\bfseries\color{daunavy}}l rrrrr}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Phương pháp & \bfseries\color{daumaroon}6h & \bfseries\color{daumaroon}12h & \bfseries\color{daumaroon}24h & \bfseries\color{daumaroon}48h & \bfseries\color{daumaroon}72h \\
+\midrule
+Persistence       & 31 & 68 & 155 & 390 & 676 \\
+CLIPER-proxy      & 30 & 65 & 151 & 388 & 677 \\
+k-NN analog       & 32 & 64 & 133 & 290 & \textbf{462} \\
+Gradient boosting & \textbf{29} & \textbf{60} & \textbf{129} & 292 & 476 \\
+LSTM              & 33 $\pm$ 0 & 65 $\pm$ 1 & 133 $\pm$ 1 & \textbf{289} $\pm$ 1 & 464 $\pm$ 5 \\
+Attention-LSTM    & 35 $\pm$ 3 & 68 $\pm$ 4 & 138 $\pm$ 5 & 297 $\pm$ 10 & 473 $\pm$ 9 \\
+Transformer       & 33 $\pm$ 1 & 64 $\pm$ 1 & 133 $\pm$ 3 & 293 $\pm$ 3 & 468 $\pm$ 5 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Sai số trung bình (km) trên 27 cơn bão ảnh hưởng Việt Nam.}
+\label{tab:ketqua-vn}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\bfseries\color{daunavy}}l rrrrr}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Phương pháp & \bfseries\color{daumaroon}6h & \bfseries\color{daumaroon}12h & \bfseries\color{daumaroon}24h & \bfseries\color{daumaroon}48h & \bfseries\color{daumaroon}72h \\
+\midrule
+Persistence       & 33 & 70 & 159 & 388 & 642 \\
+CLIPER-proxy      & 32 & 68 & 159 & 414 & 710 \\
+k-NN analog       & 33 & 65 & 134 & 290 & 476 \\
+Gradient boosting & \textbf{30} & 61 & 131 & 295 & 491 \\
+LSTM              & 32 $\pm$ 0 & 63 $\pm$ 0 & 133 $\pm$ 1 & 292 $\pm$ 6 & 468 $\pm$ 9 \\
+Attention-LSTM    & 34 $\pm$ 3 & 66 $\pm$ 4 & 138 $\pm$ 4 & 298 $\pm$ 6 & 471 $\pm$ 3 \\
+Transformer       & 32 $\pm$ 1 & \textbf{62} $\pm$ 1 & \textbf{130} $\pm$ 2 & \textbf{289} $\pm$ 3 & \textbf{463} $\pm$ 10 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Hai bảng cho cùng một bức tranh. Ở 6 và 12 giờ, mọi phương pháp chỉ cách
+nhau vài kilômét. Từ 24 giờ, nhóm phương pháp học tách khỏi hai mốc so sánh,
+và đến 72 giờ khoảng cách lên tới khoảng 200~km. Trong nhóm phương pháp học,
+không có phương pháp nào dẫn đầu ở mọi mốc. Hình~\ref{fig:horizon} biểu diễn
+xu hướng này: các đường gần như trùng nhau ở 6 giờ và tách dần từ 24 giờ trở
+đi.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{error_by_horizon.png}
+\caption{Sai số trung bình theo thời hạn dự báo của các phương pháp.}
+\label{fig:horizon}
+\end{figure}
+
+\subsection{Kiểm định thống kê}
+
+Chênh lệch vài chục kilômét giữa hai phương pháp có thể chỉ do may rủi của
+tập kiểm thử. Để kiểm tra, Bảng~\ref{tab:bootstrap} so sánh tại 72 giờ bằng
+bootstrap theo cơn bão: 50 cơn bão kiểm thử có dự báo 72 giờ được lấy mẫu lại
+5.000 lần. Đơn vị lấy mẫu là cả cơn bão chứ không phải từng cửa sổ, vì các
+cửa sổ của cùng một cơn bão không độc lập với nhau. Giá trị âm nghĩa là tốt
+hơn mốc tham chiếu.
+
+\begin{table}[H]
+\centering
+\caption{Chênh lệch sai số 72 giờ (km) và khoảng tin cậy 95\%.}
+\label{tab:bootstrap}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\bfseries\color{daunavy}}l cc}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Phương pháp & \bfseries\color{daumaroon}So với persistence & \bfseries\color{daumaroon}So với LSTM \\
+\midrule
+CLIPER-proxy      & $-15$ \ [$-101$; $+65$]  & $+188$ \ [$+113$; $+256$] \\
+k-NN analog       & $-201$ \ [$-268$; $-131$] & $+3$ \ [$-29$; $+34$] \\
+Gradient boosting & $-191$ \ [$-252$; $-126$] & $+12$ \ [$-20$; $+48$] \\
+LSTM              & $-203$ \ [$-262$; $-145$] & --- \\
+Attention-LSTM    & $-173$ \ [$-229$; $-116$] & $+30$ \ [$+12$; $+50$] \\
+Transformer       & $-200$ \ [$-257$; $-142$] & $+3$ \ [$-16$; $+22$] \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Bảng cho ba kết luận. Mọi phương pháp học đều tốt hơn persistence 170--200~km
+với khoảng tin cậy không chứa 0, nên mục tiêu MT3 đạt một cách chắc chắn.
+Giữa LSTM, Transformer, k-NN và gradient boosting không có khác biệt có ý
+nghĩa thống kê. Riêng Attention-LSTM kém hơn LSTM có ý nghĩa, và CLIPER-proxy
+không khác persistence.
+
+\subsection{Nón bất định}
+
+Bán kính nón, lấy bằng phân vị 80\% của sai số trên validation, là 52, 97,
+210, 455 và 714~km tại 6, 12, 24, 48 và 72 giờ. Trên tập kiểm thử, tỉ lệ vị
+trí thực nằm trong nón là 82--86\% ở các mốc. Con số này sát mức danh nghĩa
+80\% và hơi cao hơn, tức nón được hiệu chỉnh tốt và nghiêng về phía thận
+trọng. Cần lưu ý nón ở 72 giờ rộng hơn 700~km: nó trung thực về mức độ bất
+định, nhưng cũng cho thấy gợi ý ở hạn dài chỉ nên dùng để định hướng.
+
+\subsection{Thí nghiệm loại bỏ: dự báo độ dịch chuyển}
+\label{sec:ablation}
+
+Chương~\ref{ch:thietke} đã lập luận rằng nên cho mạng học độ dịch chuyển thay
+vì tọa độ tuyệt đối. Thí nghiệm này kiểm chứng lập luận đó: giữ nguyên kiến
+trúc LSTM, dữ liệu và seed 0, chỉ đổi mục tiêu học (Bảng~\ref{tab:ablation}).
+
+\begin{table}[H]
+\centering
+\caption{Ảnh hưởng của cách biểu diễn đầu ra lên sai số LSTM (km).}
+\label{tab:ablation}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\bfseries\color{daunavy}}l rrrrr}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Mục tiêu học & \bfseries\color{daumaroon}6h & \bfseries\color{daumaroon}12h & \bfseries\color{daumaroon}24h & \bfseries\color{daumaroon}48h & \bfseries\color{daumaroon}72h \\
+\midrule
+Tọa độ tuyệt đối         & 115 & 121 & 164 & 305 & 473 \\
+Độ dịch chuyển (đang dùng) & \textbf{33} & \textbf{65} & \textbf{133} & \textbf{289} & \textbf{464} \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Khác biệt rõ nhất ở hạn ngắn. Học tọa độ tuyệt đối làm sai số 6 giờ tăng
+khoảng 3,5 lần, kém cả persistence (31~km), và cần nhiều epoch hơn mới hội tụ
+(dừng ở epoch 42 thay vì 13--17). Ở 72 giờ hai cách gần bằng nhau, vì khi đó
+sai số do hướng đi tương lai quyết định chứ không do vị trí xuất phát. Kết
+quả này xác nhận lựa chọn thiết kế: phần mạng cần học là chuyển động, không
+phải vị trí hiện tại.
+
+\subsection{Tối ưu huấn luyện}
+\label{sec:steering}
+
+Sau khi các phương pháp học cho kết quả ngang nhau, câu hỏi tiếp theo là còn
+có thể giảm sai số bằng cách nào. Hai hướng được thử: thay đổi cách huấn
+luyện trên cùng thông tin đầu vào, và bổ sung thông tin đầu vào mới. Các thí
+nghiệm này đánh giá trên cùng các cửa sổ của bão vùng Việt Nam có đủ 48 giờ
+lịch sử (435 cửa sổ validation, 526 cửa sổ test). Mọi lựa chọn dựa trên
+validation; test chạy một lần.
+
+\textbf{(a) Chỉ dùng thông tin quỹ đạo: đã chạm trần.} LSTM gốc có sai số
+trung bình trên validation là 201~km. Không thay đổi nào cải thiện được con
+số này: dùng dữ liệu toàn lưu vực (212~km), lịch sử 48 giờ (212~km), hàm mất
+mát theo km (203~km), mạng lớn hoặc nhỏ hơn (206--207~km), Transformer
+(207~km). Mô hình kết hợp LSTM và Transformer trên test chỉ giảm 8~km tại 72
+giờ, khoảng tin cậy [$-16$; $+2$], không có ý nghĩa thống kê.
+
+\textbf{(b) Thêm dòng dẫn đường khí quyển: cải thiện có ý nghĩa.} Hướng thứ
+hai bổ sung 11 đặc trưng từ NCEP/NCAR R1 tại đúng thời điểm quan trắc
+(Bảng~\ref{tab:dactrung}). Kết quả ở Bảng~\ref{tab:steering}.
+
+\begin{table}[H]
+\centering
+\caption{Hiệu quả của đặc trưng dòng dẫn đường trên tập kiểm thử (km, 3 seed).}
+\label{tab:steering}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\bfseries\color{daunavy}}l rrrrrr}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Cấu hình & \bfseries\color{daumaroon}6h & \bfseries\color{daumaroon}12h & \bfseries\color{daumaroon}24h & \bfseries\color{daumaroon}48h & \bfseries\color{daumaroon}72h & \bfseries\color{daumaroon}TB \\
+\midrule
+LSTM chỉ quỹ đạo (gốc)        & 32 & 64 & 131 & 286 & 469 & 197 \\
+LSTM + dòng dẫn đường         & 30 & 58 & 118 & 270 & 465 & 188 \\
+Transformer + dòng dẫn đường  & 30 & 57 & 115 & 265 & 450 & 183 \\
+Kết hợp LSTM + Transformer    & \textbf{28} & \textbf{54} & \textbf{112} & \textbf{259} & \textbf{443} & \textbf{179} \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Mô hình kết hợp (chọn trên validation) giảm 35~km tại 72 giờ so với mô hình
+gốc, khoảng tin cậy 95\% [$-62$; $-9$] trên 44 cơn bão, có ý nghĩa thống kê;
+tại 24 giờ giảm khoảng 15\%, trung bình các mốc giảm khoảng 9\%.
+
+\section{Kiểm thử phần mềm}
+
+Ngoài đánh giá mô hình, phần mềm được kiểm tra bằng bộ kiểm thử tự động viết
+với \code{pytest}. Bộ kiểm thử bao phủ các khâu nạp dữ liệu, hợp đồng đặc
+trưng, vòng huấn luyện, đóng gói và nạp gói mô hình, suy luận, API, lưu trữ,
+bộ nhớ đệm và tiến trình cập nhật. Ở phiên bản bàn giao, 269 ca kiểm thử chạy
+đạt và 1 ca được bỏ qua vì cần một máy chủ PostGIS bên ngoài.
+
+Dữ liệu dùng trong kiểm thử phần mềm là dữ liệu tổng hợp. Các ca này chỉ
+chứng minh phần mềm hoạt động đúng hợp đồng, không phải bằng chứng về độ
+chính xác dự báo; độ chính xác chỉ được kết luận từ các bảng ở mục trên.
+
+\section{Bàn luận}
+
+\textbf{Học từ dữ liệu giúp rõ ở hạn dài.} Ở 6 giờ persistence gần như tối ưu,
+vì trong thời gian ngắn như vậy bão chưa kịp đổi hướng. Từ 24 giờ trở đi, các
+phương pháp học giảm sai số khoảng 14\% (24 giờ) đến 30\% (72 giờ). Lý do là
+chúng học được các kiểu quỹ đạo điển hình, chẳng hạn đi về phía tây rồi
+chuyển hướng lên phía bắc, điều mà phép ngoại suy thẳng không thể biết.
+
+\textbf{Mô hình sâu không vượt trội.} Với khoảng 7.800 cửa sổ huấn luyện và 4
+bước đầu vào, k-NN analog và gradient boosting đạt cùng mức với LSTM và
+Transformer. Mạng nơ-ron overfit nhanh, epoch tốt nhất chỉ là 2--9. Thí
+nghiệm (a) cho thấy đổi kiến trúc hay siêu tham số không giúp gì, còn thí
+nghiệm (b) cho thấy thêm thông tin khí quyển thì có. Từ đó rút ra kết luận
+chính của đồ án: nút thắt là thông tin đầu vào, không phải sức chứa của mô
+hình. Điều này hợp với vật lý, vì bão bị dòng dẫn đường đẩy đi, và dữ liệu
+chỉ có quỹ đạo không chứa thông tin này.
+
+\textbf{Sai số theo cường độ.} Tại 72 giờ, áp thấp nhiệt đới là nhóm khó nhất
+với persistence (800~km), còn bão rất mạnh cấp 12--13 là nhóm dễ nhất (khoảng
+400~km với các phương pháp học). Một giả thuyết cần kiểm chứng thêm là hướng
+đi của áp thấp kém ổn định hơn.
+
+\textbf{Nghiên cứu trường hợp.} Sai số trung bình che mất những ca khó. Vì
+vậy Bảng~\ref{tab:case} chọn thời điểm phát dự báo sao cho vị trí sau 72 giờ
+gần bờ biển Việt Nam nhất, tức trường hợp bão sắp đổ bộ và gợi ý có giá trị
+sử dụng cao nhất.
+
+\begin{table}[H]
+\centering
+\caption{Sai số 72 giờ (km) khi bão sắp đổ bộ Việt Nam.}
+\label{tab:case}
+\small
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}>{\bfseries\color{daunavy}}l rrrrr}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Bão (thời điểm phát) & \bfseries\color{daumaroon}k-NN & \bfseries\color{daumaroon}GB & \bfseries\color{daumaroon}LSTM & \bfseries\color{daumaroon}Transf. & \bfseries\color{daumaroon}Persist. \\
+\midrule
+YAGI 2024 (06Z 04/09)    & 419 & \textbf{407} & 541 & 678 & 701 \\
+SAOLA 2023 (12Z 31/08)   & \textbf{365} & 538 & 534 & 514 & 534 \\
+YINXING 2024 (06Z 09/11) & 575 & \textbf{269} & 700 & 550 & 958 \\
+CONSON 2021 (00Z 10/09)  & 558 & 581 & 625 & 702 & 987 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Với YAGI (Hình~\ref{fig:yagi}), phần lớn mô hình gợi ý bão chuyển hướng lên
+phía bắc, kiểu quỹ đạo phổ biến trong dữ liệu, trong khi YAGI đi thẳng về phía
+tây vào miền Bắc Việt Nam. Gradient boosting (407~km) và k-NN analog (419~km)
+gần đúng nhất; k-NN dựa trên các bão tương tự như WUKONG 2000, DAMREY 2005. Với SAOLA, k-NN tốt nhất (365~km so với
+514--579~km của các mạng nơ-ron). Với CONSON, CLIPER-proxy lại tốt nhất
+(101~km); đây là trường hợp đơn lẻ, không đủ để kết luận. Các ví dụ này cho thấy
+giá trị của k-NN không chỉ ở độ chính xác mà ở chỗ người dùng thấy được gợi ý
+dựa trên những cơn bão nào.
+
+\section{Hạn chế}
+
+\begin{luuy}
+\begin{itemize}[leftmargin=1.4em, itemsep=2pt]
+  \item Mô hình đang phục vụ trên website và API vẫn là LSTM chỉ dùng quỹ đạo;
+        mô hình có dòng dẫn đường cần dữ liệu khí quyển tại thời điểm dự báo
+        (ví dụ phân tích GFS) mới đưa vào vận hành được.
+  \item YAGI 2024 vẫn sai 620--670~km tại 72 giờ với mọi mô hình có dòng dẫn
+        đường; lưới 2,5° của NCEP/NCAR và các đặc trưng tóm tắt chưa đủ để nhận
+        ra áp cao cận nhiệt mạnh trong ca này.
+  \item Nón bất định là đường tròn đẳng hướng, trong khi sai số dọc và ngang
+        quỹ đạo thực tế khác nhau.
+  \item Kết quả chỉ trên một cách chia theo năm; chưa kiểm định chéo theo mùa.
+  \item Dữ liệu bão đang hoạt động từ IBTrACS ACTIVE trễ vài ngày.
+  \item Hệ thống chưa được nghiệm thu trong môi trường vận hành thật: chưa có
+        bằng chứng về tải, sao lưu và khôi phục trên máy chủ đích.
+\end{itemize}
+\end{luuy}

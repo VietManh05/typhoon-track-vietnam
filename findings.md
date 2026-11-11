@@ -162,3 +162,19 @@ Coverage 818/818, không trùng ID, dependency DAG hợp lệ, roadmap hash khô
 - Dataset targets theo timestamp chính xác cho 6/12/24/48/72h, whole-storm splits và manifest IDs; scaler chỉ fit train.
 - DVC stage dùng synthetic fixture hợp pháp, lock có dependency/output hashes, lần repro thứ hai no-op; remote chỉ cấu hình local qua `DVC_REMOTE_URL`, chưa push.
 - Full suite cuối pass 105 tests. Hai file test frontend/refactor xuất hiện đồng thời được giữ nguyên và chỉ loại khỏi lint phạm vi; full pytest vẫn collect chúng.
+
+## Findings Phase 4 — Backend M3
+
+- Runtime storage đã chuyển từ `metadata.create_all` sang Alembic; SQLite chỉ là local/test backend, không thay bằng chứng PostGIS.
+- Forecast audit lưu run/time/model/dataset/input revision, payload và forecast points; observation corrections giữ revision audit.
+- Redis key bao phủ storm/input/model revision và fail-open về DB/compute; worker bỏ qua revision đã forecast, retry hữu hạn và không gửi cảnh báo thật.
+- Cone/province/coast chỉ là geometry vùng tâm; không bị gọi là xác suất gió/lũ/thiệt hại/đổ bộ.
+- Docker/WSL đã chạy; `tests/integration/test_postgis.py` pass 1 test và full regression pass 149. Data disk cũ được giữ backup; repo-wide isort vẫn còn sáu file Phase 3/data dirty từ trước, isort riêng Phase 4 pass.
+- Docker Desktop và WSL đã cài, hai optional features đã bật bằng DISM; Windows yêu cầu reboot trước khi WSL2/Docker engine hoạt động. Không tự reboot máy vì đây là thao tác làm gián đoạn phiên người dùng.
+## Findings nghiệm thu 2026-09-21
+
+- Planning trước lượt này tự mâu thuẫn: phần đầu ghi local/testable complete nhưng Phase 4/5 và header G29 còn `in_progress`/`pending`. Evidence hiện có và kiểm chứng mới cho phép đồng bộ về `complete` trong phạm vi local/testable.
+- Full regression hiện tại đạt 232 passed, 1 skipped; skip duy nhất là cổng PostGIS khi không truyền URL. Chạy riêng bằng PostGIS 16/3.4 local đạt 1 passed, sau đó container do phiên này khởi động đã được dừng và volume được giữ nguyên.
+- Docker Compose cần `API_KEY` và env file một cách chủ ý. Config pass khi dùng giá trị local tạm thời cùng `.env.example`; không tạo `.env` hay ghi secret.
+- Các cảnh báo backend còn lại đến từ Starlette/httpx/anyio và PyTorch nested tensor, không làm test fail nhưng cần theo dõi khi nâng dependency.
+- Local acceptance không thay thế production acceptance: chưa xác minh hosting/domain, production secrets, quyền nguồn dữ liệu, recipient cảnh báo hoặc release approval.

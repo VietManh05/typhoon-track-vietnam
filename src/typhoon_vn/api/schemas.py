@@ -15,6 +15,17 @@ class Contract(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
 
+class ErrorDetail(Contract):
+    status: int
+    code: str
+    message: str
+
+
+class ErrorResponse(Contract):
+    error: ErrorDetail
+    request_id: str
+
+
 class Fix(Contract):
     timestamp: datetime
     lat: float = Field(ge=-90, le=90)
@@ -71,17 +82,29 @@ class ForecastPoint(Contract):
 
 class ForecastResponse(Contract):
     forecast_id: str
+    run_id: str = "unassigned"
     storm_id: str
     issue_time: datetime
     generated_at: datetime
     model_version: str
     model_kind: str
     dataset_version: str
+    input_revision: str = "unknown"
+    feature_schema_version: str = "unknown"
+    scaler_version: str = "unknown"
+    fallback_used: bool = False
+    fallback_reason: str | None = None
     sources: list[str]
     uncertainty_method: str
     warnings: list[str]
     disclaimer: str = DISCLAIMER
     points: list[ForecastPoint]
+
+    @model_validator(mode="after")
+    def fallback_contract(self):
+        if self.fallback_used != bool(self.fallback_reason):
+            raise ValueError("fallback_reason is required exactly when fallback_used")
+        return self
 
     @field_validator("issue_time", "generated_at")
     @classmethod
@@ -103,6 +126,13 @@ class ObservationBatch(Contract):
     storm_id: str = Field(min_length=1, max_length=80, pattern=r"^[\w.-]+$")
     name: str = Field(min_length=1, max_length=120)
     observations: list[Fix] = Field(min_length=1, max_length=512)
+
+    @model_validator(mode="after")
+    def observations_are_consistent(self):
+        times = [fix.timestamp for fix in self.observations]
+        if any(left >= right for left, right in zip(times, times[1:])):
+            raise ValueError("observations must be strictly chronological")
+        return self
 
 
 class Subscription(Contract):

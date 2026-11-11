@@ -11,8 +11,8 @@ from datetime import datetime, timedelta, timezone
 import numpy as np
 import pandas as pd
 
+from typhoon_vn.contracts.track import DEFAULT_SCHEMA
 from typhoon_vn.features.geo import destination_point
-from typhoon_vn.features.schema import DEFAULT_SCHEMA
 
 
 def _sample_intensity(wind_ms: float) -> str:

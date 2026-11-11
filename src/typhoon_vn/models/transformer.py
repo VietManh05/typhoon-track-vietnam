@@ -129,6 +129,16 @@ class TransformerTrackForecaster(TrackForecaster):
         Returns:
             Context tensor of shape ``(B, d_model)``.
         """
+        if x.ndim != 3 or not torch.isfinite(x).all():
+            raise ValueError("x must be a finite tensor with shape (B, T, F)")
+        if mask is not None:
+            if mask.shape != x.shape[:2]:
+                raise ValueError("mask must have shape (B, T)")
+            if (mask.to(dtype=torch.bool).sum(dim=1) < 1).any():
+                raise ValueError(
+                    "each sequence must contain at least one valid timestep"
+                )
+
         # Project features → d_model
         h = self.input_proj(x)  # (B, T, d_model)
         h = self.pos_enc(h)

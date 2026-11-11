@@ -6,10 +6,10 @@ and a cone-radius heuristic compatible with the multi-horizon outputs.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from dataclasses import dataclass
 import json
 import math
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -134,7 +134,7 @@ def mc_dropout_predict(
     original_states = {module: module.training for module in model.modules()}
     model.eval()
     for module in model.modules():
-        if isinstance(module, nn.modules.dropout._DropoutNd):
+        if isinstance(module, (nn.modules.dropout._DropoutNd, nn.LSTM)):
             module.train()
     reg_samples: list[torch.Tensor] = []
     cls_samples: list[torch.Tensor] = []
@@ -249,25 +249,48 @@ def quantile_loss(
 class DeepEnsemble:
     """Simple deep-ensemble wrapper that aggregates multiple trained models."""
 
-    def __init__(self, models: Sequence[TrackForecaster]) -> None:
+    def __init__(
+        self,
+        models: Sequence[TrackForecaster],
+        member_versions: Sequence[str] | None = None,
+    ) -> None:
         self.models = list(models)
-        if not self.models:
-            raise ValueError("deep ensemble requires at least one model")
+        if len(self.models) < 3:
+            raise ValueError(
+                "deep ensemble requires at least three independently seeded models"
+            )
         contract = (self.models[0].n_horizons, self.models[0].n_classes)
-        if any((model.n_horizons, model.n_classes) != contract for model in self.models):
+        if any(
+            (model.n_horizons, model.n_classes) != contract for model in self.models
+        ):
             raise ValueError("all ensemble members must share the same output contract")
+        if member_versions is None:
+            self.member_versions = tuple(
+                f"member-{index + 1}" for index in range(len(self.models))
+            )
+        else:
+            self.member_versions = tuple(member_versions)
+            if len(self.member_versions) != len(self.models):
+                raise ValueError("member_versions must identify every ensemble member")
+            if len(set(self.member_versions)) != len(self.member_versions):
+                raise ValueError("ensemble member_versions must be unique")
 
     def predict(
         self, x: torch.Tensor, mask: torch.Tensor | None = None
     ) -> dict[str, torch.Tensor]:
         reg_samples: list[torch.Tensor] = []
         cls_samples: list[torch.Tensor] = []
-        with torch.no_grad():
-            for m in self.models:
-                m.eval()
-                out = m(x, mask)
-                reg_samples.append(out["reg"])
-                cls_samples.append(torch.softmax(out["cls"], dim=-1))
+        states = [model.training for model in self.models]
+        try:
+            with torch.no_grad():
+                for model in self.models:
+                    model.eval()
+                    out = model(x, mask)
+                    reg_samples.append(out["reg"])
+                    cls_samples.append(torch.softmax(out["cls"], dim=-1))
+        finally:
+            for model, training in zip(self.models, states):
+                model.train(training)
         reg_stack = torch.stack(reg_samples, dim=0)
         cls_stack = torch.stack(cls_samples, dim=0)
         return {
@@ -277,6 +300,7 @@ class DeepEnsemble:
             "cls_samples": cls_stack,
             "cls_mean": cls_stack.mean(dim=0),
             "cls_std": cls_stack.std(dim=0, unbiased=False),
+            "member_versions": self.member_versions,
         }
 
 
@@ -313,9 +337,7 @@ class CalibratedCone:
         radii = np.maximum.accumulate(radii)
         return cls(horizon_values, tuple(float(value) for value in radii), coverage)
 
-    def coverage_report(
-        self, errors_km: np.ndarray | torch.Tensor
-    ) -> dict[int, float]:
+    def coverage_report(self, errors_km: np.ndarray | torch.Tensor) -> dict[int, float]:
         errors = (
             errors_km.detach().cpu().numpy()
             if isinstance(errors_km, torch.Tensor)
@@ -387,7 +409,9 @@ class CalibratedCone:
                     "type": "Feature",
                     "geometry": {
                         "type": "Polygon",
-                        "coordinates": [[[point_lon, point_lat] for point_lat, point_lon in ring]],
+                        "coordinates": [
+                            [[point_lon, point_lat] for point_lat, point_lon in ring]
+                        ],
                     },
                     "properties": {
                         "horizon_hours": horizon,

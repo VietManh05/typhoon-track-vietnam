@@ -1,6 +1,6 @@
 # G18 — Database, PostGIS và migration
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: in_progress; bằng chứng tại [G18-database.md](evidence/G18-database.md).
 - Hiện trạng: Nháp SQLAlchemy SQLite/Postgres; thiếu PostGIS geometry, Alembic và đủ bảng.
 - Đầu vào: Logical schema quan trắc/dự báo, SRID 4326 và yêu cầu audit.
 - Gate phụ thuộc: G00, G02.

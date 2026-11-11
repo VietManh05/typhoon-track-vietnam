@@ -1,0 +1,154 @@
+{
+  "cases": {
+    "best_cases": [
+      {
+        "index": 5,
+        "max_error_km": 11.20575747423791,
+        "mean_error_km": 2.4927550275515573,
+        "median_error_km": 1.2193804351390911,
+        "n_forecasts": 65,
+        "storm_id": "WP062020"
+      },
+      {
+        "index": 4,
+        "max_error_km": 18.814214548458196,
+        "mean_error_km": 3.5000656823074467,
+        "median_error_km": 1.9086333284301666,
+        "n_forecasts": 45,
+        "storm_id": "WP052019"
+      },
+      {
+        "index": 3,
+        "max_error_km": 23.092398935640215,
+        "mean_error_km": 6.705087490024855,
+        "median_error_km": 5.21783508755229,
+        "n_forecasts": 30,
+        "storm_id": "WP042018"
+      },
+      {
+        "index": 1,
+        "max_error_km": 30.4065674834538,
+        "mean_error_km": 8.57646245827716,
+        "median_error_km": 4.117927936021624,
+        "n_forecasts": 45,
+        "storm_id": "WP022016"
+      },
+      {
+        "index": 2,
+        "max_error_km": 43.94065389297293,
+        "mean_error_km": 10.91202042884451,
+        "median_error_km": 5.620178846349174,
+        "n_forecasts": 45,
+        "storm_id": "WP032017"
+      }
+    ],
+    "n_forecasts": 270,
+    "n_storms": 6,
+    "worst_cases": [
+      {
+        "index": 0,
+        "max_error_km": 61.729567607168036,
+        "mean_error_km": 16.50453767144013,
+        "median_error_km": 6.613454724364704,
+        "n_forecasts": 40,
+        "storm_id": "WP012015"
+      },
+      {
+        "index": 2,
+        "max_error_km": 43.94065389297293,
+        "mean_error_km": 10.91202042884451,
+        "median_error_km": 5.620178846349174,
+        "n_forecasts": 45,
+        "storm_id": "WP032017"
+      },
+      {
+        "index": 1,
+        "max_error_km": 30.4065674834538,
+        "mean_error_km": 8.57646245827716,
+        "median_error_km": 4.117927936021624,
+        "n_forecasts": 45,
+        "storm_id": "WP022016"
+      },
+      {
+        "index": 3,
+        "max_error_km": 23.092398935640215,
+        "mean_error_km": 6.705087490024855,
+        "median_error_km": 5.21783508755229,
+        "n_forecasts": 30,
+        "storm_id": "WP042018"
+      },
+      {
+        "index": 4,
+        "max_error_km": 18.814214548458196,
+        "mean_error_km": 3.5000656823074467,
+        "median_error_km": 1.9086333284301666,
+        "n_forecasts": 45,
+        "storm_id": "WP052019"
+      }
+    ]
+  },
+  "metadata": {
+    "checkpoint_sha256": "not-applicable-classical-baseline",
+    "dataset_version": "synthetic-functional-v1",
+    "model_version": "persistence-v1",
+    "run_id": "phase3-functional-seed-42",
+    "split_policy": "synthetic contract only; not final-test skill evidence"
+  },
+  "summary_by_horizon": [
+    {
+      "horizon_h": 6,
+      "intensity_accuracy": 0.46296296296296297,
+      "mean_along_track_error_km": -0.05204176377008468,
+      "mean_cross_track_error_km": -0.07861483726193669,
+      "mean_error_km": 0.6612473510027108,
+      "median_error_km": 0.5308624737661272,
+      "n_forecasts": 54,
+      "p90_km": 1.318174543185138,
+      "rmse_km": 0.7979138488326349
+    },
+    {
+      "horizon_h": 12,
+      "intensity_accuracy": 0.5370370370370371,
+      "mean_along_track_error_km": -0.181442013000941,
+      "mean_cross_track_error_km": -0.24434563028020742,
+      "mean_error_km": 1.572821805884887,
+      "median_error_km": 1.324982623238282,
+      "n_forecasts": 54,
+      "p90_km": 3.263617662335517,
+      "rmse_km": 1.9407277133949363
+    },
+    {
+      "horizon_h": 24,
+      "intensity_accuracy": 0.5740740740740741,
+      "mean_along_track_error_km": -0.7292234164031132,
+      "mean_cross_track_error_km": -0.8557879713138158,
+      "mean_error_km": 4.089280705486784,
+      "median_error_km": 3.5750423091927424,
+      "n_forecasts": 54,
+      "p90_km": 7.709451644946285,
+      "rmse_km": 5.058731860781849
+    },
+    {
+      "horizon_h": 48,
+      "intensity_accuracy": 0.6481481481481481,
+      "mean_along_track_error_km": -3.387390044931838,
+      "mean_cross_track_error_km": -3.2003713380625407,
+      "mean_error_km": 11.384600432313256,
+      "median_error_km": 11.014223702072071,
+      "n_forecasts": 54,
+      "p90_km": 21.795446941064146,
+      "rmse_km": 14.120056642257047
+    },
+    {
+      "horizon_h": 72,
+      "intensity_accuracy": 0.6481481481481481,
+      "mean_along_track_error_km": -9.030462968883947,
+      "mean_cross_track_error_km": -6.639058007998641,
+      "mean_error_km": 20.40034403815518,
+      "median_error_km": 18.84707614843993,
+      "n_forecasts": 54,
+      "p90_km": 43.99051228116195,
+      "rmse_km": 25.35110079546617
+    }
+  ]
+}

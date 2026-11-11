@@ -1,0 +1,30 @@
+% ---------------------------------------------------------------------
+%  TÓM TẮT
+% ---------------------------------------------------------------------
+\begin{abstract}
+
+Việt Nam chịu ảnh hưởng trung bình nhiều cơn bão và áp thấp nhiệt đới mỗi
+năm, nên biết sớm hướng đi của bão giúp chủ động phòng tránh. Đồ án xây dựng
+một hệ thống trí tuệ nhân tạo gợi ý đường đi của cơn bão, phát biểu dưới dạng
+bài toán dự báo chuỗi thời gian nhiều bước: từ bốn quan trắc gần nhất (24
+giờ), hệ thống ước lượng vị trí tâm bão sau 6, 12, 24, 48 và 72 giờ kèm nón
+bất định. Đồ án huấn luyện và so sánh bảy phương pháp, gồm hai mốc so sánh
+(persistence, CLIPER), k láng giềng gần nhất dựa trên các cơn bão lịch sử
+tương tự (k-NN analog), gradient boosting, LSTM, Attention-LSTM và
+Transformer, trên 1.089 cơn bão ở Tây Bắc Thái Bình Dương giai đoạn
+1980--2024, chia tập theo năm để không rò rỉ thông tin. Trên tập kiểm thử
+2021--2024, các phương pháp học giảm sai số 72 giờ khoảng 200~km so với
+persistence (676~km xuống 462--476~km), có ý nghĩa thống kê. Thí nghiệm cho
+thấy học độ dịch chuyển thay vì tọa độ tuyệt đối giảm sai số 6 giờ từ 115~km
+xuống 33~km, và bổ sung đặc trưng dòng dẫn đường khí quyển cho mô hình kết hợp
+LSTM và Transformer giảm thêm 35~km tại 72 giờ. Hệ thống được triển khai thành
+API và bản đồ web, mỗi gợi ý kèm danh sách cơn bão lịch sử tương tự để người
+dùng hiểu vì sao có gợi ý đó. Kết quả cho thấy với dữ liệu chỉ có quỹ đạo, mô
+hình học sâu không vượt trội phương pháp cổ điển; nút thắt nằm ở thông tin khí
+quyển chứ không ở kiến trúc mạng.
+
+\vspace{0.8em}
+\noindent\textbf{Từ khoá:} dự báo quỹ đạo bão, chuỗi thời gian, LSTM,
+Transformer, k láng giềng gần nhất, lập luận dựa trên tình huống.
+
+\end{abstract}

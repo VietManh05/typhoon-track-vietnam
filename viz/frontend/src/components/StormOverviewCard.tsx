@@ -1,191 +1,270 @@
-import React from 'react';
-import { ActiveTyphoonItem, Fix, ForecastResponse } from '../types';
-import { Language, TranslationStrings, translations } from '../i18n';
+﻿import React from "react";
 import {
-  Wind,
-  Gauge,
-  Navigation,
-  Crosshair,
-  ShieldAlert,
-  Info,
-  Layers,
-} from 'lucide-react';
+    Crosshair,
+    Gauge,
+    Info,
+    Layers3,
+    Navigation,
+    Radio,
+    ShieldAlert,
+    Wind,
+} from "lucide-react";
+import { Language, TranslationStrings, translations } from "../i18n";
+import {
+    beaufortFromKmh,
+    formatCoordinate,
+    formatDateTime,
+    windKmh,
+} from "../lib/format";
+import { getIntensityToken } from "../lib/storm";
+import { ActiveTyphoonItem, Fix, ForecastResponse } from "../types";
 
 interface StormOverviewCardProps {
-  storm: ActiveTyphoonItem;
-  currentFix: Fix;
-  forecast: ForecastResponse | null;
-  lang: Language;
+    storm: ActiveTyphoonItem;
+    currentFix: Fix;
+    forecast: ForecastResponse | null;
+    lang: Language;
 }
 
-const getCategoryColor = (cat: string) => {
-  switch (cat) {
-    case 'SUPERTY':
-      return 'text-purple-400 border-purple-500/40 bg-purple-950/40';
-    case 'STY':
-      return 'text-rose-400 border-rose-500/40 bg-rose-950/40';
-    case 'TY':
-      return 'text-orange-400 border-orange-500/40 bg-orange-950/40';
-    case 'STS':
-      return 'text-amber-400 border-amber-500/40 bg-amber-950/40';
-    case 'TS':
-      return 'text-emerald-400 border-emerald-500/40 bg-emerald-950/40';
-    default:
-      return 'text-cyan-400 border-cyan-500/40 bg-cyan-950/40';
-  }
-};
+interface MetricCardProps {
+    icon: React.ReactNode;
+    label: string;
+    value: React.ReactNode;
+    secondary: React.ReactNode;
+    accent: string;
+}
 
-/** Get compass direction string from bearing degrees using i18n keys */
-const getBearingCompass = (deg: number = 0, t: TranslationStrings): string => {
-  const keys: Array<keyof TranslationStrings> = [
-    'bearing_N', 'bearing_NNE', 'bearing_NE', 'bearing_ENE',
-    'bearing_E', 'bearing_ESE', 'bearing_SE', 'bearing_SSE',
-    'bearing_S', 'bearing_SSW', 'bearing_SW', 'bearing_WSW',
-    'bearing_W', 'bearing_WNW', 'bearing_NW', 'bearing_NNW',
-  ];
-  const idx = Math.round(deg / 22.5) % 16;
-  return t[keys[idx]] as string;
-};
+const MetricCard: React.FC<MetricCardProps> = ({
+    icon,
+    label,
+    value,
+    secondary,
+    accent,
+}) => (
+    <article className="metric-tile min-h-[132px]">
+        <div className={`mb-2 flex items-center gap-2 ${accent}`}>
+            {icon}
+            <h3 className="text-xs font-semibold uppercase tracking-[0.08em] text-fg-muted">
+                {label}
+            </h3>
+        </div>
+        <div className="num text-[28px] font-bold leading-tight tracking-tight text-fg">
+            {value}
+        </div>
+        <div className="num mt-2 text-xs leading-5 text-fg-muted">
+            {secondary}
+        </div>
+    </article>
+);
 
-/** Get pressure description using i18n */
-const getPressureDesc = (hpa: number | null, t: TranslationStrings): string => {
-  if (!hpa) return '';
-  return hpa < 980 ? t.pressure_deep : t.pressure_normal;
+const getBearingCompass = (deg: number, t: TranslationStrings): string => {
+    const keys: Array<keyof TranslationStrings> = [
+        "bearing_N",
+        "bearing_NNE",
+        "bearing_NE",
+        "bearing_ENE",
+        "bearing_E",
+        "bearing_ESE",
+        "bearing_SE",
+        "bearing_SSE",
+        "bearing_S",
+        "bearing_SSW",
+        "bearing_SW",
+        "bearing_WSW",
+        "bearing_W",
+        "bearing_WNW",
+        "bearing_NW",
+        "bearing_NNW",
+    ];
+    return t[keys[Math.round(deg / 22.5) % 16]] as string;
 };
 
 export const StormOverviewCard: React.FC<StormOverviewCardProps> = ({
-  storm,
-  currentFix,
-  forecast,
-  lang,
+    storm,
+    currentFix,
+    forecast,
+    lang,
 }) => {
-  const t = translations[lang];
-  const cat = currentFix.intensity || 'TY';
-  const catLabel = t.categories[cat] || cat;
+    const t = translations[lang];
+    const category = currentFix.intensity || "UNK";
+    const categoryToken = getIntensityToken(category);
+    const speed = windKmh(currentFix.wind_ms, currentFix.wind_kmh);
+    const beaufort = currentFix.beaufort_level ?? beaufortFromKmh(speed);
+    const bearing = currentFix.bearing_deg ?? 285;
+    const movementSpeed = currentFix.speed_kmh ?? 20;
+    const warnings = forecast?.warnings ?? [];
 
-  const windKmh = currentFix.wind_kmh || (currentFix.wind_ms ? Math.round(currentFix.wind_ms * 3.6) : null);
-  const beaufort = currentFix.beaufort_level || (windKmh ? (windKmh >= 184 ? 16 : windKmh >= 150 ? 14 : windKmh >= 118 ? 12 : 10) : 12);
-  const bearing = currentFix.bearing_deg ?? 285;
-  const speedKmh = currentFix.speed_kmh ?? 20;
+    return (
+        <section
+            className="panel overflow-hidden"
+            aria-label={t.storm_overview}
+        >
+            <div className="panel-head items-start">
+                <div className="min-w-0">
+                    <div className="mb-1 flex flex-wrap items-center gap-2">
+                        <span className="section-label">
+                            {t.storm_overview}
+                        </span>
+                        <span className="badge border-line bg-surface-2 font-mono text-fg-faint">
+                            {storm.id}
+                        </span>
+                    </div>
+                    <h2 className="truncate text-xl font-bold tracking-tight text-fg sm:text-2xl">
+                        {lang === "vi" && storm.name_vi
+                            ? storm.name_vi
+                            : storm.name}
+                    </h2>
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-fg-muted">
+                        <Radio
+                            className="h-3 w-3 text-success"
+                            aria-hidden="true"
+                        />
+                        <span>{t.last_observation}</span>
+                        <time className="font-mono text-fg">
+                            {formatDateTime(currentFix.timestamp, lang)}
+                        </time>
+                    </div>
+                </div>
+                <span
+                    className={`badge shrink-0 px-2.5 py-1 ${categoryToken.bg} ${categoryToken.border} ${categoryToken.text}`}
+                >
+                    <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
+                    {t.categories[category] || category}
+                </span>
+            </div>
 
-  return (
-    <div className="glass-panel p-4 flex flex-col gap-4 animate-fade-in-up" role="region" aria-label={t.storm_overview}>
-      {/* Header with Name & Category */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl md:text-2xl font-bold font-display text-white tracking-tight">
-              {lang === 'vi' && storm.name_vi ? storm.name_vi : storm.name}
-            </h2>
-            <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-              {storm.id}
-            </span>
-          </div>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">
-            {t.last_observation}: {new Date(currentFix.timestamp).toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-US')}
-          </p>
-        </div>
+            <div className="panel-body space-y-3">
+                <div className="grid grid-cols-2 gap-2.5">
+                    <MetricCard
+                        icon={<Wind className="h-4 w-4" aria-hidden="true" />}
+                        label={t.wind_speed}
+                        accent="text-primary"
+                        value={
+                            <>
+                                {speed ?? "—"}{" "}
+                                <span className="text-sm font-medium text-fg-muted">
+                                    km/h
+                                </span>
+                            </>
+                        }
+                        secondary={
+                            <>
+                                {currentFix.wind_ms ?? "—"}&nbsp;m/s ·{" "}
+                                {t.beaufort_prefix}&nbsp;{beaufort}
+                            </>
+                        }
+                    />
+                    <MetricCard
+                        icon={<Gauge className="h-4 w-4" aria-hidden="true" />}
+                        label={t.central_pressure}
+                        accent="text-warning"
+                        value={
+                            <>
+                                {currentFix.pressure_hpa ?? "—"}{" "}
+                                <span className="text-sm font-medium text-fg-muted">
+                                    hPa
+                                </span>
+                            </>
+                        }
+                        secondary={
+                            currentFix.pressure_hpa &&
+                            currentFix.pressure_hpa < 980
+                                ? t.pressure_deep
+                                : t.pressure_normal
+                        }
+                    />
+                    <MetricCard
+                        icon={
+                            <Crosshair className="h-4 w-4" aria-hidden="true" />
+                        }
+                        label={t.position}
+                        accent="text-success"
+                        value={
+                            <span className="text-2xl">
+                                {formatCoordinate(currentFix.lat, "lat", lang)}
+                            </span>
+                        }
+                        secondary={
+                            <span className="text-lg font-semibold text-fg">
+                                {formatCoordinate(currentFix.lon, "lon", lang)}
+                            </span>
+                        }
+                    />
+                    <MetricCard
+                        icon={
+                            <Navigation
+                                className="h-4 w-4"
+                                style={{ transform: `rotate(${bearing}deg)` }}
+                                aria-hidden="true"
+                            />
+                        }
+                        label={t.movement}
+                        accent="text-secondary"
+                        value={
+                            <>
+                                {movementSpeed}{" "}
+                                <span className="text-sm font-medium text-fg-muted">
+                                    km/h
+                                </span>
+                            </>
+                        }
+                        secondary={
+                            <>
+                                {getBearingCompass(bearing, t)} · {bearing}°
+                            </>
+                        }
+                    />
+                </div>
 
-        {/* Intensity Badge */}
-        <div className={`px-3 py-1.5 rounded-lg border font-bold text-xs flex items-center gap-2 ${getCategoryColor(cat)}`}>
-          <ShieldAlert className="w-4 h-4 shrink-0" aria-hidden="true" />
-          <span>{catLabel}</span>
-        </div>
-      </div>
+                {warnings.length > 0 ? (
+                    <div
+                        className="rounded-card border border-warning/35 bg-warning/[0.07] p-3"
+                        role="alert"
+                    >
+                        <div className="mb-2 flex items-center gap-2 text-warning">
+                            <ShieldAlert
+                                className="h-4 w-4"
+                                aria-hidden="true"
+                            />
+                            <strong className="text-xs">
+                                {lang === "vi"
+                                    ? "Cảnh báo tác động"
+                                    : "Impact warning"}
+                            </strong>
+                        </div>
+                        <ul className="space-y-2 text-sm leading-6 text-fg-muted">
+                            {warnings.map((warning) => (
+                                <li key={warning}>{warning}</li>
+                            ))}
+                        </ul>
+                    </div>
+                ) : null}
 
-      {/* Primary Metrics Grid (4 columns) */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {/* Wind Speed */}
-        <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-            <Wind className="w-3.5 h-3.5 text-cyan-400" aria-hidden="true" />
-            <span>{t.wind_speed}</span>
-          </div>
-          <div className="mt-2">
-            <div className="text-xl font-bold font-mono text-cyan-300">
-              {windKmh ? `${windKmh} km/h` : 'N/A'}
+                {forecast ? (
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3 text-xs text-fg-faint">
+                        <span className="flex items-center gap-1.5">
+                            <Info
+                                className="h-3 w-3 text-primary"
+                                aria-hidden="true"
+                            />
+                            {t.model_version}:{" "}
+                            <b className="font-mono text-fg-muted">
+                                {forecast.model_version}
+                            </b>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <Layers3
+                                className="h-3 w-3 text-primary"
+                                aria-hidden="true"
+                            />
+                            {t.data_source}:{" "}
+                            <b className="text-fg-muted">
+                                {forecast.sources.join(", ")}
+                            </b>
+                        </span>
+                    </div>
+                ) : null}
             </div>
-            <div className="text-[11px] text-slate-400 font-mono">
-              {currentFix.wind_ms ? `${currentFix.wind_ms} m/s` : ''} · {t.beaufort_prefix} {beaufort}
-            </div>
-          </div>
-        </div>
-
-        {/* Central Pressure */}
-        <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-            <Gauge className="w-3.5 h-3.5 text-amber-400" aria-hidden="true" />
-            <span>{t.central_pressure}</span>
-          </div>
-          <div className="mt-2">
-            <div className="text-xl font-bold font-mono text-amber-300">
-              {currentFix.pressure_hpa ? `${currentFix.pressure_hpa} hPa` : 'N/A'}
-            </div>
-            <div className="text-[11px] text-slate-400 font-mono">
-              {getPressureDesc(currentFix.pressure_hpa, t)}
-            </div>
-          </div>
-        </div>
-
-        {/* Center Position */}
-        <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-            <Crosshair className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
-            <span>{t.position}</span>
-          </div>
-          <div className="mt-2">
-            <div className="text-xl font-bold font-mono text-emerald-300">
-              {currentFix.lat.toFixed(1)}°{lang === 'vi' ? 'B' : 'N'} · {currentFix.lon.toFixed(1)}°{lang === 'vi' ? 'Đ' : 'E'}
-            </div>
-            <div className="text-[11px] text-slate-400 font-mono">
-              {t.sea_region}
-            </div>
-          </div>
-        </div>
-
-        {/* Movement Vector */}
-        <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-            <Navigation className="w-3.5 h-3.5 text-rose-400" style={{ transform: `rotate(${bearing}deg)` }} aria-hidden="true" />
-            <span>{t.movement}</span>
-          </div>
-          <div className="mt-2">
-            <div className="text-xl font-bold font-mono text-rose-300">
-              {speedKmh} km/h
-            </div>
-            <div className="text-[11px] text-slate-400 font-mono truncate">
-              {getBearingCompass(bearing, t)} ({bearing}°)
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Warnings & Model Metadata */}
-      {forecast && (
-        <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs flex flex-col gap-2">
-          {forecast.warnings && forecast.warnings.length > 0 && (
-            <div className="flex items-start gap-2 text-amber-300" role="alert">
-              <ShieldAlert className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" aria-hidden="true" />
-              <div className="flex flex-col gap-1">
-                {forecast.warnings.map((w, idx) => (
-                  <span key={idx} className="font-medium">{w}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-850 text-slate-400 text-[11px] font-mono">
-            <div className="flex items-center gap-1">
-              <Info className="w-3 h-3 text-cyan-400" aria-hidden="true" />
-              <span>{t.model_version}: <strong className="text-slate-200">{forecast.model_version}</strong></span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Layers className="w-3 h-3 text-cyan-400" aria-hidden="true" />
-              <span>{t.data_source}: <strong className="text-slate-200">{forecast.sources.join(', ')}</strong></span>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+        </section>
+    );
 };

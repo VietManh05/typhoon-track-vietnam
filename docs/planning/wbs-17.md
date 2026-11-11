@@ -1,6 +1,6 @@
 # G17 — FastAPI
 
-- Trạng thái: pending; chưa nghiệm thu.
+- Trạng thái: in_progress; bằng chứng tại [G17-api.md](evidence/G17-api.md).
 - Hiện trạng: Vừa viết endpoints, auth, rate limit; chưa chạy test mới.
 - Đầu vào: Inference đã test và repository dữ liệu vận hành.
 - Gate phụ thuộc: G16, G18.

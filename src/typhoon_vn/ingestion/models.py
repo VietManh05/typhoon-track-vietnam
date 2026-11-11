@@ -59,13 +59,23 @@ class Observation:
                 _utc_datetime(self.downloaded_at, "downloaded_at"),
             )
         source = self.source.strip().lower()
-        if (
-            not source
-            or not self.source_url.strip()
-            or not self.source_file_checksum.strip()
+        source_storm_id = self.source_storm_id.strip()
+        storm_id = self.storm_id.strip()
+        source_url = self.source_url.strip()
+        checksum = self.source_file_checksum.strip().lower()
+        if not source or not source_storm_id or not storm_id or not source_url:
+            raise ValueError(
+                "source, source_storm_id, storm_id and source_url are required"
+            )
+        if len(checksum) != 64 or any(
+            character not in "0123456789abcdef" for character in checksum
         ):
-            raise ValueError("source, source_url and source_file_checksum are required")
+            raise ValueError("source_file_checksum must be a SHA-256 hex digest")
         object.__setattr__(self, "source", source)
+        object.__setattr__(self, "source_storm_id", source_storm_id)
+        object.__setattr__(self, "storm_id", storm_id)
+        object.__setattr__(self, "source_url", source_url)
+        object.__setattr__(self, "source_file_checksum", checksum)
         if self.wind_unit is not None:
             unit = self.wind_unit.strip().lower()
             if unit not in SUPPORTED_WIND_UNITS:

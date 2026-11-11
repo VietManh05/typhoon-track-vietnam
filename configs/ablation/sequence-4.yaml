@@ -1,0 +1,6 @@
+base_config: ../phase3_lstm.yaml
+sequence_length: 4
+seed: 42
+split_manifest: fixed
+budget: fixed
+comparison_samples: common_windows_only

@@ -4,6 +4,14 @@ __pycache__
 .pytest_cache
 .pre-commit-cache
 .env
+secrets
+.env.*
+**/node_modules
+**/dist
+.pytest-*
+.pytest_tmp*
+.tmp-*
+data/operational
 data/raw
 data/interim
 data/processed

@@ -1,0 +1,40 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/backend.Dockerfile
+    environment:
+      APP_ENV: development
+      ALLOW_BASELINE: "true"
+      CACHE_ENABLED: "false"
+      REQUIRE_API_KEY: "true"
+      API_KEY: ${API_KEY:?Set API_KEY in the shell or --env-file}
+      WEATHER_PROVIDER: open-meteo
+      OPERATIONAL_DATABASE_URL: sqlite:////app/data/operational/typhoon.db
+      ACCUWEATHER_API_KEY: ${ACCUWEATHER_API_KEY:-}
+    volumes:
+      - preview-data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+  frontend:
+    build:
+      context: .
+      dockerfile: infra/docker/frontend.Dockerfile
+      args:
+        VITE_WINDY_MAP_API_KEY: ${VITE_WINDY_MAP_API_KEY:-}
+    environment:
+      API_KEY: ${API_KEY:?Set API_KEY in the shell or --env-file}
+      NGINX_ENVSUBST_FILTER: ^API_KEY$
+    volumes:
+      - ./infra/docker/nginx.preview.conf.template:/etc/nginx/templates/default.conf.template:ro
+    ports: ["127.0.0.1:8080:80"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  preview-data:

@@ -17,9 +17,9 @@ import numpy as np
 import pandas as pd
 import torch
 
+from typhoon_vn.contracts.track import DEFAULT_SCHEMA, TrackSchema
 from typhoon_vn.features.build import FEATURE_COLUMNS, FeatureBuilder
 from typhoon_vn.features.scaling import FeatureScaler
-from typhoon_vn.features.schema import DEFAULT_SCHEMA, TrackSchema
 
 
 @dataclass(frozen=True)
@@ -88,18 +88,19 @@ class TyphoonDataset(torch.utils.data.Dataset):
 
         # Explicit custom lists are selected from this same transformed frame.
 
-        if self.scaler is not None:
-            if not self.scaler.is_fitted:
-                raise ValueError("dataset scaler must be fitted on training data")
-            scaled = self.scaler.transform(df[self.feature_cols])
-            df.loc[:, self.feature_cols] = scaled
-
         # Ensure all feature columns exist
         missing = [c for c in self.feature_cols if c not in df.columns]
         if missing:
             raise ValueError(f"Feature columns missing from frame: {missing}")
 
+        features = df[self.feature_cols].copy()
+        if self.scaler is not None:
+            if not self.scaler.is_fitted:
+                raise ValueError("dataset scaler must be fitted on training data")
+            features = self.scaler.transform(features)
+
         for storm_id, group in df.groupby(self.schema.storm_id, sort=False):
+            storm_features = features.loc[group.index].reset_index(drop=True)
             group = group.reset_index(drop=True)
             total = len(group)
             if group[self.schema.timestamp].duplicated().any():
@@ -154,7 +155,9 @@ class TyphoonDataset(torch.utils.data.Dataset):
                     )
                 self.samples.append(
                     {
-                        "x": input_rows[self.feature_cols].to_numpy(dtype=np.float32),
+                        "x": storm_features.iloc[
+                            start : start + self.config.input_len
+                        ].to_numpy(dtype=np.float32),
                         "mask": np.ones(self.config.input_len, dtype=np.float32),
                         "y_reg": np.array(y_reg_list, dtype=np.float32),
                         "y_cls": np.array(y_cls_list, dtype=np.int64),

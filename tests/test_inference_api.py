@@ -356,3 +356,25 @@ def test_bad_storm_id_in_url_is_rejected_not_a_server_error() -> None:
         response = client.get("/health")
     csp = response.headers["Content-Security-Policy"]
     assert "default-src 'self'" in csp and "frame-ancestors 'none'" in csp
+
+
+def test_bad_api_keys_are_rejected_and_throttled() -> None:
+    app = create_app(
+        settings=Settings(
+            _env_file=None,
+            api_key="secret",
+            requests_per_minute=2,
+            operational_database_url="sqlite:///:memory:",
+        ),
+        store=Store("sqlite:///:memory:"),
+        forecaster=TyphoonForecaster(),
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        non_ascii = client.get("/metrics", headers={"X-API-Key": "clé".encode()})
+        assert non_ascii.status_code == 401
+        assert client.get("/metrics", headers={"X-API-Key": "x"}).status_code == 401
+        assert client.get("/metrics", headers={"X-API-Key": "y"}).status_code == 429
+        # Guessing must not use up the key holder's own budget.
+        assert (
+            client.get("/metrics", headers={"X-API-Key": "secret"}).status_code == 200
+        )

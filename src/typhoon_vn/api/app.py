@@ -65,6 +65,9 @@ def create_app(
         "auth": defaultdict(deque),
         "public": defaultdict(deque),
         "edge": defaultdict(deque),
+        # Wrong keys get their own budget so guessing is throttled without
+        # spending the key holder's.
+        "denied": defaultdict(deque),
     }
     counters = {
         "requests": 0,
@@ -142,9 +145,12 @@ def create_app(
         return response
 
     def authorize(request: Request):
+        # Compare bytes: compare_digest raises TypeError on non-ASCII str.
         if settings.api_key and not hmac.compare_digest(
-            request.headers.get("X-API-Key", ""), settings.api_key
+            request.headers.get("X-API-Key", "").encode(),
+            settings.api_key.encode(),
         ):
+            rate_limit(request, limiters["denied"])
             raise HTTPException(401, "Valid X-API-Key required")
         # The edge proxies every viewer from a few Cloudflare IPs; trust its
         # forwarded viewer address only once the key has been verified.

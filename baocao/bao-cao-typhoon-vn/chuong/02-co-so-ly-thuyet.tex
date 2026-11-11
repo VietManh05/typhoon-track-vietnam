@@ -1,0 +1,146 @@
+% ---------------------------------------------------------------------
+%  CHƯƠNG 2 — CƠ SỞ LÝ THUYẾT VÀ CÔNG NGHỆ
+% ---------------------------------------------------------------------
+\chapter{Cơ sở lý thuyết và công nghệ}
+\label{ch:coso}
+
+\begin{muctieu}
+Chương này trình bày các kiến thức nền tảng gồm bài toán dự báo chuỗi thời
+gian, các phương pháp trí tuệ nhân tạo được dùng, cách đo sai số, cùng danh
+mục công cụ và thư viện để xây dựng hệ thống.
+\end{muctieu}
+
+\section{Kiến thức nền tảng}
+
+\subsection{Dự báo quỹ đạo bão như bài toán chuỗi thời gian}
+
+\begin{dinhnghia}[Dự báo quỹ đạo nhiều mốc]
+Cho chuỗi quan trắc $\mathbf{x}_{t-T+1}, \dots, \mathbf{x}_t$ của một cơn bão,
+mỗi $\mathbf{x}_i \in \mathbb{R}^F$ là vec-tơ đặc trưng tại thời điểm $i$.
+Bài toán là học hàm $f$ ánh xạ chuỗi này thành vị trí tâm bão
+$\hat{\mathbf{p}}_{t+h} = (\hat\varphi_{t+h}, \hat\lambda_{t+h})$ tại các mốc
+$h \in \mathcal{H} = \{6, 12, 24, 48, 72\}$ giờ, với $\varphi$ là vĩ độ và
+$\lambda$ là kinh độ.
+\end{dinhnghia}
+
+Cơn bão không ``chọn'' đường đi như tác tử trong bài toán tìm đường; nó bị
+dòng khí quyển quy mô lớn (dòng dẫn đường, \en{steering flow}) đẩy đi. Vì vậy
+``gợi ý đường đi'' ở đây là bài toán \term{hồi quy nhiều đầu ra}: ước lượng vị
+trí tương lai và độ bất định của nó.
+
+\subsection{Sai số khoảng cách vòng lớn}
+
+Sai số dự báo được đo bằng khoảng cách trên mặt cầu Trái Đất (công thức
+Haversine) giữa vị trí dự báo và vị trí thực:
+\begin{equation}
+d = 2R \arcsin\sqrt{\sin^2\frac{\Delta\varphi}{2}
+    + \cos\varphi_1\cos\varphi_2\sin^2\frac{\Delta\lambda}{2}},
+\label{eq:haversine}
+\end{equation}
+với $R = 6371$~km là bán kính Trái Đất. Đây là độ đo chuẩn trong đánh giá dự
+báo quỹ đạo bão, có đơn vị km nên dễ hiểu với người dùng.
+
+\subsection{Các phương pháp mốc so sánh}
+
+\term{Persistence} giả định bão giữ nguyên vận tốc của 6 giờ gần nhất.
+\term{CLIPER} \en{(CLImatology and PERsistence)}~\cite{Neumann1972} kết hợp quán
+tính với khí hậu học; đồ án dùng một phiên bản rút gọn (CLIPER-proxy) với
+persistence có suy giảm. Một phương pháp AI chỉ có giá trị nếu thắng được hai
+mốc này.
+
+\subsection{Lập luận dựa trên tình huống: k láng giềng gần nhất}
+
+Phương pháp \term{analog} là dạng lập luận dựa trên tình huống
+\en{(case-based reasoning)}~\cite{RussellNorvig2021}: tìm trong thư viện các
+tình huống bão lịch sử giống tình huống hiện tại nhất rồi dùng diễn biến tiếp
+theo của chúng để dự báo. Khoảng cách giữa hai tình huống $q$ và $c$ là khoảng
+cách Euclid trên các nhóm đặc trưng $g$ (đoạn quỹ đạo, vị trí, mùa) đã chuẩn
+hóa, mỗi nhóm có trọng số $w_g$ và chia cho căn bậc hai số chiều $n_g$ của nhóm
+để các nhóm so sánh được với nhau:
+\begin{equation}
+D(q, c) = \sqrt{\sum_{g} \frac{w_g^2}{n_g} \,\bigl\lVert \mathbf{z}_g(q) - \mathbf{z}_g(c) \bigr\rVert_2^2} .
+\label{eq:knn-dist}
+\end{equation}
+Dự báo là trung bình có trọng số nghịch đảo khoảng cách của $k$ láng giềng:
+$\hat{\mathbf{y}} = \sum_{j=1}^{k} \alpha_j \mathbf{y}_j$, với
+$\alpha_j \propto 1 / (D_j + \epsilon)$. Ưu điểm lớn của k-NN là giải thích
+được: hệ thống nêu tên các cơn bão lịch sử đã dùng.
+
+\subsection{Gradient boosting}
+
+Gradient boosting~\cite{Friedman2001} xây dựng tuần tự nhiều cây quyết định,
+mỗi cây học phần dư của tổ hợp các cây trước. Đồ án dùng bộ hồi quy
+\en{histogram gradient boosting} của scikit-learn (300 vòng, tốc độ học 0,05,
+tối đa 31 lá mỗi cây), mỗi mốc và mỗi tọa độ một mô hình, đầu vào là cửa sổ
+đặc trưng đã trải phẳng.
+
+\subsection{Mạng LSTM}
+
+LSTM \en{(Long Short-Term Memory)}~\cite{Hochreiter1997} là mạng nơ-ron hồi quy
+có các cổng quên $f_t$, cổng vào $i_t$ và cổng ra $o_t$ điều khiển ô nhớ $c_t$:
+\begin{equation}
+\begin{aligned}
+c_t &= f_t \odot c_{t-1} + i_t \odot \tanh(W_c[\mathbf{h}_{t-1}, \mathbf{x}_t] + b_c),\\
+\mathbf{h}_t &= o_t \odot \tanh(c_t),
+\end{aligned}
+\end{equation}
+nhờ đó giữ được thông tin qua nhiều bước. Trạng thái ẩn cuối cùng
+$\mathbf{h}_t$ được đưa qua tầng tuyến tính để sinh ra dự báo cho cả năm mốc
+cùng lúc. Biến thể \term{Attention-LSTM}~\cite{Bahdanau2015} thay $\mathbf{h}_t$
+bằng tổng có trọng số của mọi trạng thái ẩn, trọng số do cơ chế attention học.
+
+\subsection{Transformer}
+
+Transformer~\cite{Vaswani2017} bỏ cơ chế hồi quy, dùng self-attention để mỗi
+bước thời gian ``nhìn'' trực tiếp mọi bước khác:
+\begin{equation}
+\mathrm{Attention}(Q, K, V) = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V,
+\end{equation}
+cộng thêm mã hóa vị trí để giữ thứ tự thời gian. Đồ án dùng phần encoder.
+
+\subsection{Huấn luyện và kiểm định}
+
+Mạng nơ-ron được tối ưu bằng Adam~\cite{Kingma2015} với hàm mất mát Smooth~L1,
+ít nhạy với ngoại lai hơn bình phương sai số. Để so sánh hai phương pháp,
+đồ án dùng \term{bootstrap}~\cite{Efron1993} lấy mẫu lại theo cơn bão, vì các
+dự báo của cùng một cơn bão tương quan với nhau; khoảng tin cậy 95\% không
+chứa 0 nghĩa là khác biệt có ý nghĩa thống kê.
+
+\begin{ghinho}
+Với bài toán dự báo, phải chia tập theo thời gian và giữ nguyên cả cơn bão.
+Nếu chia ngẫu nhiên theo điểm quan trắc, mô hình sẽ ``thấy'' các điểm khác của
+cùng cơn bão khi huấn luyện, và sai số báo cáo sẽ thấp hơn thực tế.
+\end{ghinho}
+
+\section{Công cụ và thư viện}
+
+\begin{table}[H]
+\centering
+\caption{Công cụ và thư viện sử dụng trong đồ án.}
+\label{tab:congcu}
+\begin{tabularx}{\textwidth}{>{\bfseries\color{daunavy}}l >{\color{daumaroon}}l X}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Thành phần & \bfseries\color{daumaroon}Phiên bản & \leavevmode\bfseries\color{daunavy}Vai trò \\
+\midrule
+Python        & 3.11 & Ngôn ngữ lập trình chính \\
+PyTorch       & 2.x  & Huấn luyện LSTM, Attention-LSTM, Transformer \\
+scikit-learn  & 1.x  & Gradient boosting, k-NN, chuẩn hóa \\
+pandas, NumPy & 2.x  & Xử lý dữ liệu quỹ đạo dạng bảng \\
+xarray        & ---  & Đọc dữ liệu tái phân tích NCEP/NCAR \\
+FastAPI       & ---  & API phục vụ dự báo \\
+Leaflet       & ---  & Bản đồ web hiển thị quỹ đạo và nón \\
+pytest        & ---  & Kiểm thử tự động \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Các công trình liên quan}
+
+Dự báo quỹ đạo bão truyền thống đi theo ba hướng. Hướng thống kê với CLIPER
+\cite{Neumann1972} là mốc so sánh chuẩn suốt nhiều thập kỷ. Hướng mô hình số
+trị khí quyển cho độ chính xác cao nhất nhưng cần siêu máy tính. Hướng học máy
+gần đây dùng mạng hồi quy và Transformer học trực tiếp từ dữ liệu best-track
+như IBTrACS~\cite{Knapp2010}, đôi khi bổ sung trường khí quyển từ tái phân tích
+\cite{Kalnay1996}. Đồ án kế thừa hướng học máy, nhưng khác ở chỗ so sánh công
+bằng nhiều họ phương pháp trên cùng tập kiểm thử có kiểm định thống kê, tập
+trung vào nhóm bão ảnh hưởng Việt Nam, và dùng k-NN analog để giải thích gợi ý.

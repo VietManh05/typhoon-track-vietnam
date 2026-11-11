@@ -1,0 +1,99 @@
+% ---------------------------------------------------------------------
+%  CHƯƠNG 1 — MỞ ĐẦU
+% ---------------------------------------------------------------------
+\chapter{Mở đầu}
+\label{ch:modau}
+
+\begin{muctieu}
+Chương này nêu bối cảnh và lý do chọn đề tài, phát biểu bài toán, các mục
+tiêu có thể kiểm chứng, phạm vi thực hiện, đóng góp chính và bố cục của báo
+cáo.
+\end{muctieu}
+
+\section{Bối cảnh và lý do chọn đề tài}
+
+Việt Nam có hơn 3.200~km bờ biển nằm cạnh Biển Đông, một trong những vùng
+xoáy thuận nhiệt đới hoạt động mạnh nhất thế giới. Phần lớn các cơn bão ảnh
+hưởng đến nước ta hình thành ở Tây Bắc Thái Bình Dương, đi vào Biển Đông rồi
+đổ bộ vào đất liền; bão YAGI năm 2024 đi thẳng vào miền Bắc là một ví dụ gần
+đây. Với công tác phòng chống thiên tai, câu hỏi quan trọng nhất là tâm bão
+sẽ ở đâu trong một đến ba ngày tới, vì câu trả lời quyết định nơi nào cần sơ
+tán và khi nào phải cấm biển.
+
+Dự báo nghiệp vụ hiện nay dựa trên mô hình số trị khí quyển, cần siêu máy
+tính và đội ngũ chuyên môn. Trong khi đó, hơn bốn mươi năm dữ liệu quỹ đạo
+bão đã được công bố công khai và có chất lượng kiểm soát tốt. Từ đó đề tài
+đặt ra hai câu hỏi:
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Một hệ thống trí tuệ nhân tạo chỉ học từ dữ liệu lịch sử có thể gợi ý
+        đường đi của bão chính xác đến mức nào?
+  \item Các nhóm phương pháp AI khác nhau, từ lập luận dựa trên tình huống
+        đến học máy và học sâu, khác nhau ra sao khi đặt trên cùng một bài
+        toán, cùng một tập dữ liệu và cùng một cách đánh giá?
+\end{itemize}
+
+Đề tài được chọn vì ba lý do. Thứ nhất, bài toán có ý nghĩa thực tiễn rõ
+ràng với Việt Nam. Thứ hai, nó cho phép vận dụng nhiều nhóm kiến thức của
+học phần trên một bộ dữ liệu thật. Thứ ba, kết quả đo được bằng một đại
+lượng dễ hiểu là số kilômét lệch so với vị trí thực, nên có thể so sánh
+khách quan giữa các phương pháp.
+
+\section{Phát biểu bài toán}
+
+Cho chuỗi quan trắc gần nhất của một cơn bão, gồm vị trí tâm, gió và khí áp
+đo cách nhau 6 giờ, hệ thống cần gợi ý vị trí tâm bão tại các mốc 6, 12, 24,
+48 và 72 giờ tiếp theo. Mỗi gợi ý đi kèm một vùng bất định cho biết mức độ
+tin cậy, và danh sách các cơn bão lịch sử tương tự để người dùng hiểu gợi ý
+dựa trên căn cứ nào. Chương~\ref{ch:thietke} phát biểu chi tiết đầu vào, đầu
+ra và tiêu chí chạy đúng.
+
+\section{Mục tiêu của đồ án}
+
+Đồ án đặt ra năm mục tiêu, mỗi mục tiêu đều có tiêu chí để kiểm chứng ở
+Chương~\ref{ch:ketqua}:
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item \textbf{MT1.} Xây dựng quy trình dữ liệu từ NOAA IBTrACS: làm sạch,
+        tạo đặc trưng, chia tập theo năm không rò rỉ thông tin.
+  \item \textbf{MT2.} Huấn luyện và so sánh ít nhất bốn phương pháp AI với hai
+        mốc so sánh trên cùng tập kiểm thử, có kiểm định thống kê.
+  \item \textbf{MT3.} Mô hình tốt nhất giảm sai số vị trí tại 72 giờ ít nhất
+        20\% so với phương pháp persistence.
+  \item \textbf{MT4.} Cung cấp vùng bất định (nón) có độ phủ thực tế xấp xỉ
+        mức danh nghĩa 80\%.
+  \item \textbf{MT5.} Triển khai mô hình thành API và giao diện bản đồ, mỗi gợi
+        ý kèm lời giải thích bằng các cơn bão lịch sử tương tự.
+\end{itemize}
+
+\section{Phạm vi và đối tượng}
+
+Đối tượng nghiên cứu là quỹ đạo tâm của xoáy thuận nhiệt đới ở Tây Bắc Thái
+Bình Dương, giới hạn trong vùng 0--30°N, 100--140°E, giai đoạn 1980--2024.
+Đồ án dự báo vị trí tâm bão tại năm mốc 6, 12, 24, 48 và 72 giờ.
+
+Đồ án \textbf{không} dự báo cường độ, mưa, lũ hay nước dâng; không phát hành
+cảnh báo chính thức và không gửi thông báo tới người dùng. Hệ thống chỉ phục
+vụ học tập và nghiên cứu, không thay thế bản tin của Trung tâm Dự báo Khí
+tượng Thủy văn Quốc gia (NCHMF).
+
+\section{Đóng góp chính}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Một quy trình dữ liệu tái lập được, có truy vết nguồn gốc và chia tập
+        theo năm để tránh rò rỉ.
+  \item Một phép so sánh công bằng giữa bảy phương pháp thuộc bốn nhóm (mốc
+        so sánh, AI cổ điển, học máy, học sâu), có khoảng tin cậy bootstrap
+        theo cơn bão.
+  \item Bằng chứng thực nghiệm rằng nút thắt của bài toán nằm ở thông tin đầu
+        vào chứ không ở kiến trúc mô hình: bổ sung dòng dẫn đường khí quyển
+        giúp giảm sai số có ý nghĩa thống kê, còn đổi kiến trúc thì không.
+  \item Một hệ thống chạy được từ đầu đến cuối gồm gói mô hình có kiểm tra
+        toàn vẹn, API và bản đồ web, kèm bộ kiểm thử tự động.
+\end{itemize}
+
+\section{Bố cục báo cáo}
+
+Phần còn lại của báo cáo được tổ chức như sau. Chương~\ref{ch:coso} trình
+bày cơ sở lý thuyết và công nghệ sử dụng. Chương~\ref{ch:thietke} phân tích
+bài toán và thiết kế giải pháp. Chương~\ref{ch:caidat} mô tả quá trình cài
+đặt và thử nghiệm. Chương~\ref{ch:ketqua} trình bày kết quả và đánh giá.
+Chương~\ref{ch:ketluan} tổng kết và nêu hướng phát triển.

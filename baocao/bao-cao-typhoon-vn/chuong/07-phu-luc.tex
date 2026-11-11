@@ -1,0 +1,85 @@
+% ---------------------------------------------------------------------
+%  PHỤ LỤC
+% ---------------------------------------------------------------------
+% Trong \backmatter thì \chapter đã tự thêm vào mục lục, không cần
+% \addcontentsline nữa, thêm vào là trùng neo dấu trang.
+\chapter{Phụ lục}
+\markboth{Phụ lục}{}
+
+\section*{A. Hướng dẫn cài đặt và chạy chương trình}
+\phantomsection
+\addcontentsline{toc}{section}{A. Hướng dẫn cài đặt và chạy chương trình}
+
+Các bước dưới đây cho phép cài đặt, kiểm thử, huấn luyện và chạy hệ thống
+từ đầu trên một máy Windows có Python 3.11.
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Mã nguồn đầy đủ:\\ \url{https://github.com/VietManh05/typhoon-track-vietnam}
+  \item Bản demo trực tuyến: \url{https://baoviet2026.pages.dev}
+\end{itemize}
+
+\begin{lstlisting}[language=bash, caption={Các bước cài đặt, huấn luyện và khởi chạy hệ thống.}]
+# 1. Clone the repository
+git clone https://github.com/VietManh05/typhoon-track-vietnam.git
+cd typhoon-track-vietnam
+
+# 2. Create a virtual environment and install dependencies
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -e ".[api,train,ingestion,dev]"
+
+# 3. Run the test suite
+python -m pytest -q
+
+# 4. Train and compare models (see Chapter 4 for all experiments)
+python scripts/run_model_comparison.py --data-root data \
+    --output-dir runs/model-comparison --seeds 0 1 2
+
+# 5. Launch the API, then open http://localhost:8000/docs
+python -m uvicorn typhoon_vn.api.app:app --reload
+\end{lstlisting}
+
+\section*{B. Bảng tự kiểm trước khi nộp}
+\phantomsection
+\addcontentsline{toc}{section}{B. Bảng tự kiểm trước khi nộp}
+
+Nhóm đã rà soát báo cáo theo danh sách dưới đây trước khi nộp.
+
+\begin{tukiem}
+  \item Sản phẩm chạy được trên máy khác, không chỉ trên máy của nhóm.
+  \item Đã chạy thử demo trên đúng môi trường sẽ dùng khi bảo vệ.
+  \item Mã nguồn nằm trên kho \code{git}, lịch sử commit cho thấy tiến độ
+        trải đều chứ không dồn vào tuần cuối.
+  \item Có tệp \code{README} và \code{pyproject.toml} để người khác chạy lại.
+  \item Mọi hình, bảng và giải thuật đều có chú thích, có nhãn, và được nhắc
+        tới trong thân bài.
+  \item Mọi mục tiêu ở Chương~\ref{ch:modau} đều được đối chiếu ở
+        Chương~\ref{ch:ketluan}.
+  \item Mọi con số trong báo cáo trùng khớp với kết quả chạy thật, không có
+        số nào là ước lượng hay bịa.
+  \item Mọi tài liệu trong \code{refs.bib} đều được trích dẫn ít nhất một
+        lần, và mọi nguồn dữ liệu, mã tham khảo đều đã ghi rõ.
+  \item Đã khai báo phần nào có dùng công cụ trí tuệ nhân tạo hỗ trợ, và nhóm
+        giải thích được toàn bộ hệ thống khi bị hỏi.
+  \item Đã xoá hết hộp gợi ý, mọi khối nội dung mẫu, và cả
+        chương sổ tra cứu quy cách trình bày.
+\end{tukiem}
+
+\section*{C. Nhận xét của giảng viên hướng dẫn}
+\phantomsection
+\addcontentsline{toc}{section}{C. Nhận xét của giảng viên hướng dẫn}
+
+\khungnhanxet
+
+\vspace{0.8em}
+\noindent\begin{minipage}[t]{0.5\textwidth}
+\color{daunavy}
+{\color{daumaroon}\bfseries Điểm số}
+
+\vspace{0.7em}
+\dongchamnhan{Bằng số:}
+
+\vspace{0.9em}
+\dongchamnhan{Bằng chữ:}
+\end{minipage}\hfill
+\okyten{\dauGVHD}{Giảng viên hướng dẫn}

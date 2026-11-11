@@ -1,0 +1,462 @@
+% !TEX program = xelatex
+% =====================================================================
+%  SLIDE BÁO CÁO ĐỒ ÁN TRÍ TUỆ NHÂN TẠO, HỌC PHẦN AIP202
+%  Build:  latexmk -xelatex slide.tex   (Overleaf: Compiler = XeLaTeX)
+%  Ảnh lấy từ ../bao-cao-typhoon-vn/figs; thiếu ảnh thì slide vẫn build.
+% =====================================================================
+\documentclass[aspectratio=169, 11pt]{beamer}
+
+\usepackage{fontspec}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
+% ---------------------------------------------------------------------
+%  Thông tin nhóm: sửa ở đây
+% ---------------------------------------------------------------------
+\newcommand{\sinhvien}{Nguyễn Viết Mạnh (2351220241) \and Nguyễn Đình Phú (2351220247)}
+\newcommand{\gvhd}{TS. Đỗ Phúc Hảo}
+\newcommand{\lop}{23CT5}
+
+% ---------------------------------------------------------------------
+%  Nhận diện DAU: cùng bảng màu với báo cáo
+% ---------------------------------------------------------------------
+\definecolor{daumaroon}{HTML}{990000}
+\definecolor{daugold}{HTML}{FBAE40}
+\definecolor{daunavy}{HTML}{0E2841}
+\definecolor{gray100}{HTML}{F3F4F6}
+
+\usetheme{Madrid}
+\usecolortheme[named=daunavy]{structure}
+\setbeamercolor{title}{fg=white, bg=daunavy}
+\setbeamercolor{frametitle}{fg=white, bg=daunavy}
+\setbeamercolor{author in head/foot}{fg=white, bg=daumaroon}
+\setbeamercolor{title in head/foot}{fg=white, bg=daunavy}
+\setbeamercolor{date in head/foot}{fg=daunavy, bg=daugold}
+\setbeamercolor{block title}{fg=white, bg=daumaroon}
+\setbeamercolor{block body}{bg=gray100}
+\setbeamercolor{alerted text}{fg=daumaroon}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[square]
+\setbeamerfont{frametitle}{series=\bfseries}
+
+% Chèn ảnh nếu có, nếu không thì in khung báo thiếu để slide vẫn build được
+\graphicspath{{../bao-cao-typhoon-vn/figs/}}
+\newcommand{\hinh}[2][]{%
+  \IfFileExists{../bao-cao-typhoon-vn/figs/#2}%
+    {\includegraphics[#1]{#2}}%
+    {\fbox{\parbox{0.6\linewidth}{\centering\small Thiếu ảnh \texttt{\detokenize{#2}}}}}}
+
+\tikzset{
+  khoi/.style = {rectangle, rounded corners=2pt, draw=daumaroon, line width=0.8pt,
+                 fill=white, align=center, font=\scriptsize, minimum height=9mm,
+                 inner sep=3pt},
+  kho/.style  = {khoi, draw=daunavy, fill=gray100},
+  mui/.style  = {-{Stealth[length=2mm]}, line width=0.8pt, color=daumaroon},
+}
+
+\title[Gợi ý đường đi của bão]{Xây dựng hệ thống hỗ trợ gợi ý\\ đường đi của cơn bão Việt Nam}
+\subtitle{Báo cáo đồ án Trí tuệ nhân tạo \textperiodcentered{} Học phần AIP202}
+\author[Nhóm \lop]{\sinhvien}
+\institute[DAU]{Khoa Công nghệ Thông tin, Trường Đại học Kiến trúc Đà Nẵng\\[2pt]
+  Giảng viên hướng dẫn: \gvhd}
+\date{Năm học 2025--2026}
+
+\AtBeginSection[]{%
+  \begin{frame}{Nội dung}
+    \tableofcontents[currentsection]
+  \end{frame}}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% =====================================================================
+\section{Bài toán và mục tiêu}
+% =====================================================================
+
+\begin{frame}{Vì sao chọn đề tài này}
+  \begin{itemize}
+    \item Việt Nam nằm cạnh Biển Đông, vùng xoáy thuận nhiệt đới hoạt động mạnh.
+    \item Câu hỏi quan trọng nhất khi phòng chống bão:
+          \alert{tâm bão sẽ ở đâu trong 1 đến 3 ngày tới?}
+    \item Dự báo nghiệp vụ cần mô hình số trị và siêu máy tính.
+    \item Hơn 40 năm dữ liệu quỹ đạo bão đã được công bố công khai.
+  \end{itemize}
+  \vspace{0.6em}
+  \begin{block}{Hai câu hỏi của đồ án}
+    \begin{enumerate}
+      \item AI chỉ học từ dữ liệu lịch sử gợi ý đường đi chính xác đến mức nào?
+      \item Lập luận theo tình huống, học máy và học sâu khác nhau ra sao trên
+            cùng một bài toán?
+    \end{enumerate}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Phát biểu bài toán}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Đầu vào}
+        4 quan trắc gần nhất, cách nhau 6 giờ (24 giờ lịch sử): thời điểm,
+        vĩ độ, kinh độ, gió, khí áp, cấp cường độ.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Đầu ra}
+        Vị trí tâm bão tại +6, +12, +24, +48, +72 giờ; nón bất định 80\%;
+        5 cơn bão lịch sử tương tự nhất.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{0.8em}
+  \textbf{Phạm vi:} Tây Bắc Thái Bình Dương, 0--30°N, 100--140°E, 1980--2024.
+
+  \textbf{Không làm:} dự báo cường độ, mưa, lũ, nước dâng; không phát cảnh báo
+  chính thức, không thay thế bản tin của NCHMF.
+\end{frame}
+
+\begin{frame}{Năm mục tiêu có thể kiểm chứng}
+  \begin{description}[MT5]
+    \item[MT1] Quy trình dữ liệu từ NOAA IBTrACS, chia tập theo năm, không rò rỉ.
+    \item[MT2] So sánh ít nhất 4 phương pháp AI với 2 mốc, có kiểm định thống kê.
+    \item[MT3] Giảm sai số 72 giờ ít nhất 20\% so với persistence.
+    \item[MT4] Nón bất định có độ phủ thực tế xấp xỉ 80\%.
+    \item[MT5] Triển khai thành API và bản đồ, có giải thích bằng bão tương tự.
+  \end{description}
+\end{frame}
+
+% =====================================================================
+\section{Thiết kế giải pháp}
+% =====================================================================
+
+\begin{frame}{Kiến trúc tổng thể}
+  \centering
+  \resizebox{\ifdim\width>\textwidth\textwidth\else\width\fi}{!}{%
+  \begin{tikzpicture}[node distance=7mm and 5mm]
+    \node[kho]  (data)  {IBTrACS WP\\1980--2024};
+    \node[khoi, right=of data]  (clean) {Làm sạch,\\chuẩn hóa};
+    \node[khoi, right=of clean] (feat)  {Tạo đặc trưng\\(47 + 11 biến)};
+    \node[khoi, right=of feat]  (split) {Cửa sổ chuỗi,\\chia theo năm};
+    \node[khoi, right=of split] (train) {Huấn luyện,\\chọn trên val};
+    \node[kho,  right=of train] (bundle){Gói mô hình\\+ analog};
+    \node[kho,  below=of feat]  (env)   {NCEP/NCAR R1\\(dòng dẫn đường)};
+    \node[khoi, below=of bundle](api)   {FastAPI\\dự báo + nón};
+    \node[kho,  left=of api]    (web)   {Bản đồ web\\+ bão tương tự};
+    \draw[mui] (data) -- (clean);
+    \draw[mui] (clean) -- (feat);
+    \draw[mui] (feat) -- (split);
+    \draw[mui] (split) -- (train);
+    \draw[mui] (train) -- (bundle);
+    \draw[mui] (env) -- (feat);
+    \draw[mui] (bundle) -- (api);
+    \draw[mui] (api) -- (web);
+  \end{tikzpicture}}
+
+  \vspace{0.8em}
+  \raggedright
+  Huấn luyện chạy ngoại tuyến, phục vụ chạy trực tuyến. Hai nửa chỉ giao tiếp
+  qua \alert{gói mô hình có mã băm SHA-256}, nên huấn luyện lại không phải sửa
+  phần phục vụ.
+\end{frame}
+
+\begin{frame}{Dữ liệu và chia tập không rò rỉ}
+  Sau làm sạch: \alert{24.024 quan trắc của 1.089 cơn bão}.
+  \vspace{0.4em}
+
+  \centering
+  \begin{tabular}{llrl}
+    \toprule
+    \textbf{Tập} & \textbf{Giai đoạn} & \textbf{Số bão} & \textbf{Mục đích} \\
+    \midrule
+    Huấn luyện   & 1980--2016 & 895 & Học tham số (khoảng 7.800 cửa sổ) \\
+    Validation   & 2017--2020 & 110 & Chọn mô hình, siêu tham số, bán kính nón \\
+    Kiểm thử     & 2021--2024 & 84  & Đánh giá một lần (714 cửa sổ) \\
+    Ảnh hưởng VN & 2021--2024 & 27  & Tập con của kiểm thử (278 cửa sổ) \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.6em}
+  \raggedright
+  \begin{itemize}
+    \item Chia \textbf{theo năm, giữ nguyên cả cơn bão}: quan trắc của một cơn
+          bão không nằm ở hai tập.
+    \item Bộ chuẩn hóa chỉ fit trên tập huấn luyện.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Đặc trưng và cách biểu diễn đầu ra}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \textbf{47 đặc trưng mỗi quan trắc}
+      \begin{itemize}
+        \item Vị trí và độ trễ 1--3 bước
+        \item Động học: tốc độ, hướng, góc rẽ
+        \item Thời gian: sin/cos giờ, tháng, mùa bão
+        \item Địa lý: khoảng cách tới bờ biển Việt Nam
+        \item Cường độ: gió, khí áp, cấp bão
+      \end{itemize}
+      \textbf{Mở rộng:} 11 đặc trưng dòng dẫn đường khí quyển.
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{block}{Học độ dịch chuyển}
+        \[
+          \hat{\mathbf{p}}_{t+h} = \mathbf{p}_t + \Delta\hat{\mathbf{p}}_h
+        \]
+        Vị trí hiện tại đã biết chính xác. Mạng chỉ cần học hướng và tốc độ
+        di chuyển.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Bảy phương pháp thuộc bốn nhóm}
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{Nhóm} & \textbf{Phương pháp} & \textbf{Cấu hình} \\
+    \midrule
+    Mốc so sánh & Persistence       & Giữ nguyên vận tốc 6 giờ gần nhất \\
+    Mốc so sánh & CLIPER-proxy      & Persistence có suy giảm \\
+    AI cổ điển  & k-NN analog       & $k = 40$, có giải thích bằng bão tương tự \\
+    Học máy     & Gradient boosting & Hồi quy độ dịch chuyển \\
+    Học sâu     & LSTM              & 2 tầng, 128 nơ-ron ẩn, dropout 0,2 \\
+    Học sâu     & Attention-LSTM    & LSTM + attention cộng \\
+    Học sâu     & Transformer       & Encoder self-attention \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.6em}
+  \raggedright
+  Mọi lựa chọn chỉ dựa trên validation 2017--2020. Tập kiểm thử được chạy
+  \alert{một lần} sau khi chốt cấu hình. Mỗi mạng chạy 3 seed.
+\end{frame}
+
+% =====================================================================
+\section{Kết quả và đánh giá}
+% =====================================================================
+
+\begin{frame}{Sai số trung bình trên tập kiểm thử 2021--2024 (km)}
+  \centering
+  \begin{tabular}{lrrrrr}
+    \toprule
+    \textbf{Phương pháp} & \textbf{6h} & \textbf{12h} & \textbf{24h} & \textbf{48h} & \textbf{72h} \\
+    \midrule
+    Persistence       & 31 & 68 & 155 & 390 & 676 \\
+    CLIPER-proxy      & 30 & 65 & 151 & 388 & 677 \\
+    k-NN analog       & 32 & 64 & 133 & 290 & \textbf{462} \\
+    Gradient boosting & \textbf{29} & \textbf{60} & \textbf{129} & 292 & 476 \\
+    LSTM              & 33 & 65 & 133 & \textbf{289} & 464 \\
+    Attention-LSTM    & 35 & 68 & 138 & 297 & 473 \\
+    Transformer       & 33 & 64 & 133 & 293 & 468 \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.6em}
+  \raggedright
+  84 cơn bão, 714 cửa sổ. Tại 72 giờ: \alert{676~km xuống 462~km, giảm 32\%}
+  (mục tiêu MT3 là 20\%).
+\end{frame}
+
+\begin{frame}{Sai số theo thời hạn dự báo}
+  \begin{columns}[c]
+    \begin{column}{0.58\textwidth}
+      \centering
+      \hinh[width=\linewidth]{error_by_horizon.png}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item Ở 6 giờ các đường gần như trùng nhau: persistence gần tối ưu.
+        \item Từ 24 giờ, nhóm phương pháp học tách khỏi hai mốc.
+        \item Không phương pháp học nào dẫn đầu ở mọi mốc.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Kiểm định thống kê và nón bất định}
+  \begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      \textbf{Chênh lệch 72 giờ so với persistence (km)}\\[2pt]
+      \small
+      \begin{tabular}{lr}
+        \toprule
+        \textbf{Phương pháp} & \textbf{Khoảng tin cậy 95\%} \\
+        \midrule
+        k-NN analog       & $-201$ \ [$-268$; $-131$] \\
+        Gradient boosting & $-191$ \ [$-252$; $-126$] \\
+        LSTM              & $-203$ \ [$-262$; $-145$] \\
+        Attention-LSTM    & $-173$ \ [$-229$; $-116$] \\
+        Transformer       & $-200$ \ [$-257$; $-142$] \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{0.3em}
+      Bootstrap theo cơn bão, 50 cơn bão, 5.000 lần lấy mẫu lại.
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{block}{Nón bất định 80\%}
+        Bán kính: 52, 97, 210, 455, 714~km tại 6, 12, 24, 48, 72 giờ.
+
+        Độ phủ thực tế trên tập kiểm thử: \alert{82--86\%}.
+      \end{block}
+      Mọi phương pháp học đều tốt hơn persistence có ý nghĩa thống kê; giữa
+      LSTM, Transformer, k-NN và gradient boosting không có khác biệt có ý
+      nghĩa.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Hai thí nghiệm bổ sung}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \textbf{Học độ dịch chuyển (LSTM, km)}\\[2pt]
+      \small
+      \begin{tabular}{lrrr}
+        \toprule
+        \textbf{Mục tiêu học} & \textbf{6h} & \textbf{24h} & \textbf{72h} \\
+        \midrule
+        Tọa độ tuyệt đối & 115 & 164 & 473 \\
+        Độ dịch chuyển   & \textbf{33} & \textbf{133} & \textbf{464} \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{0.4em}
+      \normalsize
+      Sai số 6 giờ giảm khoảng 3,5 lần.
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \textbf{Thêm dòng dẫn đường (km)}\\[2pt]
+      \small
+      \begin{tabular}{lrrr}
+        \toprule
+        \textbf{Cấu hình} & \textbf{24h} & \textbf{72h} & \textbf{TB} \\
+        \midrule
+        LSTM chỉ quỹ đạo        & 131 & 469 & 197 \\
+        LSTM + dẫn đường        & 118 & 465 & 188 \\
+        Transformer + dẫn đường & 115 & 450 & 183 \\
+        Kết hợp hai mô hình     & \textbf{112} & \textbf{443} & \textbf{179} \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{0.4em}
+      \normalsize
+      Giảm 35~km tại 72 giờ, khoảng tin cậy [$-62$; $-9$].
+    \end{column}
+  \end{columns}
+  \vspace{0.6em}
+  \begin{block}{Kết luận chính}
+    Đổi kiến trúc hay siêu tham số không giúp gì; thêm thông tin khí quyển thì
+    có. \alert{Nút thắt là thông tin đầu vào, không phải kiến trúc mô hình.}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Nghiên cứu trường hợp: bão YAGI 2024}
+  \begin{columns}[c]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \hinh[width=\linewidth]{case_WP122024.png}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      Phát dự báo lúc 06Z 04/09/2024, sai số 72 giờ:
+      \begin{itemize}
+        \item Gradient boosting: \textbf{407~km}
+        \item k-NN analog: 419~km
+        \item LSTM: 541~km
+        \item Transformer: 678~km
+        \item Persistence: 701~km
+      \end{itemize}
+      Phần lớn mô hình gợi ý bão chuyển hướng lên phía bắc, trong khi YAGI đi
+      thẳng về phía tây.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% =====================================================================
+\section{Hệ thống và kết luận}
+% =====================================================================
+
+\begin{frame}{Hệ thống đã triển khai}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Phần phục vụ}
+      \begin{itemize}
+        \item API FastAPI: dự báo, nón, bão đang hoạt động
+        \item Gói mô hình kiểm tra mã băm trước khi nạp
+        \item Phản hồi kèm phiên bản mô hình, nguồn dữ liệu, cảnh báo
+        \item Xác thực bằng khóa API, giới hạn tần suất
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Giao diện và kiểm thử}
+      \begin{itemize}
+        \item Bản đồ web: quỹ đạo, nón, bão tương tự
+        \item Demo công khai: \texttt{baoviet2026.pages.dev}
+        \item \alert{176 ca kiểm thử Python đạt}, 4 ca bỏ qua
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.8em}
+  \begin{block}{Lưu ý}
+    Hệ thống chỉ phục vụ học tập và nghiên cứu, không phải hệ thống cảnh báo
+    chính thức.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Đối chiếu mục tiêu}
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{Mục tiêu} & \textbf{Kết quả} & \textbf{Mức độ} \\
+    \midrule
+    MT1 & 24.024 quan trắc, chia theo năm, scaler fit trên train & Đạt \\
+    MT2 & 7 phương pháp, 3 seed, bootstrap theo cơn bão & Đạt \\
+    MT3 & 72 giờ: 676~km xuống 462~km, giảm 32\% & Đạt \\
+    MT4 & Nón 80\% phủ 82--86\% vị trí thực & Đạt \\
+    MT5 & API, bản đồ web, demo công khai & Đạt một phần \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.8em}
+  \raggedright
+  MT5 đạt một phần vì mô hình đang phục vụ là LSTM chỉ dùng quỹ đạo, chưa dùng
+  dòng dẫn đường.
+\end{frame}
+
+\begin{frame}{Hạn chế và hướng phát triển}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Hạn chế}
+      \begin{itemize}
+        \item Mô hình có dòng dẫn đường chưa vận hành được vì cần dữ liệu khí
+              quyển tại thời điểm dự báo.
+        \item YAGI 2024 vẫn sai 620--670~km tại 72 giờ dù có dòng dẫn đường.
+        \item Nón là đường tròn đẳng hướng.
+        \item Chỉ một cách chia theo năm, chưa kiểm định chéo theo mùa.
+        \item Chưa nghiệm thu trong môi trường vận hành thật.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Hướng phát triển}
+      \begin{itemize}
+        \item Nối dữ liệu phân tích khí quyển thời gian thực (ví dụ GFS).
+        \item Nón bất định dạng elip theo hướng di chuyển.
+        \item Kiểm định chéo theo mùa bão.
+        \item Nguồn bão đang hoạt động ít trễ hơn.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \vfill
+  {\Huge\bfseries\color{daunavy} Xin cảm ơn quý thầy cô và các bạn}
+
+  \vspace{1.2em}
+  {\large Nhóm xin lắng nghe câu hỏi và góp ý.}
+  \vfill
+\end{frame}
+
+\end{document}

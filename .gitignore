@@ -53,7 +53,7 @@ Thumbs.db
 
 # Frontend / test scratch
 node_modules/
-viz/frontend/dist/
+frontend/dist/
 .pytest_tmp*/
 
 # Local operational store

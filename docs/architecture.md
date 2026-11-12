@@ -48,7 +48,7 @@ NOAA IBTrACS (best track, archive + ACTIVE)      NCEP/NCAR R1 reanalysis
 | `src/typhoon_vn/inference` | Load approved bundle/analog library; forecast safely |
 | `src/typhoon_vn/api` | Typed HTTP API (public rate-limited reads; keyed writes/operator routes) |
 | `src/typhoon_vn/operations` | Alembic-managed store, worker (IBTrACS ACTIVE or snapshot) |
-| `viz/frontend` | React/Leaflet dashboard and Cloudflare Pages Functions (JMA, AI, NCHMF) |
+| `frontend` | React/Leaflet dashboard and Cloudflare Pages Functions (JMA, AI, NCHMF) |
 | `scripts/` | Benchmarks, comparison/training/steering studies, exports, data downloads |
 | `infra/docker` | Container serving the trained model (non-root, healthcheck) |
 

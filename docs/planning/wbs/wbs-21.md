@@ -4,7 +4,7 @@
 - Hiện trạng: Chưa có dashboard; static mount trong API chưa phải frontend.
 - Đầu vào: API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực.
 - Gate phụ thuộc: G02, G17.
-- Vùng file dự kiến: viz/frontend/; tests/frontend/; docs/frontend.md.
+- Vùng file dự kiến: frontend/; tests/frontend/; docs/frontend.md.
 - Đường dẫn test/tài liệu mới là đích dự kiến, không khẳng định đã có.
 - Task trong nhóm có thể đổi thứ tự theo contract/fixture; tests và tài liệu làm cùng implementation, không chờ nhóm cuối.
 - DoD nhóm: React/TypeScript + Leaflet là phương án dự kiến; actual/forecast/cone rõ; mobile/a11y; nguồn/thời gian/disclaimer luôn hiện.
@@ -23,7 +23,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.1 Setup.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Tạo React/Next.js.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-001.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-001.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Tạo React/Next.js.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -42,7 +42,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.1 Setup.
 - **Task trước trong tiểu mục:** T21-001; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Router.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-002.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-002.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Router.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -61,7 +61,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.1 Setup.
 - **Task trước trong tiểu mục:** T21-002; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: API client.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-003.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-003.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “API client.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -80,7 +80,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.1 Setup.
 - **Task trước trong tiểu mục:** T21-003; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: State management.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-004.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-004.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “State management.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -99,7 +99,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.1 Setup.
 - **Task trước trong tiểu mục:** T21-004; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: CSS/theme.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-005.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-005.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “CSS/theme.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -118,7 +118,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.1 Setup.
 - **Task trước trong tiểu mục:** T21-005; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Environment config.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-006.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-006.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Environment config.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -137,7 +137,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.2 Map.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Leaflet.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-007.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-007.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Leaflet.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -156,7 +156,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.2 Map.
 - **Task trước trong tiểu mục:** T21-007; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Vietnam boundary.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-008.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-008.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Vietnam boundary.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -175,7 +175,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.2 Map.
 - **Task trước trong tiểu mục:** T21-008; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Coastline.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-009.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-009.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Coastline.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -194,7 +194,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.2 Map.
 - **Task trước trong tiểu mục:** T21-009; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Storm marker.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-010.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-010.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Storm marker.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -213,7 +213,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.2 Map.
 - **Task trước trong tiểu mục:** T21-010; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Historical track.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-011.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-011.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Historical track.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -232,7 +232,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.2 Map.
 - **Task trước trong tiểu mục:** T21-011; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Forecast track.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-012.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-012.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Forecast track.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -251,7 +251,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.2 Map.
 - **Task trước trong tiểu mục:** T21-012; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Cone.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-013.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-013.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Cone.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -270,7 +270,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.2 Map.
 - **Task trước trong tiểu mục:** T21-013; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Province layer.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-014.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-014.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Province layer.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -289,7 +289,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.3 Dashboard.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Active storm list.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-015.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-015.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Active storm list.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -308,7 +308,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.3 Dashboard.
 - **Task trước trong tiểu mục:** T21-015; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Storm status.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-016.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-016.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Storm status.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -327,7 +327,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.3 Dashboard.
 - **Task trước trong tiểu mục:** T21-016; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Map.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-017.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-017.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Map.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -346,7 +346,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.3 Dashboard.
 - **Task trước trong tiểu mục:** T21-017; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Legend.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-018.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-018.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Legend.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -365,7 +365,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.3 Dashboard.
 - **Task trước trong tiểu mục:** T21-018; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Last update.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-019.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-019.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Last update.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -384,7 +384,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.3 Dashboard.
 - **Task trước trong tiểu mục:** T21-019; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Data source.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-020.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-020.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Data source.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -403,7 +403,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.4 Storm Detail.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Storm name.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-021.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-021.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Storm name.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -422,7 +422,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.4 Storm Detail.
 - **Task trước trong tiểu mục:** T21-021; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Position.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-022.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-022.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Position.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -441,7 +441,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.4 Storm Detail.
 - **Task trước trong tiểu mục:** T21-022; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Wind.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-023.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-023.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Wind.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -460,7 +460,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.4 Storm Detail.
 - **Task trước trong tiểu mục:** T21-023; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Pressure.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-024.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-024.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Pressure.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -479,7 +479,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.4 Storm Detail.
 - **Task trước trong tiểu mục:** T21-024; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Direction.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-025.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-025.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Direction.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -498,7 +498,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.4 Storm Detail.
 - **Task trước trong tiểu mục:** T21-025; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Speed.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-026.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-026.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Speed.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -517,7 +517,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.4 Storm Detail.
 - **Task trước trong tiểu mục:** T21-026; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Forecast table.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-027.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-027.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Forecast table.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -536,7 +536,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.4 Storm Detail.
 - **Task trước trong tiểu mục:** T21-027; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Timeline.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-028.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-028.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Timeline.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -555,7 +555,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.5 Province Impact.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Select province.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-029.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-029.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Select province.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -574,7 +574,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.5 Province Impact.
 - **Task trước trong tiểu mục:** T21-029; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Calculate distance.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-030.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-030.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Calculate distance.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -593,7 +593,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.5 Province Impact.
 - **Task trước trong tiểu mục:** T21-030; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Display ETA.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-031.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-031.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Display ETA.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -612,7 +612,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.5 Province Impact.
 - **Task trước trong tiểu mục:** T21-031; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Display impact level.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-032.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-032.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Display impact level.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -631,7 +631,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.5 Province Impact.
 - **Task trước trong tiểu mục:** T21-032; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Display uncertainty.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-033.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-033.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Display uncertainty.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -650,7 +650,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.5 Province Impact.
 - **Task trước trong tiểu mục:** T21-033; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Show source/time.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-034.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-034.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Show source/time.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -669,7 +669,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.6 Mobile.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Responsive map.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-035.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-035.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Responsive map.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -688,7 +688,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.6 Mobile.
 - **Task trước trong tiểu mục:** T21-035; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Responsive cards.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-036.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-036.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Responsive cards.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -707,7 +707,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.6 Mobile.
 - **Task trước trong tiểu mục:** T21-036; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Responsive timeline.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-037.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-037.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Responsive timeline.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -726,7 +726,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.6 Mobile.
 - **Task trước trong tiểu mục:** T21-037; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Test mobile width.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-038.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-038.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Test mobile width.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -745,7 +745,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G02, G17; contract/fixture của tiểu mục 21.6 Mobile.
 - **Task trước trong tiểu mục:** T21-038; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực; yêu cầu riêng: Test tablet.
-- **File/đầu ra:** thay đổi nhỏ trong viz/frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-039.md.
+- **File/đầu ra:** thay đổi nhỏ trong frontend/; tests/frontend/; docs/frontend.md; evidence tại evidence/T21-039.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Test tablet.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G21, không mở rộng module khác ngoài phụ thuộc bắt buộc.

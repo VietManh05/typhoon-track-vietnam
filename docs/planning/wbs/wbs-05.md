@@ -1,6 +1,6 @@
 # G05 — Scaling không rò rỉ
 
-- Trạng thái: complete; nghiệm thu tại [G05-scaling.md](evidence/G05-scaling.md).
+- Trạng thái: complete; nghiệm thu tại [G05-scaling.md](../evidence/G05-scaling.md).
 - Hiện trạng: Có scaler; cần tích hợp artifact manifest và kiểm thử parity.
 - Đầu vào: Feature schema đóng băng và split manifest theo storm.
 - Gate phụ thuộc: G04, G06.
@@ -31,7 +31,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fit train-only; val/test cực trị không đổi stats; save/load giữ order/fill; finite round-trip <=1e-6.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-001.md](evidence/T05-001.md).
+- **Bằng chứng hiện tại:** [T05-001.md](../evidence/T05-001.md).
 
 <a id="t05-002"></a>
 ## T05-002 — Fit scaler chỉ trên train.
@@ -50,7 +50,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fit train-only; val/test cực trị không đổi stats; save/load giữ order/fill; finite round-trip <=1e-6.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-002.md](evidence/T05-002.md).
+- **Bằng chứng hiện tại:** [T05-002.md](../evidence/T05-002.md).
 
 <a id="t05-003"></a>
 ## T05-003 — Save scaler.
@@ -69,7 +69,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fit train-only; val/test cực trị không đổi stats; save/load giữ order/fill; finite round-trip <=1e-6.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-003.md](evidence/T05-003.md).
+- **Bằng chứng hiện tại:** [T05-003.md](../evidence/T05-003.md).
 
 <a id="t05-004"></a>
 ## T05-004 — Load scaler khi inference.
@@ -88,7 +88,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fit train-only; val/test cực trị không đổi stats; save/load giữ order/fill; finite round-trip <=1e-6.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-004.md](evidence/T05-004.md).
+- **Bằng chứng hiện tại:** [T05-004.md](../evidence/T05-004.md).
 
 <a id="t05-005"></a>
 ## T05-005 — Transform train.
@@ -107,7 +107,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-005.md](evidence/T05-005.md).
+- **Bằng chứng hiện tại:** [T05-005.md](../evidence/T05-005.md).
 
 <a id="t05-006"></a>
 ## T05-006 — Transform validation.
@@ -126,7 +126,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-006.md](evidence/T05-006.md).
+- **Bằng chứng hiện tại:** [T05-006.md](../evidence/T05-006.md).
 
 <a id="t05-007"></a>
 ## T05-007 — Transform test.
@@ -145,7 +145,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-007.md](evidence/T05-007.md).
+- **Bằng chứng hiện tại:** [T05-007.md](../evidence/T05-007.md).
 
 <a id="t05-008"></a>
 ## T05-008 — Test inverse transform.
@@ -164,7 +164,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fit train-only; val/test cực trị không đổi stats; save/load giữ order/fill; finite round-trip <=1e-6.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-008.md](evidence/T05-008.md).
+- **Bằng chứng hiện tại:** [T05-008.md](../evidence/T05-008.md).
 
 <a id="t05-009"></a>
 ## T05-009 — Test không có leakage.
@@ -183,4 +183,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Chỉ fit train; thống kê bất biến khi val/test thay đổi; schema mismatch bị từ chối; round-trip có dung sai định trước.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T05-009.md](evidence/T05-009.md).
+- **Bằng chứng hiện tại:** [T05-009.md](../evidence/T05-009.md).

@@ -23,5 +23,5 @@ data/operational
 .pytest_tmp*
 .playwright-mcp
 .wrangler
-viz/frontend/node_modules
-viz/frontend/dist
+frontend/node_modules
+frontend/dist

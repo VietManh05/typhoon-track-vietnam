@@ -4,14 +4,14 @@ Hệ thống giao diện trực quan hóa, theo dõi quỹ đạo và đánh gi�
 
 ## 1. Kiến Trúc Kỹ Thuật
 
-- **Vị trí mã nguồn**: `viz/frontend/`
-- **Thư mục phân phối (Production build)**: `viz/frontend/dist/` và đồng bộ vào `src/typhoon_vn/dashboard/` để FastAPI phục vụ trực tiếp.
+- **Vị trí mã nguồn**: `frontend/`
+- **Thư mục phân phối (Production build)**: `frontend/dist/` và đồng bộ vào `src/typhoon_vn/dashboard/` để FastAPI phục vụ trực tiếp.
 - **Tech Stack**:
   - **Framework**: React 18 + TypeScript 5
   - **Bundler**: Vite 5
   - **Bản đồ GIS**: Leaflet 1.9 với OpenStreetMap (mặc định, không cần key; chế độ tối đảo màu ô bản đồ), OpenTopoMap (Địa hình), Esri World Imagery (Vệ tinh)
   - **Hệ thống biểu tượng**: Lucide React
-  - **Thiết kế**: Tailwind + CSS Variables; giao diện sáng "trời trong" mặc định, dễ đọc cho mọi lứa tuổi (chữ ≥ 13px, nút ≥ 48px, tương phản ≥ 7:1), chế độ tối tùy chọn. Chi tiết: `viz/frontend/design-system/typhoon-vn/MASTER.md`
+  - **Thiết kế**: Tailwind + CSS Variables; giao diện sáng "trời trong" mặc định, dễ đọc cho mọi lứa tuổi (chữ ≥ 13px, nút ≥ 48px, tương phản ≥ 7:1), chế độ tối tùy chọn. Chi tiết: `frontend/design-system/typhoon-vn/MASTER.md`
   - **Đa ngôn ngữ**: Hệ thống từ điển song ngữ Tiếng Việt 🇻🇳 (mặc định) và English 🇬🇧
 
 ## 2. Các Thành Phần Chính
@@ -65,7 +65,7 @@ Hệ thống giao diện trực quan hóa, theo dõi quỹ đạo và đánh gi�
 
 ### Chạy Môi Trường Phát Triển (Dev Mode)
 ```bash
-cd viz/frontend
+cd frontend
 npm install
 npm run dev
 ```
@@ -73,9 +73,9 @@ Truy cập: `http://localhost:5173/` (Vite dev server tự động proxy các AP
 
 ### Build Production & Đồng Bộ Dashboard
 ```bash
-cd viz/frontend
+cd frontend
 npm run build
-python -c "import shutil; shutil.rmtree('src/typhoon_vn/dashboard', ignore_errors=True); shutil.copytree('viz/frontend/dist', 'src/typhoon_vn/dashboard')"
+python -c "import shutil; shutil.rmtree('src/typhoon_vn/dashboard', ignore_errors=True); shutil.copytree('frontend/dist', 'src/typhoon_vn/dashboard')"
 ```
 
 ### Chạy Toàn Bộ Hệ Thống Với FastAPI

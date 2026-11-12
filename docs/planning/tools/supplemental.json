@@ -84,7 +84,7 @@
     "S10",
     "Hiển thị so sánh dự báo chính thức",
     "G01, G13, G21",
-    "evaluation/official_comparison.py; viz/frontend/",
+    "evaluation/official_comparison.py; frontend/",
     "Import bản tin phát hành thực tế; ghép cùng issue_time, valid_time, storm; overlay hai nguồn có nhãn.",
     "Không so best-track tương lai với forecast như cùng loại; không có bản tin thì hiển thị unavailable.",
     "song song dự báo"
@@ -93,7 +93,7 @@
     "S11",
     "Giao diện Việt/Anh",
     "G21",
-    "viz/frontend/src/i18n/; tests/frontend/",
+    "frontend/src/i18n/; tests/frontend/",
     "Externalize labels, errors, disclaimer, units, datetime; VN là mặc định đề xuất; nhớ lựa chọn ngôn ngữ.",
     "Chuyển VI/EN cập nhật toàn UI, không chỉ tiêu đề; UTC/giờ VN có nhãn; dữ liệu null không thành 0.",
     "Đa ngôn ngữ"
@@ -102,7 +102,7 @@
     "S12",
     "Màu/chú giải cường độ có tài liệu nguồn",
     "G21",
-    "viz/frontend/src/theme/; docs/frontend.md",
+    "frontend/src/theme/; docs/frontend.md",
     "Quy định palette có contrast và ký hiệu bổ trợ; chỉ gọi chuẩn NCHMF khi đã xác minh tài liệu chính thức.",
     "Người không phân biệt màu vẫn hiểu severity; legend luôn hiện và unknown có style riêng.",
     "theme/màu"

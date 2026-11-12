@@ -4,7 +4,7 @@
 - Hiện trạng: Chưa nghiệm thu.
 - Đầu vào: Release candidate, checklist DoD, fixtures và evidence.
 - Gate phụ thuộc: G23, G25, G26, G27.
-- Vùng file dự kiến: docs/acceptance/; reports/; tests/integration/; viz/frontend/.
+- Vùng file dự kiến: docs/acceptance/; reports/; tests/integration/; frontend/.
 - Đường dẫn test/tài liệu mới là đích dự kiến, không khẳng định đã có.
 - Task trong nhóm có thể đổi thứ tự theo contract/fixture; tests và tài liệu làm cùng implementation, không chờ nhóm cuối.
 - DoD nhóm: Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực.
@@ -23,7 +23,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 1 — Dữ liệu.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Chọn một cơn bão.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-001.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-001.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Chọn một cơn bão.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -42,7 +42,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 1 — Dữ liệu.
 - **Task trước trong tiểu mục:** T28-001; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Hiển thị lịch sử.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-002.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-002.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Hiển thị lịch sử.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -61,7 +61,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 1 — Dữ liệu.
 - **Task trước trong tiểu mục:** T28-002; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Chứng minh data pipeline.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-003.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-003.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Chứng minh data pipeline.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -80,7 +80,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 2 — Model.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Load model.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-004.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-004.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Load model.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -99,7 +99,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 2 — Model.
 - **Task trước trong tiểu mục:** T28-004; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Nhập observation.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-005.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-005.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Nhập observation.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -118,7 +118,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 2 — Model.
 - **Task trước trong tiểu mục:** T28-005; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Sinh 6/12/24/48/72h.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-006.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-006.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Sinh 6/12/24/48/72h.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -137,7 +137,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 2 — Model.
 - **Task trước trong tiểu mục:** T28-006; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Hiển thị metric.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-007.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-007.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Hiển thị metric.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -156,7 +156,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 3 — Bản đồ.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Actual track.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-008.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-008.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Actual track.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -175,7 +175,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 3 — Bản đồ.
 - **Task trước trong tiểu mục:** T28-008; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Forecast track.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-009.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-009.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Forecast track.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -194,7 +194,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 3 — Bản đồ.
 - **Task trước trong tiểu mục:** T28-009; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Cone.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-010.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-010.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Cone.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -213,7 +213,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 3 — Bản đồ.
 - **Task trước trong tiểu mục:** T28-010; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Province impact.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-011.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-011.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Province impact.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -232,7 +232,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 4 — API.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Swagger.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-012.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-012.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Swagger.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -251,7 +251,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 4 — API.
 - **Task trước trong tiểu mục:** T28-012; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: POST forecast.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-013.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-013.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “POST forecast.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -270,7 +270,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 4 — API.
 - **Task trước trong tiểu mục:** T28-013; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Response.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-014.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-014.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Response.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -289,7 +289,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 4 — API.
 - **Task trước trong tiểu mục:** T28-014; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Error handling.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-015.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-015.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Error handling.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -308,7 +308,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 5 — Real-time.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Mock observation mới.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-016.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-016.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Mock observation mới.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -327,7 +327,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 5 — Real-time.
 - **Task trước trong tiểu mục:** T28-016; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Worker nhận dữ liệu.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-017.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-017.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Worker nhận dữ liệu.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -346,7 +346,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 5 — Real-time.
 - **Task trước trong tiểu mục:** T28-017; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Trigger inference.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-018.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-018.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Trigger inference.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -365,7 +365,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 5 — Real-time.
 - **Task trước trong tiểu mục:** T28-018; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Dashboard cập nhật.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-019.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-019.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Dashboard cập nhật.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -384,7 +384,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 6 — Alert.
 - **Task trước trong tiểu mục:** không; áp dụng gate phụ thuộc của nhóm.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Tạo subscription.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-020.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-020.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Tạo subscription.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -403,7 +403,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 6 — Alert.
 - **Task trước trong tiểu mục:** T28-020; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Kích hoạt rule.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-021.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-021.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Kích hoạt rule.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -422,7 +422,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 6 — Alert.
 - **Task trước trong tiểu mục:** T28-021; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Sinh cảnh báo.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-022.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-022.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Sinh cảnh báo.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.
@@ -441,7 +441,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Phụ thuộc:** G23, G25, G26, G27; contract/fixture của tiểu mục Demo 6 — Alert.
 - **Task trước trong tiểu mục:** T28-022; kiểm tra output trước khi bắt đầu.
 - **Đầu vào:** Release candidate, checklist DoD, fixtures và evidence; yêu cầu riêng: Kiểm tra throttle.
-- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; viz/frontend/; evidence tại evidence/T28-023.md.
+- **File/đầu ra:** thay đổi nhỏ trong docs/acceptance/; reports/; tests/integration/; frontend/; evidence tại evidence/T28-023.md.
 - **Bước thực hiện:**
   1. Định vị phần hiện có liên quan “Kiểm tra throttle.”; ghi phần đạt/chưa đạt và ví dụ input/output.
   2. Hoàn thiện đúng mục này; giữ contract G28, không mở rộng module khác ngoài phụ thuộc bắt buộc.

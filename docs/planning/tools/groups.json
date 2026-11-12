@@ -191,7 +191,7 @@
   [
     21,
     "Frontend và bản đồ",
-    "viz/frontend/; tests/frontend/; docs/frontend.md",
+    "frontend/; tests/frontend/; docs/frontend.md",
     "G02, G17",
     "API contract ổn định, mock có nhãn demo, GeoJSON đã xác thực",
     "React/TypeScript + Leaflet là phương án dự kiến; actual/forecast/cone rõ; mobile/a11y; nguồn/thời gian/disclaimer luôn hiện",
@@ -254,7 +254,7 @@
   [
     28,
     "Demo và nghiệm thu",
-    "docs/acceptance/; reports/; tests/integration/; viz/frontend/",
+    "docs/acceptance/; reports/; tests/integration/; frontend/",
     "G23, G25, G26, G27",
     "Release candidate, checklist DoD, fixtures và evidence",
     "Demo data/model/map/API/worker/alert có evidence; không tự gửi tin hay deploy thật; đánh dấu external pending trung thực",

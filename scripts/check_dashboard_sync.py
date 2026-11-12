@@ -1,7 +1,7 @@
-"""Fail if the served dashboard differs from a fresh ``viz/frontend`` build.
+"""Fail if the served dashboard differs from a fresh ``frontend`` build.
 
 FastAPI serves ``src/typhoon_vn/dashboard``, a committed copy of
-``viz/frontend/dist``. Run after ``npm run build``::
+``frontend/dist``. Run after ``npm run build``::
 
     python scripts/check_dashboard_sync.py
 
@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-BUILD = ROOT / "viz/frontend/dist"
+BUILD = ROOT / "frontend/dist"
 SERVED = ROOT / "src/typhoon_vn/dashboard"
 
 

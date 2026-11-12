@@ -17,7 +17,7 @@ Usage::
     python scripts/export_hindcast.py --data-root data \
         --bundle runs/ibtracs-benchmark/bundle \
         --analog runs/analog/analog-wp.npz \
-        --out viz/frontend/public/data/hindcast
+        --out frontend/public/data/hindcast
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 # G04 — Feature engineering
 
-- Trạng thái: complete; nghiệm thu tại [G04-features.md](evidence/G04-features.md).
+- Trạng thái: complete; nghiệm thu tại [G04-features.md](../evidence/G04-features.md).
 - Hiện trạng: Có feature builder; môi trường và hợp đồng train/serve cần kiểm chứng.
 - Đầu vào: Track sạch, timestamp UTC, dữ liệu môi trường có available_at.
 - Gate phụ thuộc: G02, G03.
@@ -31,7 +31,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Tạo fixture lat=[10,11,13], lon=[120,119,117]; lag/delta reset ở storm mới; xử lý wrap 179→-179 theo policy.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-001.md](evidence/T04-001.md).
+- **Bằng chứng hiện tại:** [T04-001.md](../evidence/T04-001.md).
 
 <a id="t04-002"></a>
 ## T04-002 — longitude.
@@ -50,7 +50,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Tạo fixture lat=[10,11,13], lon=[120,119,117]; lag/delta reset ở storm mới; xử lý wrap 179→-179 theo policy.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-002.md](evidence/T04-002.md).
+- **Bằng chứng hiện tại:** [T04-002.md](../evidence/T04-002.md).
 
 <a id="t04-003"></a>
 ## T04-003 — delta latitude.
@@ -69,7 +69,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Tạo fixture lat=[10,11,13], lon=[120,119,117]; lag/delta reset ở storm mới; xử lý wrap 179→-179 theo policy.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-003.md](evidence/T04-003.md).
+- **Bằng chứng hiện tại:** [T04-003.md](../evidence/T04-003.md).
 
 <a id="t04-004"></a>
 ## T04-004 — delta longitude.
@@ -88,7 +88,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hợp lệ/ngoài biên/NaN/Inf và wrap longitude; output giữ đúng đơn vị tọa độ.
 - **Kịch bản tiểu mục:** Tạo fixture lat=[10,11,13], lon=[120,119,117]; lag/delta reset ở storm mới; xử lý wrap 179→-179 theo policy.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-004.md](evidence/T04-004.md).
+- **Bằng chứng hiện tại:** [T04-004.md](../evidence/T04-004.md).
 
 <a id="t04-005"></a>
 ## T04-005 — Position lag 1.
@@ -107,7 +107,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Tạo fixture lat=[10,11,13], lon=[120,119,117]; lag/delta reset ở storm mới; xử lý wrap 179→-179 theo policy.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-005.md](evidence/T04-005.md).
+- **Bằng chứng hiện tại:** [T04-005.md](../evidence/T04-005.md).
 
 <a id="t04-006"></a>
 ## T04-006 — Position lag 2.
@@ -126,7 +126,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Tạo fixture lat=[10,11,13], lon=[120,119,117]; lag/delta reset ở storm mới; xử lý wrap 179→-179 theo policy.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-006.md](evidence/T04-006.md).
+- **Bằng chứng hiện tại:** [T04-006.md](../evidence/T04-006.md).
 
 <a id="t04-007"></a>
 ## T04-007 — Position lag 3.
@@ -145,7 +145,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Tạo fixture lat=[10,11,13], lon=[120,119,117]; lag/delta reset ở storm mới; xử lý wrap 179→-179 theo policy.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-007.md](evidence/T04-007.md).
+- **Bằng chứng hiện tại:** [T04-007.md](../evidence/T04-007.md).
 
 <a id="t04-008"></a>
 ## T04-008 — Haversine distance.
@@ -164,7 +164,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Điểm trùng cho 0 km; cặp điểm chuẩn khớp dung sai; wrap longitude không tạo khoảng cách vòng trái đất.
 - **Kịch bản tiểu mục:** Hai fix có thời gian biết trước; distance/delta_hours ra km/h; đổi hướng 359→1 là 2 độ; duplicate timestamp không chia 0.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-008.md](evidence/T04-008.md).
+- **Bằng chứng hiện tại:** [T04-008.md](../evidence/T04-008.md).
 
 <a id="t04-009"></a>
 ## T04-009 — Bearing.
@@ -183,7 +183,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Hướng bắc/đông/tây đúng; 359→1 là đổi hướng nhỏ; điểm trùng có quy tắc công bố.
 - **Kịch bản tiểu mục:** Hai fix có thời gian biết trước; distance/delta_hours ra km/h; đổi hướng 359→1 là 2 độ; duplicate timestamp không chia 0.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-009.md](evidence/T04-009.md).
+- **Bằng chứng hiện tại:** [T04-009.md](../evidence/T04-009.md).
 
 <a id="t04-010"></a>
 ## T04-010 — Speed.
@@ -202,7 +202,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Hai fix có thời gian biết trước; distance/delta_hours ra km/h; đổi hướng 359→1 là 2 độ; duplicate timestamp không chia 0.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-010.md](evidence/T04-010.md).
+- **Bằng chứng hiện tại:** [T04-010.md](../evidence/T04-010.md).
 
 <a id="t04-011"></a>
 ## T04-011 — Acceleration.
@@ -221,7 +221,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Hai fix có thời gian biết trước; distance/delta_hours ra km/h; đổi hướng 359→1 là 2 độ; duplicate timestamp không chia 0.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-011.md](evidence/T04-011.md).
+- **Bằng chứng hiện tại:** [T04-011.md](../evidence/T04-011.md).
 
 <a id="t04-012"></a>
 ## T04-012 — Bearing change.
@@ -240,7 +240,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Hướng bắc/đông/tây đúng; 359→1 là đổi hướng nhỏ; điểm trùng có quy tắc công bố.
 - **Kịch bản tiểu mục:** Hai fix có thời gian biết trước; distance/delta_hours ra km/h; đổi hướng 359→1 là 2 độ; duplicate timestamp không chia 0.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-012.md](evidence/T04-012.md).
+- **Bằng chứng hiện tại:** [T04-012.md](../evidence/T04-012.md).
 
 <a id="t04-013"></a>
 ## T04-013 — Turning rate.
@@ -259,7 +259,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Hai fix có thời gian biết trước; distance/delta_hours ra km/h; đổi hướng 359→1 là 2 độ; duplicate timestamp không chia 0.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-013.md](evidence/T04-013.md).
+- **Bằng chứng hiện tại:** [T04-013.md](../evidence/T04-013.md).
 
 <a id="t04-014"></a>
 ## T04-014 — Direction sin/cos.
@@ -278,7 +278,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Hướng bắc/đông/tây đúng; 359→1 là đổi hướng nhỏ; điểm trùng có quy tắc công bố.
 - **Kịch bản tiểu mục:** Hai fix có thời gian biết trước; distance/delta_hours ra km/h; đổi hướng 359→1 là 2 độ; duplicate timestamp không chia 0.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-014.md](evidence/T04-014.md).
+- **Bằng chứng hiện tại:** [T04-014.md](../evidence/T04-014.md).
 
 <a id="t04-015"></a>
 ## T04-015 — Distance to coastline.
@@ -297,7 +297,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Điểm trùng cho 0 km; cặp điểm chuẩn khớp dung sai; wrap longitude không tạo khoảng cách vòng trái đất.
 - **Kịch bản tiểu mục:** Điểm kiểm thử ở bờ và ngoài biển; dùng geodesic km và shoreline thật; dữ liệu coastline toy phải có nhãn approximate.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-015.md](evidence/T04-015.md).
+- **Bằng chứng hiện tại:** [T04-015.md](../evidence/T04-015.md).
 
 <a id="t04-016"></a>
 ## T04-016 — Bearing to coastline.
@@ -316,7 +316,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Hướng bắc/đông/tây đúng; 359→1 là đổi hướng nhỏ; điểm trùng có quy tắc công bố.
 - **Kịch bản tiểu mục:** Điểm kiểm thử ở bờ và ngoài biển; dùng geodesic km và shoreline thật; dữ liệu coastline toy phải có nhãn approximate.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-016.md](evidence/T04-016.md).
+- **Bằng chứng hiện tại:** [T04-016.md](../evidence/T04-016.md).
 
 <a id="t04-017"></a>
 ## T04-017 — Nearest coastline point.
@@ -335,7 +335,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Điểm kiểm thử ở bờ và ngoài biển; dùng geodesic km và shoreline thật; dữ liệu coastline toy phải có nhãn approximate.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-017.md](evidence/T04-017.md).
+- **Bằng chứng hiện tại:** [T04-017.md](../evidence/T04-017.md).
 
 <a id="t04-018"></a>
 ## T04-018 — Distance to nearest province.
@@ -354,7 +354,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Điểm trùng cho 0 km; cặp điểm chuẩn khớp dung sai; wrap longitude không tạo khoảng cách vòng trái đất.
 - **Kịch bản tiểu mục:** Điểm kiểm thử ở bờ và ngoài biển; dùng geodesic km và shoreline thật; dữ liệu coastline toy phải có nhãn approximate.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-018.md](evidence/T04-018.md).
+- **Bằng chứng hiện tại:** [T04-018.md](../evidence/T04-018.md).
 
 <a id="t04-019"></a>
 ## T04-019 — Hour.
@@ -373,7 +373,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-019.md](evidence/T04-019.md).
+- **Bằng chứng hiện tại:** [T04-019.md](../evidence/T04-019.md).
 
 <a id="t04-020"></a>
 ## T04-020 — Hour sin/cos.
@@ -392,7 +392,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-020.md](evidence/T04-020.md).
+- **Bằng chứng hiện tại:** [T04-020.md](../evidence/T04-020.md).
 
 <a id="t04-021"></a>
 ## T04-021 — Day.
@@ -411,7 +411,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-021.md](evidence/T04-021.md).
+- **Bằng chứng hiện tại:** [T04-021.md](../evidence/T04-021.md).
 
 <a id="t04-022"></a>
 ## T04-022 — Day sin/cos.
@@ -430,7 +430,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-022.md](evidence/T04-022.md).
+- **Bằng chứng hiện tại:** [T04-022.md](../evidence/T04-022.md).
 
 <a id="t04-023"></a>
 ## T04-023 — Month.
@@ -449,7 +449,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-023.md](evidence/T04-023.md).
+- **Bằng chứng hiện tại:** [T04-023.md](../evidence/T04-023.md).
 
 <a id="t04-024"></a>
 ## T04-024 — Month sin/cos.
@@ -468,7 +468,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-024.md](evidence/T04-024.md).
+- **Bằng chứng hiện tại:** [T04-024.md](../evidence/T04-024.md).
 
 <a id="t04-025"></a>
 ## T04-025 — Day of year.
@@ -487,7 +487,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-025.md](evidence/T04-025.md).
+- **Bằng chứng hiện tại:** [T04-025.md](../evidence/T04-025.md).
 
 <a id="t04-026"></a>
 ## T04-026 — Day-of-year sin/cos.
@@ -506,7 +506,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-026.md](evidence/T04-026.md).
+- **Bằng chứng hiện tại:** [T04-026.md](../evidence/T04-026.md).
 
 <a id="t04-027"></a>
 ## T04-027 — Season flag.
@@ -525,7 +525,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Test giờ 23→0, tháng 12→1, năm nhuận và UTC; chu kỳ và season flag có định nghĩa rõ, không phụ thuộc dữ liệu test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-027.md](evidence/T04-027.md).
+- **Bằng chứng hiện tại:** [T04-027.md](../evidence/T04-027.md).
 
 <a id="t04-028"></a>
 ## T04-028 — Wind.
@@ -544,7 +544,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Knot→m/s, hPa, unknown category và class vắng trong train; one-hot giữ chiều cố định; class không suy tự động từ test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-028.md](evidence/T04-028.md).
+- **Bằng chứng hiện tại:** [T04-028.md](../evidence/T04-028.md).
 
 <a id="t04-029"></a>
 ## T04-029 — Pressure.
@@ -563,7 +563,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Knot→m/s, hPa, unknown category và class vắng trong train; one-hot giữ chiều cố định; class không suy tự động từ test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-029.md](evidence/T04-029.md).
+- **Bằng chứng hiện tại:** [T04-029.md](../evidence/T04-029.md).
 
 <a id="t04-030"></a>
 ## T04-030 — Intensity category.
@@ -582,7 +582,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Knot→m/s, hPa, unknown category và class vắng trong train; one-hot giữ chiều cố định; class không suy tự động từ test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-030.md](evidence/T04-030.md).
+- **Bằng chứng hiện tại:** [T04-030.md](../evidence/T04-030.md).
 
 <a id="t04-031"></a>
 ## T04-031 — Wind change.
@@ -601,7 +601,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Knot→m/s, hPa, unknown category và class vắng trong train; one-hot giữ chiều cố định; class không suy tự động từ test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-031.md](evidence/T04-031.md).
+- **Bằng chứng hiện tại:** [T04-031.md](../evidence/T04-031.md).
 
 <a id="t04-032"></a>
 ## T04-032 — Pressure change.
@@ -620,7 +620,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Knot→m/s, hPa, unknown category và class vắng trong train; one-hot giữ chiều cố định; class không suy tự động từ test.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-032.md](evidence/T04-032.md).
+- **Bằng chứng hiện tại:** [T04-032.md](../evidence/T04-032.md).
 
 <a id="t04-033"></a>
 ## T04-033 — Download SST.
@@ -639,7 +639,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Mock bytes xác định và HTTP failure; checksum/raw giữ nguyên; lần tải thật phải có nguồn hợp lệ và evidence riêng.
 - **Kịch bản tiểu mục:** Grid SST nhỏ có expected center/gradient tính tay; Celsius/Kelvin và missing mask rõ; chọn field available_at không sau issue_time.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-033.md](evidence/T04-033.md).
+- **Bằng chứng hiện tại:** [T04-033.md](../evidence/T04-033.md).
 
 <a id="t04-034"></a>
 ## T04-034 — Match timestamp.
@@ -658,7 +658,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** UTC+7 và UTC cùng instant cho cùng kết quả; naive/invalid time bị reject; issue_time và valid_time tách biệt.
 - **Kịch bản tiểu mục:** Grid SST nhỏ có expected center/gradient tính tay; Celsius/Kelvin và missing mask rõ; chọn field available_at không sau issue_time.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-034.md](evidence/T04-034.md).
+- **Bằng chứng hiện tại:** [T04-034.md](../evidence/T04-034.md).
 
 <a id="t04-035"></a>
 ## T04-035 — Match grid.
@@ -677,7 +677,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Grid SST nhỏ có expected center/gradient tính tay; Celsius/Kelvin và missing mask rõ; chọn field available_at không sau issue_time.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-035.md](evidence/T04-035.md).
+- **Bằng chứng hiện tại:** [T04-035.md](../evidence/T04-035.md).
 
 <a id="t04-036"></a>
 ## T04-036 — Sample SST at storm center.
@@ -696,7 +696,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Grid SST nhỏ có expected center/gradient tính tay; Celsius/Kelvin và missing mask rõ; chọn field available_at không sau issue_time.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-036.md](evidence/T04-036.md).
+- **Bằng chứng hiện tại:** [T04-036.md](../evidence/T04-036.md).
 
 <a id="t04-037"></a>
 ## T04-037 — Calculate SST gradient.
@@ -715,7 +715,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Loss/gradient hữu hạn với fixture đúng; NaN/empty phải fail rõ và không lưu best checkpoint giả.
 - **Kịch bản tiểu mục:** Grid SST nhỏ có expected center/gradient tính tay; Celsius/Kelvin và missing mask rõ; chọn field available_at không sau issue_time.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-037.md](evidence/T04-037.md).
+- **Bằng chứng hiện tại:** [T04-037.md](../evidence/T04-037.md).
 
 <a id="t04-038"></a>
 ## T04-038 — Validate missing.
@@ -734,7 +734,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fixture thiếu đầu/cuối chuỗi, gap dài và hai storm; không dùng future observations; missing không tự đổi thành 0.
 - **Kịch bản tiểu mục:** Grid SST nhỏ có expected center/gradient tính tay; Celsius/Kelvin và missing mask rõ; chọn field available_at không sau issue_time.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-038.md](evidence/T04-038.md).
+- **Bằng chứng hiện tại:** [T04-038.md](../evidence/T04-038.md).
 
 <a id="t04-039"></a>
 ## T04-039 — Cache extracted feature.
@@ -753,7 +753,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hit/miss/expiry, observation sửa/model đổi và outage; cache key bao gồm input+model revision.
 - **Kịch bản tiểu mục:** Grid SST nhỏ có expected center/gradient tính tay; Celsius/Kelvin và missing mask rõ; chọn field available_at không sau issue_time.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-039.md](evidence/T04-039.md).
+- **Bằng chứng hiện tại:** [T04-039.md](../evidence/T04-039.md).
 
 <a id="t04-040"></a>
 ## T04-040 — Load ERA5.
@@ -772,7 +772,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture u/v ở 850/200hPa; shear=sqrt((u200-u850)^2+(v200-v850)^2); pressure Pa→hPa; không dùng field tương lai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-040.md](evidence/T04-040.md).
+- **Bằng chứng hiện tại:** [T04-040.md](../evidence/T04-040.md).
 
 <a id="t04-041"></a>
 ## T04-041 — Extract sea-level pressure.
@@ -791,7 +791,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture u/v ở 850/200hPa; shear=sqrt((u200-u850)^2+(v200-v850)^2); pressure Pa→hPa; không dùng field tương lai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-041.md](evidence/T04-041.md).
+- **Bằng chứng hiện tại:** [T04-041.md](../evidence/T04-041.md).
 
 <a id="t04-042"></a>
 ## T04-042 — Extract 850 hPa wind.
@@ -810,7 +810,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture u/v ở 850/200hPa; shear=sqrt((u200-u850)^2+(v200-v850)^2); pressure Pa→hPa; không dùng field tương lai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-042.md](evidence/T04-042.md).
+- **Bằng chứng hiện tại:** [T04-042.md](../evidence/T04-042.md).
 
 <a id="t04-043"></a>
 ## T04-043 — Extract 200 hPa wind.
@@ -829,7 +829,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture u/v ở 850/200hPa; shear=sqrt((u200-u850)^2+(v200-v850)^2); pressure Pa→hPa; không dùng field tương lai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-043.md](evidence/T04-043.md).
+- **Bằng chứng hiện tại:** [T04-043.md](../evidence/T04-043.md).
 
 <a id="t04-044"></a>
 ## T04-044 — Extract humidity if available.
@@ -848,7 +848,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Fixture u/v ở 850/200hPa; shear=sqrt((u200-u850)^2+(v200-v850)^2); pressure Pa→hPa; không dùng field tương lai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-044.md](evidence/T04-044.md).
+- **Bằng chứng hiện tại:** [T04-044.md](../evidence/T04-044.md).
 
 <a id="t04-045"></a>
 ## T04-045 — Calculate wind shear.
@@ -867,7 +867,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Fixture u/v ở 850/200hPa; shear=sqrt((u200-u850)^2+(v200-v850)^2); pressure Pa→hPa; không dùng field tương lai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-045.md](evidence/T04-045.md).
+- **Bằng chứng hiện tại:** [T04-045.md](../evidence/T04-045.md).
 
 <a id="t04-046"></a>
 ## T04-046 — Validate units.
@@ -886,7 +886,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Fixture u/v ở 850/200hPa; shear=sqrt((u200-u850)^2+(v200-v850)^2); pressure Pa→hPa; không dùng field tương lai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-046.md](evidence/T04-046.md).
+- **Bằng chứng hiện tại:** [T04-046.md](../evidence/T04-046.md).
 
 <a id="t04-047"></a>
 ## T04-047 — Cache features.
@@ -905,7 +905,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test hit/miss/expiry, observation sửa/model đổi và outage; cache key bao gồm input+model revision.
 - **Kịch bản tiểu mục:** Fixture u/v ở 850/200hPa; shear=sqrt((u200-u850)^2+(v200-v850)^2); pressure Pa→hPa; không dùng field tương lai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-047.md](evidence/T04-047.md).
+- **Bằng chứng hiện tại:** [T04-047.md](../evidence/T04-047.md).
 
 <a id="t04-048"></a>
 ## T04-048 — Tạo danh sách feature chính thức.
@@ -924,7 +924,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Manifest liệt kê tên/order/dtype/unit/source/missing policy/version; cột mới/thiếu/đổi thứ tự phải được phát hiện trước inference.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-048.md](evidence/T04-048.md).
+- **Bằng chứng hiện tại:** [T04-048.md](../evidence/T04-048.md).
 
 <a id="t04-049"></a>
 ## T04-049 — Đặt dtype.
@@ -943,7 +943,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Manifest liệt kê tên/order/dtype/unit/source/missing policy/version; cột mới/thiếu/đổi thứ tự phải được phát hiện trước inference.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-049.md](evidence/T04-049.md).
+- **Bằng chứng hiện tại:** [T04-049.md](../evidence/T04-049.md).
 
 <a id="t04-050"></a>
 ## T04-050 — Đặt đơn vị.
@@ -962,7 +962,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Manifest liệt kê tên/order/dtype/unit/source/missing policy/version; cột mới/thiếu/đổi thứ tự phải được phát hiện trước inference.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-050.md](evidence/T04-050.md).
+- **Bằng chứng hiện tại:** [T04-050.md](../evidence/T04-050.md).
 
 <a id="t04-051"></a>
 ## T04-051 — Đặt mô tả.
@@ -981,7 +981,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Manifest liệt kê tên/order/dtype/unit/source/missing policy/version; cột mới/thiếu/đổi thứ tự phải được phát hiện trước inference.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-051.md](evidence/T04-051.md).
+- **Bằng chứng hiện tại:** [T04-051.md](../evidence/T04-051.md).
 
 <a id="t04-052"></a>
 ## T04-052 — Đặt nguồn.
@@ -1000,7 +1000,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Giữ source URL/version/checksum/time; truy ngược input; synthetic không bị gắn nguồn chính thức.
 - **Kịch bản tiểu mục:** Manifest liệt kê tên/order/dtype/unit/source/missing policy/version; cột mới/thiếu/đổi thứ tự phải được phát hiện trước inference.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-052.md](evidence/T04-052.md).
+- **Bằng chứng hiện tại:** [T04-052.md](../evidence/T04-052.md).
 
 <a id="t04-053"></a>
 ## T04-053 — Đặt missing policy.
@@ -1019,7 +1019,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Fixture thiếu đầu/cuối chuỗi, gap dài và hai storm; không dùng future observations; missing không tự đổi thành 0.
 - **Kịch bản tiểu mục:** Manifest liệt kê tên/order/dtype/unit/source/missing policy/version; cột mới/thiếu/đổi thứ tự phải được phát hiện trước inference.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-053.md](evidence/T04-053.md).
+- **Bằng chứng hiện tại:** [T04-053.md](../evidence/T04-053.md).
 
 <a id="t04-054"></a>
 ## T04-054 — Tạo data dictionary.
@@ -1038,4 +1038,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đầu ra giải quyết đúng mục việc; thử case bình thường và biên của tiểu mục bên dưới; ghi input/version/expected/actual.
 - **Kịch bản tiểu mục:** Manifest liệt kê tên/order/dtype/unit/source/missing policy/version; cột mới/thiếu/đổi thứ tự phải được phát hiện trước inference.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T04-054.md](evidence/T04-054.md).
+- **Bằng chứng hiện tại:** [T04-054.md](../evidence/T04-054.md).

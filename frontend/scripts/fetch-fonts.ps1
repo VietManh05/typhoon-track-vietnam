@@ -9,7 +9,7 @@
     public/fonts/*.woff2          - font binaries
     src/styles/fonts.css          - generated @font-face declarations
 
-  Usage (from viz/frontend):
+  Usage (from frontend):
     powershell -ExecutionPolicy Bypass -File scripts/fetch-fonts.ps1
 #>
 [CmdletBinding()]

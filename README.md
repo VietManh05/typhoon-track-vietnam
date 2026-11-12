@@ -28,7 +28,7 @@ Vietnam-focused tropical-cyclone track forecasting research and decision-support
 |   |-- inference/           forecast service
 |   |-- api/                 HTTP API
 |   `-- operations/          database migrations and background worker
-|-- viz/frontend/            React dashboard and Cloudflare Pages Functions
+|-- frontend/                 React dashboard and Cloudflare Pages Functions
 |   |-- src/                 dashboard UI
 |   |-- functions/           edge APIs
 |   `-- tests/               frontend and function tests
@@ -51,7 +51,7 @@ Vietnam-focused tropical-cyclone track forecasting research and decision-support
 Data, checkpoints, and experiment outputs are local artifacts, not source code.
 Keep reusable application logic in `src/`, its behavior tests in `tests/`, and
 project guidance/evidence in the matching `docs/` category. The frontend is a
-separate Node project under `viz/frontend/`.
+separate Node project under `frontend/`.
 
 ## Verified status
 

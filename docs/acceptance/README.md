@@ -14,7 +14,7 @@ còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt"
 |---|---|
 | `python -m pytest -q` | 176 passed, 4 skipped (3 spec chưa có implementation + 1 test chỉ chạy khi có PostGIS; đều có lý do) |
 | `flake8` / `isort --check` / `black --check` trên `src tests scripts` | sạch |
-| `cd viz/frontend && npx tsc --noEmit && npm test` | TypeScript sạch; 33/33 test Node |
+| `cd frontend && npx tsc --noEmit && npm test` | TypeScript sạch; 33/33 test Node |
 | `python scripts/check_dashboard_sync.py` (sau `vite build --outDir dist`) | dashboard khớp bản build (44 file) |
 
 ## Bảng nghiệm thu

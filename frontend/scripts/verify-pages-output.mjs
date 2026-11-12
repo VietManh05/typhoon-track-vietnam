@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const frontendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const outputRoot = path.resolve(frontendRoot, "../../src/typhoon_vn/dashboard");
+const outputRoot = path.resolve(frontendRoot, "../src/typhoon_vn/dashboard");
 const indexPath = path.join(outputRoot, "index.html");
 const indexHtml = await readFile(indexPath, "utf8");
 const assetPaths = [...indexHtml.matchAll(/(?:src|href)="\/(assets\/[^"?]+)"/g)].map(

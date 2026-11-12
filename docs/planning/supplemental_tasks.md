@@ -107,7 +107,7 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 - **Trạng thái:** pending.
 - **Phụ thuộc:** G01, G13, G21.
 - **Nguồn:** [REQ-120](traceability.md).
-- **File/đầu ra:** evaluation/official_comparison.py; viz/frontend/.
+- **File/đầu ra:** evaluation/official_comparison.py; frontend/.
 - **Thực hiện:** Import bản tin phát hành thực tế; ghép cùng issue_time, valid_time, storm; overlay hai nguồn có nhãn.
 - **Kiểm thử/DoD:** Không so best-track tương lai với forecast như cùng loại; không có bản tin thì hiển thị unavailable.
 - **Bằng chứng:** evidence/S10.md — chưa thực hiện.
@@ -118,7 +118,7 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 - **Trạng thái:** pending.
 - **Phụ thuộc:** G21.
 - **Nguồn:** [REQ-115](traceability.md).
-- **File/đầu ra:** viz/frontend/src/i18n/; tests/frontend/.
+- **File/đầu ra:** frontend/src/i18n/; tests/frontend/.
 - **Thực hiện:** Externalize labels, errors, disclaimer, units, datetime; VN là mặc định đề xuất; nhớ lựa chọn ngôn ngữ.
 - **Kiểm thử/DoD:** Chuyển VI/EN cập nhật toàn UI, không chỉ tiêu đề; UTC/giờ VN có nhãn; dữ liệu null không thành 0.
 - **Bằng chứng:** evidence/S11.md — chưa thực hiện.
@@ -129,7 +129,7 @@ Các task S cụ thể hóa mục còn thiếu task độc lập hoặc cần sc
 - **Trạng thái:** pending.
 - **Phụ thuộc:** G21.
 - **Nguồn:** [REQ-106](traceability.md).
-- **File/đầu ra:** viz/frontend/src/theme/; docs/frontend.md.
+- **File/đầu ra:** frontend/src/theme/; docs/frontend.md.
 - **Thực hiện:** Quy định palette có contrast và ký hiệu bổ trợ; chỉ gọi chuẩn NCHMF khi đã xác minh tài liệu chính thức.
 - **Kiểm thử/DoD:** Người không phân biệt màu vẫn hiểu severity; legend luôn hiện và unknown có style riêng.
 - **Bằng chứng:** evidence/S12.md — chưa thực hiện.

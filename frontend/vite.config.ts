@@ -5,7 +5,7 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react()],
-    envDir: path.resolve(__dirname, "../.."),
+    envDir: path.resolve(__dirname, ".."),
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),
@@ -54,7 +54,7 @@ export default defineConfig({
     },
     build: {
         // FastAPI serves this package directory; a successful build must update it.
-        outDir: "../../src/typhoon_vn/dashboard",
+        outDir: "../src/typhoon_vn/dashboard",
         emptyOutDir: true,
         sourcemap: false, // keep large source maps out of the served/committed bundle
         rollupOptions: {

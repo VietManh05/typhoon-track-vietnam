@@ -31,7 +31,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-001.md](evidence/T00-001.md) — Git worktree không-bare, branch `main`, HEAD và remote origin đã được kiểm chứng; giữ identity repository hiện hữu.
+- **Bằng chứng hiện tại:** [T00-001.md](../evidence/T00-001.md) — Git worktree không-bare, branch `main`, HEAD và remote origin đã được kiểm chứng; giữ identity repository hiện hữu.
 
 <a id="t00-002"></a>
 ## T00-002 — Tạo `main`, `develop`.
@@ -50,7 +50,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-002.md](evidence/T00-002.md) — local refs `main` và `develop` đã được kiểm chứng; không checkout/push.
+- **Bằng chứng hiện tại:** [T00-002.md](../evidence/T00-002.md) — local refs `main` và `develop` đã được kiểm chứng; không checkout/push.
 
 <a id="t00-003"></a>
 ## T00-003 — Tạo branch theo feature.
@@ -69,7 +69,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-003.md](evidence/T00-003.md) — local `codex/g00-foundation` được tạo từ `develop`, không checkout/push.
+- **Bằng chứng hiện tại:** [T00-003.md](../evidence/T00-003.md) — local `codex/g00-foundation` được tạo từ `develop`, không checkout/push.
 
 <a id="t00-004"></a>
 ## T00-004 — Thiết lập `.gitignore`.
@@ -88,7 +88,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-004.md](evidence/T00-004.md) — positive/negative ignore fixtures pass; file hiện tại không cần sửa.
+- **Bằng chứng hiện tại:** [T00-004.md](../evidence/T00-004.md) — positive/negative ignore fixtures pass; file hiện tại không cần sửa.
 
 <a id="t00-005"></a>
 ## T00-005 — Tạo `README.md`.
@@ -107,7 +107,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Nội dung khớp implementation đã kiểm chứng; ví dụ chạy được; link đúng; phân biệt demo/thực nghiệm/vận hành.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-005.md](evidence/T00-005.md) — README khớp implementation/giới hạn hiện tại; CLI help và documentation contract tests pass.
+- **Bằng chứng hiện tại:** [T00-005.md](../evidence/T00-005.md) — README khớp implementation/giới hạn hiện tại; CLI help và documentation contract tests pass.
 
 <a id="t00-006"></a>
 ## T00-006 — Tạo `LICENSE`.
@@ -126,7 +126,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-006.md](evidence/T00-006.md) — MIT license, package metadata và distribution metadata nhất quán; contract test pass.
+- **Bằng chứng hiện tại:** [T00-006.md](../evidence/T00-006.md) — MIT license, package metadata và distribution metadata nhất quán; contract test pass.
 
 <a id="t00-007"></a>
 ## T00-007 — Tạo `CONTRIBUTING.md`.
@@ -145,7 +145,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-007.md](evidence/T00-007.md) — CONTRIBUTING khớp commands/workflow đã kiểm chứng; documentation contracts pass.
+- **Bằng chứng hiện tại:** [T00-007.md](../evidence/T00-007.md) — CONTRIBUTING khớp commands/workflow đã kiểm chứng; documentation contracts pass.
 
 <a id="t00-008"></a>
 ## T00-008 — Thiết lập Conventional Commits.
@@ -164,7 +164,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-008.md](evidence/T00-008.md) — validator dependency-free, commit-msg hook config và 10 contract/CLI cases pass.
+- **Bằng chứng hiện tại:** [T00-008.md](../evidence/T00-008.md) — validator dependency-free, commit-msg hook config và 10 contract/CLI cases pass.
 
 <a id="t00-009"></a>
 ## T00-009 — Thiết lập pre-commit.
@@ -183,7 +183,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-009.md](evidence/T00-009.md) — config + commit-message hooks pass 11 tests trong isolated repository; không cài hook vào worktree thật.
+- **Bằng chứng hiện tại:** [T00-009.md](../evidence/T00-009.md) — config + commit-message hooks pass 11 tests trong isolated repository; không cài hook vào worktree thật.
 
 <a id="t00-010"></a>
 ## T00-010 — Chạy lint lần đầu.
@@ -202,7 +202,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-010.md](evidence/T00-010.md) — flake8/isort/Black pass; full regression 75 passed, 2 dependency warnings. JUnit: [T00-010-pytest.xml](evidence/T00-010-pytest.xml).
+- **Bằng chứng hiện tại:** [T00-010.md](../evidence/T00-010.md) — flake8/isort/Black pass; full regression 75 passed, 2 dependency warnings. JUnit: [T00-010-pytest.xml](../evidence/T00-010-pytest.xml).
 
 <a id="t00-011"></a>
 ## T00-011 — Commit cấu trúc ban đầu.
@@ -221,7 +221,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Kiểm tra Git status trước/sau; không add hàng loạt cây untracked; kiểm tra ignore bằng file fixture; remote/branch/push chỉ khi task thực sự cần.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-011.md](evidence/T00-011.md) — snapshot có manifest tường minh; pre-commit, 75 tests và plan validator đều pass; commit chỉ cập nhật ref local `codex/g00-foundation`, không push.
+- **Bằng chứng hiện tại:** [T00-011.md](../evidence/T00-011.md) — snapshot có manifest tường minh; pre-commit, 75 tests và plan validator đều pass; commit chỉ cập nhật ref local `codex/g00-foundation`, không push.
 
 <a id="t00-012"></a>
 ## T00-012 — Tạo `data/raw`.
@@ -240,7 +240,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-012.md](evidence/T00-012.md) — directory tồn tại; `.gitkeep` tracked; raw payload bị ignore; không thay đổi dữ liệu hiện có.
+- **Bằng chứng hiện tại:** [T00-012.md](../evidence/T00-012.md) — directory tồn tại; `.gitkeep` tracked; raw payload bị ignore; không thay đổi dữ liệu hiện có.
 
 <a id="t00-013"></a>
 ## T00-013 — Tạo `data/interim`.
@@ -259,7 +259,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-013.md](evidence/T00-013.md) — directory/ignore/placeholder contract pass.
+- **Bằng chứng hiện tại:** [T00-013.md](../evidence/T00-013.md) — directory/ignore/placeholder contract pass.
 
 <a id="t00-014"></a>
 ## T00-014 — Tạo `data/processed`.
@@ -278,7 +278,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-014.md](evidence/T00-014.md) — directory/ignore/placeholder contract pass.
+- **Bằng chứng hiện tại:** [T00-014.md](../evidence/T00-014.md) — directory/ignore/placeholder contract pass.
 
 <a id="t00-015"></a>
 ## T00-015 — Tạo `data/external`.
@@ -297,7 +297,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-015.md](evidence/T00-015.md) — directory/ignore/placeholder contract pass.
+- **Bằng chứng hiện tại:** [T00-015.md](../evidence/T00-015.md) — directory/ignore/placeholder contract pass.
 
 <a id="t00-016"></a>
 ## T00-016 — Tạo `src/ingestion`.
@@ -316,7 +316,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-016.md](evidence/T00-016.md) — mapped package exists and imports pass.
+- **Bằng chứng hiện tại:** [T00-016.md](../evidence/T00-016.md) — mapped package exists and imports pass.
 
 <a id="t00-017"></a>
 ## T00-017 — Tạo `src/preprocessing`.
@@ -335,7 +335,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-017.md](evidence/T00-017.md) — preprocessing maps to the existing features pipeline.
+- **Bằng chứng hiện tại:** [T00-017.md](../evidence/T00-017.md) — preprocessing maps to the existing features pipeline.
 
 <a id="t00-018"></a>
 ## T00-018 — Tạo `src/features`.
@@ -354,7 +354,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-018.md](evidence/T00-018.md) — mapped package exists and imports pass.
+- **Bằng chứng hiện tại:** [T00-018.md](../evidence/T00-018.md) — mapped package exists and imports pass.
 
 <a id="t00-019"></a>
 ## T00-019 — Tạo `src/datasets`.
@@ -373,7 +373,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-019.md](evidence/T00-019.md) — mapped package exists and imports pass.
+- **Bằng chứng hiện tại:** [T00-019.md](../evidence/T00-019.md) — mapped package exists and imports pass.
 
 <a id="t00-020"></a>
 ## T00-020 — Tạo `src/models`.
@@ -392,7 +392,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-020.md](evidence/T00-020.md) — mapped package exists and imports pass.
+- **Bằng chứng hiện tại:** [T00-020.md](../evidence/T00-020.md) — mapped package exists and imports pass.
 
 <a id="t00-021"></a>
 ## T00-021 — Tạo `src/training`.
@@ -411,7 +411,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-021.md](evidence/T00-021.md) — mapped package exists and imports pass.
+- **Bằng chứng hiện tại:** [T00-021.md](../evidence/T00-021.md) — mapped package exists and imports pass.
 
 <a id="t00-022"></a>
 ## T00-022 — Tạo `src/inference`.
@@ -430,7 +430,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-022.md](evidence/T00-022.md) — mapped package exists and imports pass.
+- **Bằng chứng hiện tại:** [T00-022.md](../evidence/T00-022.md) — mapped package exists and imports pass.
 
 <a id="t00-023"></a>
 ## T00-023 — Tạo `src/evaluation`.
@@ -449,7 +449,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Output có giá trị/đơn vị/sample count/run ID/dataset/model version; expected được tính độc lập; không dùng test để tune.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-023.md](evidence/T00-023.md) — mapped package exists and imports pass.
+- **Bằng chứng hiện tại:** [T00-023.md](../evidence/T00-023.md) — mapped package exists and imports pass.
 
 <a id="t00-024"></a>
 ## T00-024 — Tạo `src/alerts`.
@@ -468,7 +468,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-024.md](evidence/T00-024.md) — alert behavior maps to operations store/worker.
+- **Bằng chứng hiện tại:** [T00-024.md](../evidence/T00-024.md) — alert behavior maps to operations store/worker.
 
 <a id="t00-025"></a>
 ## T00-025 — Tạo `api`.
@@ -487,7 +487,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-025.md](evidence/T00-025.md) — API maps to the packaged namespace and imports pass.
+- **Bằng chứng hiện tại:** [T00-025.md](../evidence/T00-025.md) — API maps to the packaged namespace and imports pass.
 
 <a id="t00-026"></a>
 ## T00-026 — Tạo `frontend`.
@@ -506,7 +506,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-026.md](evidence/T00-026.md) — tracked frontend namespace exists; concurrent files excluded.
+- **Bằng chứng hiện tại:** [T00-026.md](../evidence/T00-026.md) — tracked frontend namespace exists; concurrent files excluded.
 
 <a id="t00-027"></a>
 ## T00-027 — Tạo `tests/unit`.
@@ -525,7 +525,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Đổi đơn vị đúng một lần; missing bị mask; shear tính từ vector 850/200hPa; áp suất đầu ra hPa.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-027.md](evidence/T00-027.md) — unit scope maps to the existing flat test layout.
+- **Bằng chứng hiện tại:** [T00-027.md](../evidence/T00-027.md) — unit scope maps to the existing flat test layout.
 
 <a id="t00-028"></a>
 ## T00-028 — Tạo `tests/integration`.
@@ -544,7 +544,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-028.md](evidence/T00-028.md) — integration scope maps to existing tests.
+- **Bằng chứng hiện tại:** [T00-028.md](../evidence/T00-028.md) — integration scope maps to existing tests.
 
 <a id="t00-029"></a>
 ## T00-029 — Tạo `tests/model`.
@@ -563,7 +563,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-029.md](evidence/T00-029.md) — model scope maps to existing tests.
+- **Bằng chứng hiện tại:** [T00-029.md](../evidence/T00-029.md) — model scope maps to existing tests.
 
 <a id="t00-030"></a>
 ## T00-030 — Tạo `configs`.
@@ -582,7 +582,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-030.md](evidence/T00-030.md) — tracked configs directory and real config verified.
+- **Bằng chứng hiện tại:** [T00-030.md](../evidence/T00-030.md) — tracked configs directory and real config verified.
 
 <a id="t00-031"></a>
 ## T00-031 — Tạo `docs`.
@@ -601,7 +601,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Giữ namespace src/typhoon_vn hiện có; kiểm tra imports và đóng gói; thư mục tương đương được ghi mapping thay vì tạo hai implementation.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-031.md](evidence/T00-031.md) — tracked docs tree verified.
+- **Bằng chứng hiện tại:** [T00-031.md](../evidence/T00-031.md) — tracked docs tree verified.
 
 <a id="t00-032"></a>
 ## T00-032 — Khóa Python version.
@@ -620,7 +620,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-032.md](evidence/T00-032.md).
+- **Bằng chứng hiện tại:** [T00-032.md](../evidence/T00-032.md).
 
 <a id="t00-033"></a>
 ## T00-033 — Tạo `pyproject.toml`.
@@ -639,7 +639,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-033.md](evidence/T00-033.md).
+- **Bằng chứng hiện tại:** [T00-033.md](../evidence/T00-033.md).
 
 <a id="t00-034"></a>
 ## T00-034 — Tạo environment.
@@ -658,7 +658,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-034.md](evidence/T00-034.md).
+- **Bằng chứng hiện tại:** [T00-034.md](../evidence/T00-034.md).
 
 <a id="t00-035"></a>
 ## T00-035 — Cài PyTorch.
@@ -677,7 +677,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-035.md](evidence/T00-035.md).
+- **Bằng chứng hiện tại:** [T00-035.md](../evidence/T00-035.md).
 
 <a id="t00-036"></a>
 ## T00-036 — Cài Pandas/NumPy.
@@ -696,7 +696,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-036.md](evidence/T00-036.md).
+- **Bằng chứng hiện tại:** [T00-036.md](../evidence/T00-036.md).
 
 <a id="t00-037"></a>
 ## T00-037 — Cài Scikit-learn.
@@ -715,7 +715,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-037.md](evidence/T00-037.md).
+- **Bằng chứng hiện tại:** [T00-037.md](../evidence/T00-037.md).
 
 <a id="t00-038"></a>
 ## T00-038 — Cài FastAPI/Uvicorn.
@@ -734,7 +734,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-038.md](evidence/T00-038.md).
+- **Bằng chứng hiện tại:** [T00-038.md](../evidence/T00-038.md).
 
 <a id="t00-039"></a>
 ## T00-039 — Cài SQLAlchemy/Alembic.
@@ -753,7 +753,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** DB trống và DB có dữ liệu upgrade được; invalid records bị constraints reject; GiST test trên PostGIS thật.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-039.md](evidence/T00-039.md).
+- **Bằng chứng hiện tại:** [T00-039.md](../evidence/T00-039.md).
 
 <a id="t00-040"></a>
 ## T00-040 — Cài Pytest.
@@ -772,7 +772,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-040.md](evidence/T00-040.md).
+- **Bằng chứng hiện tại:** [T00-040.md](../evidence/T00-040.md).
 
 <a id="t00-041"></a>
 ## T00-041 — Cài MLflow.
@@ -791,7 +791,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Output có giá trị/đơn vị/sample count/run ID/dataset/model version; expected được tính độc lập; không dùng test để tune.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-041.md](evidence/T00-041.md).
+- **Bằng chứng hiện tại:** [T00-041.md](../evidence/T00-041.md).
 
 <a id="t00-042"></a>
 ## T00-042 — Cài Optuna.
@@ -810,7 +810,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-042.md](evidence/T00-042.md).
+- **Bằng chứng hiện tại:** [T00-042.md](../evidence/T00-042.md).
 
 <a id="t00-043"></a>
 ## T00-043 — Tạo `.env.example`.
@@ -829,7 +829,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-043.md](evidence/T00-043.md).
+- **Bằng chứng hiện tại:** [T00-043.md](../evidence/T00-043.md).
 
 <a id="t00-044"></a>
 ## T00-044 — Tạo config loader.
@@ -848,7 +848,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-044.md](evidence/T00-044.md).
+- **Bằng chứng hiện tại:** [T00-044.md](../evidence/T00-044.md).
 
 <a id="t00-045"></a>
 ## T00-045 — Tạo Makefile/justfile.
@@ -867,4 +867,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Artefact đúng vị trí/quy ước; kiểm tra ignore/import/command tương ứng; không ghi đè dữ liệu người dùng.
 - **Kịch bản tiểu mục:** Dùng .venv Python 3.11; chạy import smoke trong môi trường sạch; lỗi cấu hình phải fail-fast, không lặng lẽ dùng default sai.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T00-045.md](evidence/T00-045.md).
+- **Bằng chứng hiện tại:** [T00-045.md](../evidence/T00-045.md).

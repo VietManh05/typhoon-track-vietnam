@@ -37,7 +37,7 @@ Các task "save scaler" chỉ cần dữ liệu train đã split; dataset window
 
 - Giữ src/typhoon_vn; map thư mục logic trong roadmap vào package đang có, không tạo bản sao ở src/ingestion.
 - Python 3.11; pyproject làm nguồn dependency; lockfile/pin tái lập được xử lý trong G00.
-- React + TypeScript + Leaflet ở viz/frontend là phương án frontend đề xuất. Chốt toolchain/build trong task setup, không khẳng định đã cài.
+- React + TypeScript + Leaflet ở frontend là phương án frontend đề xuất. Chốt toolchain/build trong task setup, không khẳng định đã cài.
 - PostgreSQL/PostGIS + Alembic cho vận hành; SQLite chỉ hỗ trợ test/demo local, không thay nghiệm thu PostGIS.
 - MLflow cho experiments/registry; DVC cho version dữ liệu; kiểm chứng quyền nguồn trước tải thật.
 - Direct multi-horizon là đường chính; rolling là thí nghiệm có contract thời gian rõ.

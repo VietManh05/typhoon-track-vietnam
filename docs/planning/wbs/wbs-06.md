@@ -1,6 +1,6 @@
 # G06 — Dataset và phân chia tập
 
-- Trạng thái: complete; nghiệm thu tại [G06-dataset.md](evidence/G06-dataset.md).
+- Trạng thái: complete; nghiệm thu tại [G06-dataset.md](../evidence/G06-dataset.md).
 - Hiện trạng: Có dataset; chọn feature trước khi tạo feature và split storm qua năm cần sửa.
 - Đầu vào: Dữ liệu chưa scale, storm ID đã hợp nhất, policy thời gian.
 - Gate phụ thuộc: G03, G04.
@@ -31,7 +31,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-001.md](evidence/T06-001.md).
+- **Bằng chứng hiện tại:** [T06-001.md](../evidence/T06-001.md).
 
 <a id="t06-002"></a>
 ## T06-002 — Hỗ trợ cấu hình sequence length.
@@ -50,7 +50,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-002.md](evidence/T06-002.md).
+- **Bằng chứng hiện tại:** [T06-002.md](../evidence/T06-002.md).
 
 <a id="t06-003"></a>
 ## T06-003 — Tạo sliding window.
@@ -69,7 +69,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Cửa sổ chỉ chứa một storm, input_len đúng; fixture ngắn hơn window không tạo sample; timestamps không đảo hoặc trùng.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-003.md](evidence/T06-003.md).
+- **Bằng chứng hiện tại:** [T06-003.md](../evidence/T06-003.md).
 
 <a id="t06-004"></a>
 ## T06-004 — Tạo input tensor.
@@ -88,7 +88,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-004.md](evidence/T06-004.md).
+- **Bằng chứng hiện tại:** [T06-004.md](../evidence/T06-004.md).
 
 <a id="t06-005"></a>
 ## T06-005 — Tạo target tensor.
@@ -107,7 +107,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-005.md](evidence/T06-005.md).
+- **Bằng chứng hiện tại:** [T06-005.md](../evidence/T06-005.md).
 
 <a id="t06-006"></a>
 ## T06-006 — Kiểm tra boundary từng storm.
@@ -126,7 +126,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Fixture 1 bão ngắn và 2 bão nối nhau; không có window vượt storm boundary; input_len không hợp lệ bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-006.md](evidence/T06-006.md).
+- **Bằng chứng hiện tại:** [T06-006.md](../evidence/T06-006.md).
 
 <a id="t06-007"></a>
 ## T06-007 — 6h.
@@ -145,7 +145,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-007.md](evidence/T06-007.md).
+- **Bằng chứng hiện tại:** [T06-007.md](../evidence/T06-007.md).
 
 <a id="t06-008"></a>
 ## T06-008 — 12h.
@@ -164,7 +164,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-008.md](evidence/T06-008.md).
+- **Bằng chứng hiện tại:** [T06-008.md](../evidence/T06-008.md).
 
 <a id="t06-009"></a>
 ## T06-009 — 24h.
@@ -183,7 +183,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-009.md](evidence/T06-009.md).
+- **Bằng chứng hiện tại:** [T06-009.md](../evidence/T06-009.md).
 
 <a id="t06-010"></a>
 ## T06-010 — 48h.
@@ -202,7 +202,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-010.md](evidence/T06-010.md).
+- **Bằng chứng hiện tại:** [T06-010.md](../evidence/T06-010.md).
 
 <a id="t06-011"></a>
 ## T06-011 — 72h.
@@ -221,7 +221,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-011.md](evidence/T06-011.md).
+- **Bằng chứng hiện tại:** [T06-011.md](../evidence/T06-011.md).
 
 <a id="t06-012"></a>
 ## T06-012 — Kiểm tra target tồn tại.
@@ -240,7 +240,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-012.md](evidence/T06-012.md).
+- **Bằng chứng hiện tại:** [T06-012.md](../evidence/T06-012.md).
 
 <a id="t06-013"></a>
 ## T06-013 — Bỏ sample không đủ target.
@@ -259,7 +259,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Issue 00:00 UTC phải lấy target ở +6,+12,+24,+48,+72 giờ; bỏ mốc +12 không được lấy +18 thay thế.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-013.md](evidence/T06-013.md).
+- **Bằng chứng hiện tại:** [T06-013.md](../evidence/T06-013.md).
 
 <a id="t06-014"></a>
 ## T06-014 — Split theo storm ID.
@@ -278,7 +278,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-014.md](evidence/T06-014.md).
+- **Bằng chứng hiện tại:** [T06-014.md](../evidence/T06-014.md).
 
 <a id="t06-015"></a>
 ## T06-015 — Kiểm tra không overlap storm.
@@ -297,7 +297,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-015.md](evidence/T06-015.md).
+- **Bằng chứng hiện tại:** [T06-015.md](../evidence/T06-015.md).
 
 <a id="t06-016"></a>
 ## T06-016 — Có tùy chọn split theo năm.
@@ -316,7 +316,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-016.md](evidence/T06-016.md).
+- **Bằng chứng hiện tại:** [T06-016.md](../evidence/T06-016.md).
 
 <a id="t06-017"></a>
 ## T06-017 — Lưu danh sách train IDs.
@@ -335,7 +335,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-017.md](evidence/T06-017.md).
+- **Bằng chứng hiện tại:** [T06-017.md](../evidence/T06-017.md).
 
 <a id="t06-018"></a>
 ## T06-018 — Lưu validation IDs.
@@ -354,7 +354,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-018.md](evidence/T06-018.md).
+- **Bằng chứng hiện tại:** [T06-018.md](../evidence/T06-018.md).
 
 <a id="t06-019"></a>
 ## T06-019 — Lưu test IDs.
@@ -373,7 +373,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-019.md](evidence/T06-019.md).
+- **Bằng chứng hiện tại:** [T06-019.md](../evidence/T06-019.md).
 
 <a id="t06-020"></a>
 ## T06-020 — Test leakage.
@@ -392,7 +392,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Storm không giao train/val/test kể cả qua năm; ratio=0 đúng nghĩa; split IDs/seed được lưu.
 - **Kịch bản tiểu mục:** Test bão qua 31/12→01/01; train/val/test không giao storm; ratio=0 tạo tập rỗng đúng; tổng tỷ lệ sai bị từ chối.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-020.md](evidence/T06-020.md).
+- **Bằng chứng hiện tại:** [T06-020.md](../evidence/T06-020.md).
 
 <a id="t06-021"></a>
 ## T06-021 — Test shape.
@@ -411,7 +411,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-021.md](evidence/T06-021.md).
+- **Bằng chứng hiện tại:** [T06-021.md](../evidence/T06-021.md).
 
 <a id="t06-022"></a>
 ## T06-022 — Test dtype.
@@ -430,7 +430,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-022.md](evidence/T06-022.md).
+- **Bằng chứng hiện tại:** [T06-022.md](../evidence/T06-022.md).
 
 <a id="t06-023"></a>
 ## T06-023 — Test window.
@@ -449,7 +449,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Cửa sổ chỉ chứa một storm, input_len đúng; fixture ngắn hơn window không tạo sample; timestamps không đảo hoặc trùng.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-023.md](evidence/T06-023.md).
+- **Bằng chứng hiện tại:** [T06-023.md](../evidence/T06-023.md).
 
 <a id="t06-024"></a>
 ## T06-024 — Test horizon.
@@ -468,7 +468,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Target đúng issue_time+h; thứ tự [6,12,24,48,72] nhất quán; thiếu +12 không lấy +18 thay.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-024.md](evidence/T06-024.md).
+- **Bằng chứng hiện tại:** [T06-024.md](../evidence/T06-024.md).
 
 <a id="t06-025"></a>
 ## T06-025 — Test mask.
@@ -487,7 +487,7 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Test B=1/4, T=4/6/8; shape/dtype đúng; thay padding không đổi output hợp lệ; không qua storm boundary.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-025.md](evidence/T06-025.md).
+- **Bằng chứng hiện tại:** [T06-025.md](../evidence/T06-025.md).
 
 <a id="t06-026"></a>
 ## T06-026 — Test storm boundary.
@@ -506,4 +506,4 @@ Chỉ qua gate khi task bắt buộc có evidence. Mục tùy chọn/ngoại vi 
 - **Kiểm thử riêng:** Assertion cho case thường và biên/lỗi; ghi lệnh, expected/actual và exit code; không chỉ kiểm tra hàm có tồn tại.
 - **Kịch bản tiểu mục:** Assertions kiểm tra shape/dtype/giờ đích/ID độc lập với implementation; test padding làm thay đổi dữ liệu đệm nhưng không đổi output hợp lệ.
 - **DoD:** có output thực tế và kiểm chứng pass; evidence ghi command/input/version/expected/actual. Nếu scope tùy chọn không làm, ghi quyết định và giữ riêng với trạng thái complete.
-- **Bằng chứng hiện tại:** [T06-026.md](evidence/T06-026.md).
+- **Bằng chứng hiện tại:** [T06-026.md](../evidence/T06-026.md).

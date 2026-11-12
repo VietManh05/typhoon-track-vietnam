@@ -5,7 +5,7 @@ Hệ thống giao diện trực quan hóa, theo dõi quỹ đạo và đánh gi�
 ## 1. Kiến Trúc Kỹ Thuật
 
 - **Vị trí mã nguồn**: `viz/frontend/`
-- **Thư mục phân phối (Production build)**: `viz/frontend/dist/` và đồng bộ vào `src/typhoon_vn/dashboard/` để FastAPI phục vụ trực tiếp.
+- **Thư mục phân phối (Production build)**: `npm run build` ghi thẳng vào `src/typhoon_vn/dashboard/` (cấu hình `outDir` trong `vite.config.ts`); FastAPI và Cloudflare Pages phục vụ từ thư mục này.
 - **Tech Stack**:
   - **Framework**: React 18 + TypeScript 5
   - **Bundler**: Vite 5
@@ -74,9 +74,12 @@ Truy cập: `http://localhost:5173/` (Vite dev server tự động proxy các AP
 ### Build Production & Đồng Bộ Dashboard
 ```bash
 cd viz/frontend
-npm run build
-python -c "import shutil; shutil.rmtree('src/typhoon_vn/dashboard', ignore_errors=True); shutil.copytree('viz/frontend/dist', 'src/typhoon_vn/dashboard')"
+npm run build          # ghi thẳng vào src/typhoon_vn/dashboard
 ```
+
+Hoặc chạy `make dashboard` ở thư mục gốc: lệnh này build ra `viz/frontend/dist`,
+chép sang `src/typhoon_vn/dashboard` rồi chạy `scripts/check_dashboard_sync.py`
+để xác nhận hai bản khớp nhau.
 
 ### Chạy Toàn Bộ Hệ Thống Với FastAPI
 ```bash

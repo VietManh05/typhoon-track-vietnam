@@ -50,12 +50,16 @@ Website: <https://baoviet2026.pages.dev>
 ## 4. Chạy lại trên máy
 
 ```powershell
-python -m pip install -e ".[api,train]"        # Python 3.11
-$env:MODEL_ARTIFACT="artifacts/model-bundle"   # trong gói nộp
-$env:ANALOG_ARTIFACT="artifacts/analog-wp.npz"
-python -m uvicorn typhoon_vn.api.app:app       # mở http://127.0.0.1:8000
+python -m pip install -e ".[api,train,ingestion,dev]"   # Python 3.11
 python -m pytest -q                            # 177 đạt, 4 bỏ qua
+python -m uvicorn typhoon_vn.api.app:app       # mở http://127.0.0.1:8000
 ```
+
+Gói mô hình đã huấn luyện không nằm trong git. Khi chưa có, API ở chế độ phát
+triển tự dùng mốc persistence. Muốn phục vụ bằng LSTM và k-NN thì tạo lại bằng
+các lệnh "Tái lập kết quả" trong báo cáo, rồi đặt
+`$env:MODEL_ARTIFACT` (thư mục bundle) và `$env:ANALOG_ARTIFACT` (file `.npz`)
+trước khi chạy API.
 
 Docker: `docker build -f infra/docker/Dockerfile -t typhoon-vn .` rồi mount hai
 artefact ở chế độ chỉ đọc (xem `artifacts/README.md`).
@@ -70,7 +74,9 @@ artefact ở chế độ chỉ đọc (xem `artifacts/README.md`).
 * **"Sao học sâu không hơn k-NN?"** Chỉ có ~7.800 cửa sổ huấn luyện và đặc trưng chỉ
   từ quỹ đạo; hướng đi của bão chủ yếu do dòng dẫn đường khí quyển. Khi thêm đặc
   trưng đó mới có cải thiện có ý nghĩa.
-* **"YAGI sai nhiều?"** Đúng, sai 540–680 km ở 72 h với mọi mô hình. Lưới 2,5° và
+* **"YAGI sai nhiều?"** Đúng. Tại 72 h, LSTM sai 541 km và Transformer 678 km;
+  gradient boosting (407 km) và k-NN (419 km) gần đúng hơn; kể cả khi thêm dòng
+  dẫn đường, các mô hình vẫn sai khoảng 620–670 km. Lưới 2,5° và
   đặc trưng tóm tắt chưa đủ nhận ra áp cao cận nhiệt mạnh; hướng tiếp theo là ERA5
   0,25° và đặc trưng dạng ảnh.
 * **"Website có dự báo bão đang hoạt động không?"** Chưa chạy mô hình trên bão trực

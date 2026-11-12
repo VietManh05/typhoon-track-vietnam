@@ -39,3 +39,6 @@ def test_dashboard_static_files_served_by_fastapi():
     islands_data = res_islands.json()
     assert any("Hoàng Sa" in item["name_vi"] for item in islands_data)
     assert any("Trường Sa" in item["name_vi"] for item in islands_data)
+
+    # 6. Self-hosted fonts referenced by the built CSS
+    assert client.get("/fonts/BeVietnamPro-400-vietnamese.woff2").status_code == 200

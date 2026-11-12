@@ -387,9 +387,11 @@ def create_app(
         else:
             app.mount("/assets", StaticFiles(directory=dashboard), name="assets")
 
-        data_dir = dashboard / "data"
-        if data_dir.exists():
-            app.mount("/data", StaticFiles(directory=data_dir), name="data")
+        for name in ("data", "fonts"):
+            if (dashboard / name).exists():
+                app.mount(
+                    f"/{name}", StaticFiles(directory=dashboard / name), name=name
+                )
 
         @app.get("/favicon.svg", include_in_schema=False)
         def favicon():

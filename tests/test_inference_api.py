@@ -356,3 +356,5 @@ def test_bad_storm_id_in_url_is_rejected_not_a_server_error() -> None:
         response = client.get("/health")
     csp = response.headers["Content-Security-Policy"]
     assert "default-src 'self'" in csp and "frame-ancestors 'none'" in csp
+    # No bare scheme source: `https:` would allow any host.
+    assert "https:;" not in csp and "https: " not in csp

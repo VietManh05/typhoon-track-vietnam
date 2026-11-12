@@ -14,16 +14,44 @@ Vietnam-focused tropical-cyclone track forecasting research and decision-support
 | Hướng dẫn trình bày / bảo vệ (demo 5 phút, số liệu, Q&A) | [`docs/acceptance/HUONG_DAN_BAO_VE.md`](docs/acceptance/HUONG_DAN_BAO_VE.md) |
 | Demo trực tuyến | <https://baoviet2026.pages.dev> (nút "Dự báo lại") |
 
+## Project layout
+
 ```text
-src/typhoon_vn/   Python package: ingestion, features, models, training, inference, API
-tests/            pytest suite (unit, API, migrations, models)
-scripts/          benchmarks, studies, exports, data downloads (reproduce the report)
-configs/          training configurations
-viz/frontend/     React dashboard + Cloudflare Pages Functions (node tests in tests/)
-infra/            Dockerfile, scheduler example
-docs/             report/, acceptance/, architecture, contracts; planning/ = process log
-data/ checkpoints/ notebooks/   empty placeholders; data and models are not committed
+.
+|-- src/typhoon_vn/          Python package
+|   |-- ingestion/           source adapters and data provenance
+|   |-- features/            feature engineering
+|   |-- datasets/            model-ready data
+|   |-- models/              model definitions
+|   |-- training/            model training and export
+|   |-- evaluation/          backtests and metrics
+|   |-- inference/           forecast service
+|   |-- api/                 HTTP API
+|   `-- operations/          database migrations and background worker
+|-- viz/frontend/            React dashboard and Cloudflare Pages Functions
+|   |-- src/                 dashboard UI
+|   |-- functions/           edge APIs
+|   `-- tests/               frontend and function tests
+|-- tests/                    Python tests and fixtures
+|-- configs/                  training and benchmark configuration
+|-- scripts/                  studies, benchmarks, exports, and data utilities
+|-- data/                     raw/, external/, interim/, processed/ (local data)
+|-- checkpoints/              local model artifacts
+|-- docs/
+|   |-- acceptance/          project acceptance and demo guidance
+|   |-- contracts/           data and model interfaces
+|   |-- report/              results and report figures
+|   |-- thesis/              Vietnamese thesis (LaTeX source, slides, PDF)
+|   |-- planning/            roadmap, task tracking, and evidence
+|   `-- architecture.md       system design
+|-- infra/                    Docker image and data scheduler
+`-- .github/workflows/        CI automation
 ```
+
+Data, checkpoints, and experiment outputs are local artifacts, not source code.
+Keep reusable application logic in `src/`, its behavior tests in `tests/`, and
+project guidance/evidence in the matching `docs/` category. The frontend is a
+separate Node project under `viz/frontend/`.
 
 ## Verified status
 

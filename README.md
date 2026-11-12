@@ -176,7 +176,7 @@ typhoon-track-vietnam/
 |---|---|
 | 📄 Báo cáo đồ án (PDF) | [`baocao/Bao-cao-do-an-TTNT-Typhoon-VN.pdf`](baocao/Bao-cao-do-an-TTNT-Typhoon-VN.pdf) |
 | 📊 Báo cáo đánh giá mô hình | [`docs/report/README.md`](docs/report/README.md) |
-| 🎤 Slide trình bày (Beamer) | [`baocao/slide-typhoon-vn/slide.tex`](baocao/slide-typhoon-vn/slide.tex) |
+| 🎤 Slide trình bày (PDF) | [`baocao/Slide-do-an-TTNT-Typhoon-VN.pdf`](baocao/Slide-do-an-TTNT-Typhoon-VN.pdf) · [mã nguồn Beamer](baocao/slide-typhoon-vn/slide.tex) |
 | 🧭 Hướng dẫn bảo vệ (demo 5 phút, Q&A) | [`docs/acceptance/HUONG_DAN_BAO_VE.md`](docs/acceptance/HUONG_DAN_BAO_VE.md) |
 | ✅ Hồ sơ nghiệm thu 28 tiêu chí | [`docs/acceptance/README.md`](docs/acceptance/README.md) |
 | 🏗️ Kiến trúc hệ thống | [`docs/architecture.md`](docs/architecture.md) |

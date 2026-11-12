@@ -133,6 +133,7 @@ nghĩa thống kê. Riêng Attention-LSTM kém hơn LSTM có ý nghĩa, và CLIP
 không khác persistence.
 
 \subsection{Nón bất định}
+\label{sec:non}
 
 Bán kính nón, lấy bằng phân vị 80\% của sai số trên validation, là 52, 97,
 210, 455 và 714~km tại 6, 12, 24, 48 và 72 giờ. Trên tập kiểm thử, tỉ lệ vị
@@ -216,8 +217,9 @@ Ngoài đánh giá mô hình, phần mềm được kiểm tra bằng bộ kiể
 với \code{pytest}. Bộ kiểm thử bao phủ các khâu nạp dữ liệu, hợp đồng đặc
 trưng, vòng huấn luyện, đóng gói và nạp gói mô hình, suy luận, API, lưu trữ,
 bộ nhớ đệm và tiến trình cập nhật. Ở phiên bản bàn giao, bộ kiểm thử Python
-có 176 ca chạy đạt và 4 ca được bỏ qua: hai ca cần máy chủ PostgreSQL/PostGIS
-bên ngoài, hai ca thuộc phần chưa hoàn thiện.
+có 177 ca chạy đạt và 4 ca được bỏ qua: hai ca cần máy chủ PostgreSQL/PostGIS
+bên ngoài, hai ca thuộc phần chưa hoàn thiện. Phần bản đồ web và các hàm chạy
+trên Cloudflare có thêm 42 ca kiểm thử riêng, tất cả đều đạt.
 
 Dữ liệu dùng trong kiểm thử phần mềm là dữ liệu tổng hợp. Các ca này chỉ
 chứng minh phần mềm hoạt động đúng hợp đồng, không phải bằng chứng về độ

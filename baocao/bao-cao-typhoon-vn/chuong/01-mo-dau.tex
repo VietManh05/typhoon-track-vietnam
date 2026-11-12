@@ -38,6 +38,49 @@ học phần trên một bộ dữ liệu thật. Thứ ba, kết quả đo đư
 lượng dễ hiểu là số kilômét lệch so với vị trí thực, nên có thể so sánh
 khách quan giữa các phương pháp.
 
+Có thể hình dung độ khó của bài toán qua phương pháp đơn giản nhất là
+\term{persistence}, tức giả định bão giữ nguyên hướng và tốc độ của 6 giờ gần
+nhất. Trên dữ liệu kiểm thử của đồ án, cách ngoại suy này chỉ lệch khoảng
+31~km sau 6 giờ, nhưng lệch tới 676~km sau 72 giờ, dài hơn cả quãng đường
+chim bay từ Đà Nẵng ra Hà Nội. Nói cách khác, ở hạn ngắn bão gần như đi theo
+quán tính, còn ở hạn dài thì quán tính không còn đủ. Khoảng trống giữa hai con
+số đó là chỗ để một phương pháp học từ dữ liệu chứng minh giá trị, và cũng là
+thước đo mà đồ án dùng để tự đánh giá.
+
+Một điểm cần nói rõ ngay từ đầu là cách hiểu chữ ``gợi ý'' trong tên đề tài.
+Cơn bão không lựa chọn đường đi, nên đây không phải bài toán tìm đường trên đồ
+thị. Hệ thống ước lượng vị trí tương lai của tâm bão, nói rõ mức độ không chắc
+chắn của ước lượng đó và chỉ ra căn cứ lịch sử của nó. Người đọc kết quả vẫn
+là người ra quyết định; hệ thống chỉ cung cấp thêm một nguồn tham khảo.
+
+\section{Các hướng tiếp cận hiện có và khoảng trống}
+
+Dự báo quỹ đạo bão hiện có ba hướng chính. Hướng thứ nhất là mô hình số trị:
+giải hệ phương trình động lực học khí quyển trên lưới ba chiều. Đây là hướng
+chính xác nhất và là nền tảng của dự báo nghiệp vụ, nhưng đòi hỏi siêu máy
+tính, dữ liệu đồng hóa toàn cầu và đội ngũ chuyên gia, vượt xa điều kiện của
+một đồ án học phần. Hướng thứ hai là các phương pháp thống kê cổ điển, tiêu
+biểu là CLIPER~\cite{Neumann1972}, kết hợp quán tính với khí hậu học; chúng rẻ
+và ổn định nên thường được dùng làm mốc so sánh. Hướng thứ ba là học máy trên
+dữ liệu best-track như IBTrACS~\cite{Knapp2010}, từ các phương pháp tìm bão
+tương tự đến mạng hồi quy~\cite{Hochreiter1997} và
+Transformer~\cite{Vaswani2017}.
+
+Khi khảo sát hướng thứ ba, nhóm thấy ba khoảng trống mà một đồ án học phần có
+thể đóng góp:
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Nhiều kết quả chỉ báo cáo một mô hình học sâu so với persistence, không
+        đặt cạnh các phương pháp đơn giản hơn trên cùng dữ liệu. Vì vậy khó biết
+        phần cải thiện đến từ kiến trúc hay chỉ từ việc có học.
+  \item Cách chia dữ liệu ngẫu nhiên theo quan trắc làm rò rỉ thông tin giữa
+        huấn luyện và kiểm thử, vì các quan trắc liên tiếp của một cơn bão rất
+        giống nhau. Điểm số thu được khi đó đẹp hơn thực tế.
+  \item Kết quả thường dừng ở một con số sai số, thiếu vùng bất định được hiệu
+        chỉnh và thiếu lời giải thích để người không chuyên có thể tin hoặc nghi
+        ngờ một gợi ý cụ thể.
+\end{itemize}
+Ba khoảng trống này định hướng cho các mục tiêu và cách đánh giá của đồ án.
+
 \section{Phát biểu bài toán}
 
 Cho chuỗi quan trắc gần nhất của một cơn bão, gồm vị trí tâm, gió và khí áp
@@ -46,6 +89,44 @@ Cho chuỗi quan trắc gần nhất của một cơn bão, gồm vị trí tâm
 tin cậy, và danh sách các cơn bão lịch sử tương tự để người dùng hiểu gợi ý
 dựa trên căn cứ nào. Chương~\ref{ch:thietke} phát biểu chi tiết đầu vào, đầu
 ra và tiêu chí chạy đúng.
+
+Về mặt học máy, đây là bài toán hồi quy chuỗi thời gian nhiều bước: từ một cửa
+sổ quan trắc có độ dài cố định, mô hình xuất đồng thời năm cặp vĩ độ và kinh
+độ. Chất lượng được đo bằng khoảng cách trên mặt cầu giữa vị trí gợi ý và vị
+trí thực, tính bằng kilômét, và bằng tỉ lệ vị trí thực rơi vào trong vùng bất
+định.
+
+\section{Câu hỏi nghiên cứu và giả thuyết}
+
+Từ bối cảnh và các khoảng trống nêu trên, đồ án đặt ra ba câu hỏi nghiên cứu.
+Mỗi câu hỏi đi kèm một giả thuyết ban đầu và một cách kiểm chứng cụ thể
+(Bảng~\ref{tab:cauhoi}). Việc ghi giả thuyết trước khi chạy thí nghiệm giúp
+phần đánh giá ở Chương~\ref{ch:ketqua} không bị uốn theo kết quả.
+
+\begin{table}[H]
+\centering
+\caption{Câu hỏi nghiên cứu, giả thuyết ban đầu và cách kiểm chứng.}
+\label{tab:cauhoi}
+\begin{tabularx}{\textwidth}{>{\bfseries\color{daunavy}}l X X X}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Mã & \leavevmode\bfseries\color{daunavy}Câu hỏi & \leavevmode\bfseries\color{daunavy}Giả thuyết ban đầu & \leavevmode\bfseries\color{daunavy}Cách kiểm chứng \\
+\midrule
+CH1 & Học từ dữ liệu lịch sử có tốt hơn ngoại suy quán tính không, và từ hạn dự báo nào?
+    & Có, và lợi ích tăng theo hạn dự báo.
+    & So sai số từng mốc với persistence; bootstrap theo cơn bão tại 72 giờ. \\
+CH2 & Mô hình học sâu có vượt các phương pháp đơn giản hơn không?
+    & Có, vì mạng hồi quy và Transformer mô hình hóa chuỗi tốt hơn.
+    & So sánh bảy phương pháp trên cùng cửa sổ kiểm thử, ba seed, có khoảng tin cậy. \\
+CH3 & Muốn giảm sai số thêm thì nên thay đổi mô hình hay thay đổi thông tin đầu vào?
+    & Chưa rõ; cần thí nghiệm có đối chứng.
+    & Thử lần lượt từng thay đổi, chọn trên validation, chạy kiểm thử một lần. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Kết quả cho thấy giả thuyết của CH1 đúng, giả thuyết của CH2 sai, và CH3 có
+câu trả lời rõ ràng là thông tin đầu vào. Việc một giả thuyết bị bác bỏ được
+giữ nguyên trong báo cáo, vì đó là phát hiện có giá trị nhất của đồ án.
 
 \section{Mục tiêu của đồ án}
 
@@ -64,6 +145,27 @@ Chương~\ref{ch:ketqua}:
         ý kèm lời giải thích bằng các cơn bão lịch sử tương tự.
 \end{itemize}
 
+Các mục tiêu được viết sao cho có thể trả lời ``đạt'' hoặc ``không đạt'' bằng
+số liệu. Bảng~\ref{tab:tieuchi} nêu tiêu chí kiểm chứng của từng mục tiêu và
+nơi trình bày bằng chứng trong báo cáo.
+
+\begin{table}[H]
+\centering
+\caption{Tiêu chí kiểm chứng của từng mục tiêu.}
+\label{tab:tieuchi}
+\begin{tabularx}{\textwidth}{>{\bfseries\color{daunavy}}l X >{\raggedright\arraybackslash}p{3.6cm}}
+\toprule
+\rowcolor{gray100}\bfseries\color{daunavy}Mục tiêu & \leavevmode\bfseries\color{daunavy}Tiêu chí kiểm chứng & \leavevmode\bfseries\color{daunavy}Bằng chứng \\
+\midrule
+MT1 & Không cơn bão nào xuất hiện ở hai tập; bộ chuẩn hóa chỉ fit trên tập huấn luyện; mỗi quan trắc truy được về tệp nguồn. & Mục thiết kế dữ liệu, Chương~\ref{ch:thietke} \\
+MT2 & Mọi phương pháp được đánh giá trên cùng các cửa sổ; mạng nơ-ron chạy ba seed; có khoảng tin cậy 95\%. & Bảng~\ref{tab:ketqua-all}, \ref{tab:bootstrap} \\
+MT3 & Sai số 72 giờ của mô hình tốt nhất không quá 80\% sai số của persistence. & Bảng~\ref{tab:ketqua-all}, \ref{tab:steering} \\
+MT4 & Tỉ lệ vị trí thực nằm trong nón 80\% trên tập kiểm thử nằm trong khoảng 75--90\%. & Mục~\ref{sec:non} \\
+MT5 & Gọi được API để nhận quỹ đạo, nón và bão tương tự; xem được trên bản đồ; bộ kiểm thử tự động chạy đạt. & Chương~\ref{ch:caidat}, mục kiểm thử phần mềm \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \section{Phạm vi và đối tượng}
 
 Đối tượng nghiên cứu là quỹ đạo tâm của xoáy thuận nhiệt đới ở Tây Bắc Thái
@@ -74,6 +176,60 @@ Bình Dương, giới hạn trong vùng 0--30°N, 100--140°E, giai đoạn 1980
 cảnh báo chính thức và không gửi thông báo tới người dùng. Hệ thống chỉ phục
 vụ học tập và nghiên cứu, không thay thế bản tin của Trung tâm Dự báo Khí
 tượng Thủy văn Quốc gia (NCHMF).
+
+Vùng 0--30°N, 100--140°E được chọn vì nó bao trọn Biển Đông và phần phía tây
+của Tây Bắc Thái Bình Dương, nơi các cơn bão đi qua trước khi ảnh hưởng đến
+Việt Nam. Giai đoạn bắt đầu từ năm 1980 vì từ đó vệ tinh địa tĩnh đã phủ
+thường xuyên khu vực, nên vị trí tâm bão trong dữ liệu đáng tin cậy hơn các
+thập kỷ trước. Năm mốc dự báo trải từ rất ngắn (6 giờ) đến ba ngày (72 giờ),
+là khoảng thời gian thường được dùng để chuẩn bị ứng phó.
+
+Trong phạm vi đó, đồ án dành riêng một nhóm đánh giá cho \textbf{bão ảnh hưởng
+Việt Nam}, định nghĩa là cơn bão có quỹ đạo đi vào trong 300~km tính từ đường
+bờ biển. Nhóm này có 27 cơn bão trong giai đoạn kiểm thử và là nhóm mà đề tài
+quan tâm nhất.
+
+\section{Phương pháp thực hiện}
+
+Đồ án được thực hiện theo sáu bước nối tiếp, mỗi bước cho ra một sản phẩm
+kiểm tra được trước khi sang bước sau:
+\begin{enumerate}[leftmargin=1.8em, itemsep=2pt]
+  \item \textbf{Thu thập và làm sạch dữ liệu.} Tải IBTrACS, chuẩn hóa đơn vị,
+        khử trùng lặp, lọc theo vùng và ghi lại nguồn gốc từng quan trắc.
+  \item \textbf{Xây dựng đặc trưng và chia tập.} Viết một bộ tạo đặc trưng dùng
+        chung cho huấn luyện và suy luận; chia tập theo năm, giữ nguyên cả cơn
+        bão.
+  \item \textbf{Dựng mốc so sánh.} Cài đặt persistence và CLIPER-proxy trước
+        khi huấn luyện bất kỳ mô hình nào, để có ngưỡng mà mọi phương pháp học
+        phải vượt qua.
+  \item \textbf{Huấn luyện và so sánh.} Huấn luyện k-NN analog, gradient
+        boosting và ba mạng nơ-ron; chọn cấu hình trên tập validation; chạy tập
+        kiểm thử một lần; kiểm định bằng bootstrap theo cơn bão.
+  \item \textbf{Phân tích và thí nghiệm bổ sung.} Thí nghiệm loại bỏ để kiểm
+        chứng lựa chọn thiết kế; thử các hướng giảm sai số; nghiên cứu từng
+        cơn bão cụ thể.
+  \item \textbf{Đóng gói và triển khai.} Xuất gói mô hình có mã băm, dựng API
+        và bản đồ web, viết bộ kiểm thử tự động.
+\end{enumerate}
+
+Hai nguyên tắc được giữ xuyên suốt. Thứ nhất, mọi con số trong báo cáo đều
+sinh ra từ mã nguồn trong kho và có lệnh tái lập ở Chương~\ref{ch:caidat}.
+Thứ hai, tập kiểm thử không tham gia vào bất kỳ quyết định nào; mọi lựa chọn
+đều dựa trên tập validation.
+
+\section{Đối tượng sử dụng}
+
+Hệ thống hướng tới ba nhóm người dùng, với nhu cầu khác nhau:
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item \textbf{Người học và giảng viên} dùng hệ thống như một ví dụ trọn vẹn
+        về quy trình học máy trên dữ liệu thật: từ dữ liệu thô đến mô hình,
+        đánh giá và triển khai.
+  \item \textbf{Người quan tâm đến thời tiết} xem quỹ đạo gợi ý, vùng bất định
+        và các cơn bão lịch sử tương tự trên bản đồ, kèm lời nhắc rằng bản tin
+        chính thức thuộc về NCHMF.
+  \item \textbf{Người phát triển} gọi API để lấy kết quả dạng có cấu trúc, mỗi
+        phản hồi kèm phiên bản mô hình và nguồn dữ liệu.
+\end{itemize}
 
 \section{Đóng góp chính}
 
@@ -90,10 +246,43 @@ tượng Thủy văn Quốc gia (NCHMF).
         toàn vẹn, API và bản đồ web, kèm bộ kiểm thử tự động.
 \end{itemize}
 
+\section{Ý nghĩa của đề tài}
+
+\textbf{Về học thuật}, đồ án đặt bốn nhóm phương pháp của học phần lên cùng
+một bài toán và cùng một cách đánh giá: lập luận dựa trên tình huống, học máy
+trên cây quyết định, mạng hồi quy và cơ chế attention. Kết quả cho thấy một
+điều hay bị bỏ qua khi học về học sâu: với dữ liệu vài nghìn mẫu và đầu vào
+ngắn, phương pháp đơn giản có thể ngang bằng mô hình phức tạp, và chất lượng
+thông tin đầu vào quan trọng hơn kiến trúc.
+
+\textbf{Về thực tiễn}, hệ thống cho thấy có thể dựng một công cụ tham khảo về
+đường đi của bão chỉ từ dữ liệu công khai và máy tính cá nhân; lần huấn luyện
+LSTM chuẩn chỉ mất khoảng hơn một phút trên CPU. Công cụ này không thay thế
+dự báo nghiệp vụ, nhưng phù hợp cho giảng dạy và cho việc thử nhanh các ý
+tưởng mới.
+
+\textbf{Về phương pháp}, đồ án áp dụng một số thói quen của nghiên cứu nghiêm
+túc ở quy mô nhỏ: chia tập chống rò rỉ, chọn mô hình trên validation, báo cáo
+khoảng tin cậy, và nêu rõ cả những kết quả không như mong đợi.
+
 \section{Bố cục báo cáo}
 
-Phần còn lại của báo cáo được tổ chức như sau. Chương~\ref{ch:coso} trình
-bày cơ sở lý thuyết và công nghệ sử dụng. Chương~\ref{ch:thietke} phân tích
-bài toán và thiết kế giải pháp. Chương~\ref{ch:caidat} mô tả quá trình cài
-đặt và thử nghiệm. Chương~\ref{ch:ketqua} trình bày kết quả và đánh giá.
-Chương~\ref{ch:ketluan} tổng kết và nêu hướng phát triển.
+Phần còn lại của báo cáo gồm năm chương và một phụ lục.
+
+Chương~\ref{ch:coso} trình bày cơ sở lý thuyết: cách đo sai số trên mặt cầu,
+các mốc so sánh, bốn nhóm phương pháp được dùng, cách ước lượng vùng bất định
+và các công cụ phần mềm.
+
+Chương~\ref{ch:thietke} phân tích yêu cầu và trình bày thiết kế: kiến trúc
+tổng thể, thiết kế dữ liệu và đặc trưng, thiết kế các mô hình, thiết kế phần
+phục vụ, giao diện và quy trình chọn mô hình.
+
+Chương~\ref{ch:caidat} mô tả việc cài đặt: tổ chức mã nguồn, các đoạn mã cốt
+lõi, lệnh tái lập thí nghiệm và bản demo.
+
+Chương~\ref{ch:ketqua} trình bày kết quả: sai số của từng phương pháp, kiểm
+định thống kê, độ phủ của nón, các thí nghiệm bổ sung, nghiên cứu trường hợp,
+kiểm thử phần mềm, bàn luận và hạn chế.
+
+Chương~\ref{ch:ketluan} tổng kết những gì đã làm được, bài học rút ra và
+hướng phát triển.

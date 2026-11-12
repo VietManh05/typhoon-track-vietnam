@@ -1,12 +1,17 @@
 % ---------------------------------------------------------------------
-%  CHƯƠNG 4 — CÀI ĐẶT VÀ THỬ NGHIỆM
+%  CHƯƠNG 4 — CÀI ĐẶT, THỬ NGHIỆM VÀ ĐÁNH GIÁ
+%  Phần kết quả nằm ở chuong/05-ket-qua-danh-gia.tex, cùng chương này.
 % ---------------------------------------------------------------------
-\chapter{Cài đặt và thử nghiệm}
+\chapter{Cài đặt, thử nghiệm và đánh giá}
 \label{ch:caidat}
+\label{ch:ketqua}
 
 \begin{muctieu}
 Chương này mô tả môi trường triển khai, các thành phần chính kèm mã nguồn
-minh hoạ, quy trình huấn luyện, giao diện demo và cách kiểm thử hệ thống.
+minh hoạ, quy trình huấn luyện và giao diện demo. Sau đó chương đối chiếu kết
+quả với các mục tiêu đã đặt ra, trình bày sai số của từng phương pháp, kiểm
+định thống kê, độ phủ của nón bất định, hai nhóm thí nghiệm bổ sung, kiểm thử
+phần mềm, phần bàn luận và những hạn chế còn tồn tại.
 \end{muctieu}
 
 \section{Môi trường triển khai}
@@ -92,8 +97,8 @@ kiểm tra toàn bộ checksum, số đặc trưng, số mốc dự báo và n�
 
 \subsection{Chạy các thí nghiệm}
 
-Mã nguồn~\ref{lst:run} là các lệnh tái lập toàn bộ kết quả ở
-Chương~\ref{ch:ketqua}.
+Mã nguồn~\ref{lst:run} là các lệnh tái lập toàn bộ kết quả trình bày ở phần
+sau của chương này.
 
 \begin{lstlisting}[language=bash, caption={Các lệnh tái lập thí nghiệm.}, label={lst:run}]
 # Benchmark on IBTrACS and uncertainty-cone calibration
@@ -136,22 +141,3 @@ Khi phát lại một cơn bão cũ với thời gian dời về hiện tại, �
 k-NN thay đổi (ví dụ YAGI tháng 9 thành tháng 11) và cho ra bão tương tự khác
 hẳn. Vì vậy bản demo giữ đúng ngày lịch sử của cơn bão.
 \end{luuy}
-
-\section{Kiểm thử}
-
-Dự án có bộ kiểm thử tự động bằng \code{pytest} (thư mục \code{tests/}), chia
-thành ba nhóm:
-\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
-  \item \textbf{Dữ liệu:} parser các nguồn, chuẩn hóa mã bão, gộp đa nguồn, ghi
-        Parquet; dữ liệu biên như tọa độ ngoài phạm vi, thời điểm thiếu múi giờ,
-        giá trị gió không hữu hạn đều bị từ chối.
-  \item \textbf{Học máy:} bộ chuẩn hóa chỉ fit trên train, chia tập không trùng
-        cơn bão, kích thước đầu ra mô hình, huấn luyện tiếp từ checkpoint, gói mô
-        hình bị sửa checksum phải bị từ chối.
-  \item \textbf{API:} kiểm tra đầu vào (ít nhất 2 quan trắc, khoảng cách thời
-        gian hợp lệ, tốc độ suy ra không quá 150~km/h) và các điểm cuối.
-\end{itemize}
-
-Một lỗi phát hiện trong quá trình làm là timestamp trùng hoặc lùi trong dữ
-liệu gốc sinh ra tốc độ và gia tốc giả rất lớn; lỗi được khắc phục bằng cách
-không gán khoảng thời gian 6 giờ giả định cho các bước này.

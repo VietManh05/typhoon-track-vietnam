@@ -51,8 +51,8 @@ chuong/00-tom-tat.tex             Tóm tắt, viết sau cùng
 chuong/01-mo-dau.tex              Lý do, mục tiêu, phạm vi, bố cục
 chuong/02-co-so-ly-thuyet.tex     Lý thuyết nền, công cụ, công trình liên quan
 chuong/03-phan-tich-thiet-ke.tex  Phân tích, kiến trúc, dữ liệu, mô hình
-chuong/04-cai-dat.tex             Môi trường, mã nguồn, demo, kiểm thử
-chuong/05-ket-qua-danh-gia.tex    Kết quả, độ đo, bàn luận, hạn chế
+chuong/04-cai-dat.tex             Chương 4, phần đầu: môi trường, mã nguồn, demo
+chuong/05-ket-qua-danh-gia.tex    Chương 4, phần sau: kết quả, kiểm thử, bàn luận, hạn chế
 chuong/06-ket-luan.tex            Kết luận, bài học, hướng phát triển
 chuong/07-phu-luc.tex             Hướng dẫn chạy, bảng tự kiểm, trang nhận xét
 chuong/99-quy-cach-trinh-bay.tex  Sổ tra cứu, XOÁ trước khi nộp

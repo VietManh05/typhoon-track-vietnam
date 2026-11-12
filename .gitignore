@@ -70,3 +70,22 @@ runs/
 
 # DAST scanner config (local tooling, not needed to run the project)
 stackhawk.yml
+
+# LaTeX build intermediates (keep only .tex sources and the final .pdf)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.toc
+*.xdv
+*.synctex.gz
+
+# Local QA output and AI-tool state
+reports/
+.agents/
+.ocr-review.json
+*.map

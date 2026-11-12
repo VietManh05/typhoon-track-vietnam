@@ -1,6 +1,10 @@
 import { backendJson } from "./_lib/backend.js";
+import { createRateLimiter, tooManyRequests } from "./_lib/rateLimit.js";
+
+const isRateLimited = createRateLimiter("AUTH_RATE_LIMITER", 10);
 
 export async function onRequestPost({ env, request }) {
+    if (await isRateLimited(request, env)) return tooManyRequests();
     const body = await request.text();
     if (body.length > 4096) {
         return Response.json({ error: { message: "Request too large" } }, { status: 413 });

@@ -89,3 +89,6 @@ reports/
 .agents/
 .ocr-review.json
 *.map
+
+# LaTeX output inside source folders (the published PDF lives in baocao/)
+baocao/**/do-an.pdf

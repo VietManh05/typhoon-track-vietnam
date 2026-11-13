@@ -85,5 +85,5 @@ artefact ở chế độ chỉ đọc (xem `artifacts/README.md`).
 * **"Có thể dùng để cảnh báo không?"** Không. Mọi giao diện ghi "không thay thế bản
   tin NCHMF". Kênh gửi cảnh báo qua webhook đã viết và kiểm thử nhưng **tắt mặc
   định**, chỉ bật khi có phê duyệt nghiệp vụ.
-* **"CI đâu?"** Workflow đã viết, mọi bước chạy được trên máy; GitHub Actions chưa
-  chạy vì tài khoản bị khoá do thanh toán (đây là tiêu chí duy nhất "đạt một phần").
+* **"CI đâu?"** GitHub Actions chạy mỗi lần push lên `main`: lint, 177 test Python
+  (có PostGIS thật), 42 test Node, build frontend và đối chiếu dashboard; đang xanh.

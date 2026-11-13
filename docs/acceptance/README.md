@@ -1,6 +1,6 @@
 # Hồ sơ nghiệm thu — Typhoon VN (G29, 28 tiêu chí)
 
-Ngày nghiệm thu: 2026-11-05, kiểm tra lại 2026-11-12 · Nhánh `main`
+Ngày nghiệm thu: 2026-11-05, kiểm tra lại 2026-11-13 · Nhánh `main`
 · Website: <https://baoviet2026.pages.dev>
 
 Hướng dẫn trình bày và bảo vệ: [HUONG_DAN_BAO_VE.md](HUONG_DAN_BAO_VE.md).
@@ -12,13 +12,14 @@ còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt"
 
 | Lệnh | Kết quả |
 |---|---|
+| GitHub Actions CI trên `main` (2026-11-13) | xanh cả 2 job (Python + PostGIS; frontend) |
 | `python -m pytest -q` | 177 passed, 4 skipped (2 spec chưa có implementation + 2 test chỉ chạy khi có PostGIS; đều có lý do) |
 | `flake8` / `isort --check` / `black --check` trên `src tests scripts` | sạch |
 | `cd viz/frontend && npx tsc --noEmit && npm test` | TypeScript sạch; 42/42 test Node |
 | `python scripts/check_dashboard_sync.py` (sau `vite build --outDir dist`) | dashboard khớp bản build (44 file) |
 | `TEST_POSTGRES_URL=… pytest tests/test_migrations.py tests/test_spatial.py` (PostGIS 16-3.4 trong Docker, 2026-11-13) | 7 passed: migration Alembic và truy vấn không gian chạy trên PostGIS thật |
 | `docker build -f infra/docker/Dockerfile .` rồi chạy container (2026-11-13) | build thành công; `/health` ok; user `app`; `APP_ENV=production` thiếu `API_KEY` thì từ chối khởi động |
-| HawkScan (DAST) trên API cục bộ, đủ 12 route OpenAPI, có xác thực (2026-11-13) | 1 Medium "CSP: Wildcard Directive" đã sửa (`0e403b2`) và quét lại xác nhận; còn 1 Medium "CSP: style-src unsafe-inline" (xem rủi ro 6) |
+| HawkScan (DAST) trên API cục bộ, đủ 12 route OpenAPI, có xác thực (2026-11-13) | 1 Medium "CSP: Wildcard Directive" đã sửa (`0e403b2`) và quét lại xác nhận; còn 1 Medium "CSP: style-src unsafe-inline" (xem rủi ro 5) |
 
 ## Bảng nghiệm thu
 
@@ -46,14 +47,14 @@ còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt"
 | A29-020 | Cảnh báo nếu triển khai | **Đạt** | Đăng ký vị trí/bán kính/thời hạn → bản nháp cảnh báo idempotent có cooldown; kênh gửi webhook ký HMAC-SHA256, thử lại tối đa 5 lần, không gửi trùng, chỉ HTTPS (`operations/delivery.py`, `tests/test_alert_delivery.py` với máy nhận cục bộ). **Tắt mặc định** (`ALERT_DELIVERY_ENABLED`) — bật khi có phê duyệt nghiệp vụ |
 | A29-021 | Unit/integration/model tests | **Đạt** | 177 test Python (unit, API, migration SQLite/PostGIS, model, pipeline) + 42 test Node (Functions, frontend) |
 | A29-022 | Docker | **Đạt** | Build lại sau sửa bảo mật (`cc5c19c`, `1fee1c9`): exit 0, torch 2.15.0+cpu chỉ từ index PyTorch; container `healthy`, user `app` (không root), production bắt buộc API key; chạy cùng PostGIS: nhận quan trắc, dự báo bằng model đã train + 5 bão tương tự; `.dockerignore` loại `.env*`, `runs/`, `*.db`, `*.pt`, `*.npz`, dữ liệu thô; artefact mount read-only |
-| A29-023 | CI/CD cơ bản | **Đạt một phần** | Workflow lint/test/PostGIS/frontend/đồng bộ dashboard; **chưa chạy được** vì tài khoản GitHub bị khoá do billing; deploy Pages thủ công bằng `wrangler` |
+| A29-023 | CI/CD cơ bản | **Đạt** | GitHub Actions `.github/workflows/ci.yml` chạy xanh trên `main` (`002d125`, 2026-11-13): job Python (flake8/isort/black + pytest có PostGIS service) và job frontend (tsc, test Node, build, đối chiếu dashboard). Deploy Pages thủ công bằng `wrangler` |
 | A29-024 | Logging/monitoring cơ bản | **Đạt** | Log mỗi request (request id, path, status, ms) + header `X-Request-ID`; `/metrics` định dạng Prometheus (histogram độ trễ, số dự báo, lỗi); **giám sát chất lượng mô hình thực tế**: dự báo đã phát được đối chiếu quan trắc đến sau (`operations/monitoring.py`, `typhoon-vn monitor`, exit 2 khi suy giảm). Chạy trên 20 hindcast: độ phủ nón 80/85/95/95/90% tại 6–72 h, sai số 72 h 408 km → `ok` |
 | A29-025 | Tài liệu cài đặt | **Đạt** | `README.md`, `docs/frontend.md`, `.env.example`, `make dashboard`, mục "Tái lập kết quả" trong báo cáo |
 | A29-026 | Tài liệu kiến trúc | **Đạt** | `docs/architecture.md` (cập nhật theo hệ thống thực tế) |
 | A29-027 | Báo cáo đánh giá | **Đạt** | `docs/report/README.md` + `comparison.md`, `significance.md`, `training_study.md`, `steering_study.md`, `cases.md` |
 | A29-028 | Disclaimer rõ ràng | **Đạt** | Trong mọi response API, banner website, chế độ dự báo lại, báo cáo |
 
-**Tổng hợp:** 27 Đạt · 1 Đạt một phần (A29-023 CI — tài khoản GitHub bị khoá do billing) · 0 Chưa đạt.
+**Tổng hợp:** 28 Đạt · 0 Đạt một phần · 0 Chưa đạt.
 
 ## Kết quả mô hình (tóm tắt)
 
@@ -71,16 +72,14 @@ còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt"
    `Origin` khớp và giới hạn tần suất; giới hạn trong bộ nhớ chỉ theo isolate nên
    vẫn nên thêm Turnstile hoặc binding rate limit của Cloudflare và giới hạn chi
    tiêu phía Ollama.
-2. **GitHub Actions** bị khoá do billing → CI chưa chạy; cần mở khoá tại
-   github.com/settings/billing.
-3. **Đưa mô hình có dòng dẫn đường vào vận hành**: cần nguồn phân tích khí quyển
+2. **Đưa mô hình có dòng dẫn đường vào vận hành**: cần nguồn phân tích khí quyển
    gần thời gian thực (ví dụ GFS analysis), mở rộng định dạng bundle cho cột môi
    trường và ensemble, hiệu chỉnh lại nón.
-4. **Ca khó (YAGI 2024)**: mọi mô hình vẫn dự báo đổi hướng tây bắc; cần dữ liệu
+3. **Ca khó (YAGI 2024)**: mọi mô hình vẫn dự báo đổi hướng tây bắc; cần dữ liệu
    độ phân giải cao hơn / đặc trưng dạng ảnh.
-5. JMA không cung cấp thời điểm cho quỹ đạo quá khứ, nên website không chạy mô
+4. JMA không cung cấp thời điểm cho quỹ đạo quá khứ, nên website không chạy mô
    hình trên bão đang hoạt động (chỉ trên hindcast).
-6. **CSP còn `style-src 'unsafe-inline'`** (HawkScan, Medium): Leaflet dựng marker
+5. **CSP còn `style-src 'unsafe-inline'`** (HawkScan, Medium): Leaflet dựng marker
    và popup bằng chuỗi HTML có thuộc tính `style`, Windy chèn thẻ `<style>`; bỏ
    ngay sẽ làm vỡ bản đồ. Muốn bỏ cần chuyển các style đó sang class CSS hoặc
    dùng nonce/hash. Các chỉ thị khác đã giới hạn đúng máy chủ.

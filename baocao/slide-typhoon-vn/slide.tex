@@ -2,14 +2,16 @@
 % =====================================================================
 %  SLIDE BÁO CÁO ĐỒ ÁN TRÍ TUỆ NHÂN TẠO, HỌC PHẦN AIP202
 %  Build:  latexmk -xelatex slide.tex   (Overleaf: Compiler = XeLaTeX)
-%  Ảnh lấy từ ../bao-cao-typhoon-vn/figs; thiếu ảnh thì slide vẫn build.
+%  Ảnh lấy từ ../bao-cao-typhoon-vn/{figs,assets} và ./figs; thiếu ảnh thì
+%  slide vẫn build.
 % =====================================================================
-\documentclass[aspectratio=169, 11pt]{beamer}
+\documentclass[aspectratio=169, 11pt, xcolor={table}]{beamer}
 
 \usepackage{fontspec}
 \usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning}
+\renewcommand{\arraystretch}{1.18}
 
 % ---------------------------------------------------------------------
 %  Thông tin nhóm: sửa ở đây
@@ -25,27 +27,67 @@
 \definecolor{daugold}{HTML}{FBAE40}
 \definecolor{daunavy}{HTML}{0E2841}
 \definecolor{gray100}{HTML}{F3F4F6}
+\definecolor{gray500}{HTML}{6B7280}
+\definecolor{goldsoft}{HTML}{FEF3DC}
 
-\usetheme{Madrid}
+% Giao diện phẳng: thanh tiêu đề xanh đậm viền vàng, chân trang ba ô
 \usecolortheme[named=daunavy]{structure}
-\setbeamercolor{title}{fg=white, bg=daunavy}
+\setbeamercolor{normal text}{fg=daunavy!90!black}
 \setbeamercolor{frametitle}{fg=white, bg=daunavy}
 \setbeamercolor{author in head/foot}{fg=white, bg=daumaroon}
 \setbeamercolor{title in head/foot}{fg=white, bg=daunavy}
 \setbeamercolor{date in head/foot}{fg=daunavy, bg=daugold}
 \setbeamercolor{block title}{fg=white, bg=daumaroon}
-\setbeamercolor{block body}{bg=gray100}
+\setbeamercolor{block body}{fg=daunavy!90!black, bg=gray100}
 \setbeamercolor{alerted text}{fg=daumaroon}
+\setbeamercolor{item}{fg=daumaroon}
 \setbeamertemplate{navigation symbols}{}
-\setbeamertemplate{itemize items}[square]
-\setbeamerfont{frametitle}{series=\bfseries}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{itemize item}{\raisebox{0.15ex}{\scriptsize$\blacktriangleright$}}
+\setbeamertemplate{itemize subitem}{\raisebox{0.25ex}{\tiny$\bullet$}}
+\setbeamertemplate{enumerate item}{\insertenumlabel.}
+\setbeamerfont{frametitle}{series=\bfseries, size=\large}
+\setbeamerfont{footline}{size=\tiny}
+\setbeamersize{text margin left=1.1cm, text margin right=1.1cm}
 
-% Chèn ảnh nếu có, nếu không thì in khung báo thiếu để slide vẫn build được
-\graphicspath{{../bao-cao-typhoon-vn/figs/}}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth, ht=1.9em, dp=0.8em, leftskip=1.1cm]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}%
+  \nointerlineskip
+  \makebox[0pt][l]{\color{daugold}\rule{\paperwidth}{1.5pt}}%
+  \vspace{0.1em}}
+
+\setbeamertemplate{footline}{%
+  \usebeamerfont{footline}\leavevmode\hbox{%
+  \begin{beamercolorbox}[wd=.34\paperwidth, ht=2.6ex, dp=1.1ex, leftskip=1.1cm]{author in head/foot}%
+    \insertshortauthor\end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.56\paperwidth, ht=2.6ex, dp=1.1ex, center]{title in head/foot}%
+    \insertshorttitle\end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.10\paperwidth, ht=2.6ex, dp=1.1ex, center]{date in head/foot}%
+    \textbf{\insertframenumber}\,/\,\inserttotalframenumber\end{beamercolorbox}}}
+
+% Chèn ảnh nếu có (đường dẫn tính từ thư mục slide), nếu không thì in khung
+% báo thiếu để slide vẫn build được
 \newcommand{\hinh}[2][]{%
-  \IfFileExists{../bao-cao-typhoon-vn/figs/#2}%
+  \IfFileExists{#2}%
     {\includegraphics[#1]{#2}}%
     {\fbox{\parbox{0.6\linewidth}{\centering\small Thiếu ảnh \texttt{\detokenize{#2}}}}}}
+
+% Ô số liệu nổi bật: \soLieu{màu}{con số}{mô tả}
+\newcommand{\soLieu}[3]{%
+  \begin{tikzpicture}
+    \node[rectangle, rounded corners=4pt, fill=#1!8, draw=#1, line width=0.8pt,
+          minimum height=2.7cm, align=center, text width=0.17\paperwidth] {%
+      {\fontsize{19}{22}\selectfont\bfseries\color{#1}#2}\\[5pt]
+      {\scriptsize #3}};
+  \end{tikzpicture}}
+
+% Bảng: dòng tiêu đề xanh đậm, các dòng xen kẽ nền xám
+\newcommand{\dauBang}{\rowcolor{daunavy}}
+\newcommand{\tb}[1]{\textcolor{white}{\textbf{#1}}}
+\newcommand{\tot}[1]{\textcolor{daumaroon}{\textbf{#1}}}
 
 \tikzset{
   khoi/.style = {rectangle, rounded corners=2pt, draw=daumaroon, line width=0.8pt,
@@ -62,15 +104,82 @@
   Giảng viên hướng dẫn: \gvhd}
 \date{Năm học 2025--2026}
 
+% Trang mở đầu mỗi phần: nền xanh đậm, số phần lớn màu vàng
 \AtBeginSection[]{%
-  \begin{frame}{Nội dung}
-    \tableofcontents[currentsection]
+  \begin{frame}[plain, noframenumbering]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[daunavy] (current page.south west) rectangle (current page.north east);
+      \fill[daumaroon] (current page.south west) rectangle
+        ([yshift=0.5cm]current page.south east);
+      \node[anchor=south west, text=daugold, inner sep=0pt,
+            font=\fontsize{80}{80}\selectfont\bfseries]
+        at ([xshift=1.6cm, yshift=0.5cm]current page.west) {0\insertsectionnumber};
+      \fill[daugold] ([xshift=1.6cm, yshift=0.15cm]current page.west)
+        rectangle ++(2.2cm, 0.1cm);
+      \node[anchor=north west, text=white, inner sep=0pt, text width=12cm,
+            font=\huge\bfseries]
+        at ([xshift=1.6cm, yshift=-0.35cm]current page.west) {\insertsectionhead};
+    \end{tikzpicture}
   \end{frame}}
 
 \begin{document}
 
-\begin{frame}[plain]
-  \titlepage
+% ---------------------------------------------------------------------
+%  Trang bìa
+% ---------------------------------------------------------------------
+\begin{frame}[plain, noframenumbering]
+  \begin{tikzpicture}[remember picture, overlay]
+    % Dải đầu trang: logo và tên trường
+    \fill[daunavy] (current page.north west) rectangle
+      ([yshift=-1.35cm]current page.north east);
+    \fill[daugold] ([yshift=-1.35cm]current page.north west) rectangle
+      ([yshift=-1.41cm]current page.north east);
+    \node[anchor=west, fill=white, circle, inner sep=0.5pt]
+      at ([xshift=0.8cm, yshift=-0.675cm]current page.north west)
+      {\hinh[height=0.95cm]{../bao-cao-typhoon-vn/assets/dau-logo.png}};
+    \node[anchor=west, text=white, align=left, font=\scriptsize]
+      at ([xshift=2.15cm, yshift=-0.675cm]current page.north west)
+      {\textbf{TRƯỜNG ĐẠI HỌC KIẾN TRÚC ĐÀ NẴNG}\\[1pt]
+       Khoa Công nghệ Thông tin};
+    \node[anchor=east, text=daugold, align=right, font=\scriptsize\bfseries]
+      at ([xshift=-0.8cm, yshift=-0.675cm]current page.north east)
+      {ĐỒ ÁN TRÍ TUỆ NHÂN TẠO\\[1pt]\mdseries\color{white}Học phần AIP202};
+    % Ảnh phác hoạ khuôn viên trường, mờ ở góc dưới phải
+    \node[anchor=south east, opacity=0.3, inner sep=0pt]
+      at ([xshift=-0.3cm, yshift=0.2cm]current page.south east)
+      {\hinh[width=0.45\paperwidth]{../bao-cao-typhoon-vn/assets/dau-campus.png}};
+    % Tên đề tài, vạch vàng và thông tin nhóm xếp chồng trong một khối
+    \node[anchor=north west, inner sep=0pt, text width=0.8\paperwidth, align=left]
+      at ([xshift=1.1cm, yshift=-2.0cm]current page.north west)
+      {{\color{daumaroon}\fontsize{21}{26}\selectfont\bfseries
+        Xây dựng hệ thống hỗ trợ gợi ý\\ đường đi của cơn bão Việt Nam\par}
+       \vspace{6pt}
+       {\color{daugold}\rule{2.4cm}{2.5pt}\par}
+       \vspace{8pt}
+       {\color{daunavy}\small
+       \begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+         \textcolor{gray500}{Sinh viên}  & \textbf{Nguyễn Viết Mạnh} (2351220241)\\
+                                         & \textbf{Nguyễn Đình Phú} (2351220247)\\
+         \textcolor{gray500}{Lớp}        & \lop\\
+         \textcolor{gray500}{GV hướng dẫn} & \textbf{\gvhd}\\
+         \textcolor{gray500}{Năm học}    & 2025--2026
+       \end{tabular}\par}};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Nội dung trình bày}
+  \begin{columns}[c]
+    \begin{column}{0.62\textwidth}
+      \Large
+      \tableofcontents[hideallsubsections]
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      \begin{block}{Demo trực tuyến}
+        \centering\texttt{baoviet2026.pages.dev}\\[3pt]
+        \small Dự báo lại 20 cơn bão thật 2021--2024 ảnh hưởng Việt Nam.
+      \end{block}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 % =====================================================================
@@ -166,10 +275,10 @@
   \vspace{0.4em}
 
   \centering
+  \rowcolors{2}{white}{gray100}
   \begin{tabular}{llrl}
-    \toprule
-    \textbf{Tập} & \textbf{Giai đoạn} & \textbf{Số bão} & \textbf{Mục đích} \\
-    \midrule
+    \dauBang
+    \tb{Tập} & \tb{Giai đoạn} & \tb{Số bão} & \tb{Mục đích} \\
     Huấn luyện   & 1980--2016 & 895 & Học tham số (khoảng 7.800 cửa sổ) \\
     Validation   & 2017--2020 & 110 & Chọn mô hình, siêu tham số, bán kính nón \\
     Kiểm thử     & 2021--2024 & 84  & Đánh giá một lần (714 cửa sổ) \\
@@ -213,10 +322,10 @@
 
 \begin{frame}{Bảy phương pháp thuộc bốn nhóm}
   \centering
+  \rowcolors{2}{white}{gray100}
   \begin{tabular}{lll}
-    \toprule
-    \textbf{Nhóm} & \textbf{Phương pháp} & \textbf{Cấu hình} \\
-    \midrule
+    \dauBang
+    \tb{Nhóm} & \tb{Phương pháp} & \tb{Cấu hình} \\
     Mốc so sánh & Persistence       & Giữ nguyên vận tốc 6 giờ gần nhất \\
     Mốc so sánh & CLIPER-proxy      & Persistence có suy giảm \\
     AI cổ điển  & k-NN analog       & $k = 40$, có giải thích bằng bão tương tự \\
@@ -237,17 +346,30 @@
 \section{Kết quả và đánh giá}
 % =====================================================================
 
+\begin{frame}{Kết quả nổi bật}
+  \centering
+  \soLieu{daumaroon}{$-$32\%}{sai số 72 giờ so với persistence\\(676 $\rightarrow$ 462~km)}\hfill
+  \soLieu{daunavy}{82--86\%}{độ phủ thực tế\\của nón bất định 80\%}\hfill
+  \soLieu{daumaroon}{$-$35~km}{tại 72 giờ nhờ thêm\\dòng dẫn đường khí quyển}\hfill
+  \soLieu{daunavy}{7}{phương pháp so sánh,\\3 seed, bootstrap theo bão}
+
+  \vspace{1.2em}
+  \raggedright
+  Đánh giá trên \alert{84 cơn bão 2021--2024} chưa từng dùng khi huấn luyện
+  hay chọn mô hình; mọi cải thiện đều có khoảng tin cậy 95\% không chứa 0.
+\end{frame}
+
 \begin{frame}{Sai số trung bình trên tập kiểm thử 2021--2024 (km)}
   \centering
+  \rowcolors{2}{white}{gray100}
   \begin{tabular}{lrrrrr}
-    \toprule
-    \textbf{Phương pháp} & \textbf{6h} & \textbf{12h} & \textbf{24h} & \textbf{48h} & \textbf{72h} \\
-    \midrule
-    Persistence       & 31 & 68 & 155 & 390 & 676 \\
-    CLIPER-proxy      & 30 & 65 & 151 & 388 & 677 \\
-    k-NN analog       & 32 & 64 & 133 & 290 & \textbf{462} \\
-    Gradient boosting & \textbf{29} & \textbf{60} & \textbf{129} & 292 & 476 \\
-    LSTM              & 33 & 65 & 133 & \textbf{289} & 464 \\
+    \dauBang
+    \tb{Phương pháp} & \tb{6h} & \tb{12h} & \tb{24h} & \tb{48h} & \tb{72h} \\
+    \textcolor{gray500}{Persistence}  & 31 & 68 & 155 & 390 & 676 \\
+    \textcolor{gray500}{CLIPER-proxy} & 30 & 65 & 151 & 388 & 677 \\
+    k-NN analog       & 32 & 64 & 133 & 290 & \tot{462} \\
+    Gradient boosting & \tot{29} & \tot{60} & \tot{129} & 292 & 476 \\
+    LSTM              & 33 & 65 & 133 & \tot{289} & 464 \\
     Attention-LSTM    & 35 & 68 & 138 & 297 & 473 \\
     Transformer       & 33 & 64 & 133 & 293 & 468 \\
     \bottomrule
@@ -263,7 +385,7 @@
   \begin{columns}[c]
     \begin{column}{0.58\textwidth}
       \centering
-      \hinh[width=\linewidth]{error_by_horizon.png}
+      \hinh[width=\linewidth]{../bao-cao-typhoon-vn/figs/error_by_horizon.png}
     \end{column}
     \begin{column}{0.38\textwidth}
       \begin{itemize}
@@ -345,7 +467,7 @@
       Giảm 35~km tại 72 giờ, khoảng tin cậy [$-62$; $-9$].
     \end{column}
   \end{columns}
-  \vspace{0.6em}
+  \vspace{0.15em}
   \begin{block}{Kết luận chính}
     Đổi kiến trúc hay siêu tham số không giúp gì; thêm thông tin khí quyển thì
     có. \alert{Nút thắt là thông tin đầu vào, không phải kiến trúc mô hình.}
@@ -356,7 +478,7 @@
   \begin{columns}[c]
     \begin{column}{0.56\textwidth}
       \centering
-      \hinh[width=\linewidth, height=0.7\textheight, keepaspectratio]{case_WP122024.png}
+      \hinh[width=\linewidth, height=0.7\textheight, keepaspectratio]{../bao-cao-typhoon-vn/figs/case_WP122024.png}
     \end{column}
     \begin{column}{0.40\textwidth}
       Phát dự báo lúc 06Z 04/09/2024, sai số 72 giờ:
@@ -376,6 +498,15 @@
 % =====================================================================
 \section{Hệ thống và kết luận}
 % =====================================================================
+
+\begin{frame}{Giao diện bản đồ web: dự báo lại bão YAGI 2024}
+  \centering
+  \hinh[height=0.66\textheight]{figs/demo-replay-yagi.jpg}
+
+  \vspace{0.3em}
+  \small Quỹ đạo quan trắc, đường dự báo, \alert{nón bất định 80\%}, quỹ đạo
+  thực tế sau thời điểm dự báo và các tỉnh nằm trong vùng ảnh hưởng.
+\end{frame}
 
 \begin{frame}{Hệ thống đã triển khai}
   \begin{columns}[T]
@@ -398,7 +529,7 @@
       \end{itemize}
     \end{column}
   \end{columns}
-  \vspace{0.8em}
+  \vspace{0.2em}
   \begin{block}{Lưu ý}
     Hệ thống chỉ phục vụ học tập và nghiên cứu, không phải hệ thống cảnh báo
     chính thức.
@@ -407,15 +538,15 @@
 
 \begin{frame}{Đối chiếu mục tiêu}
   \centering
+  \rowcolors{2}{white}{gray100}
   \begin{tabular}{lll}
-    \toprule
-    \textbf{Mục tiêu} & \textbf{Kết quả} & \textbf{Mức độ} \\
-    \midrule
-    MT1 & 24.024 quan trắc, chia theo năm, scaler fit trên train & Đạt \\
-    MT2 & 7 phương pháp, 3 seed, bootstrap theo cơn bão & Đạt \\
-    MT3 & 72 giờ: 676~km xuống 462~km, giảm 32\% & Đạt \\
-    MT4 & Nón 80\% phủ 82--86\% vị trí thực & Đạt \\
-    MT5 & API, bản đồ web, demo công khai & Đạt một phần \\
+    \dauBang
+    \tb{Mục tiêu} & \tb{Kết quả} & \tb{Mức độ} \\
+    MT1 & 24.024 quan trắc, chia theo năm, scaler fit trên train & \textcolor{green!45!black}{\textbf{Đạt}} \\
+    MT2 & 7 phương pháp, 3 seed, bootstrap theo cơn bão & \textcolor{green!45!black}{\textbf{Đạt}} \\
+    MT3 & 72 giờ: 676~km xuống 462~km, giảm 32\% & \textcolor{green!45!black}{\textbf{Đạt}} \\
+    MT4 & Nón 80\% phủ 82--86\% vị trí thực & \textcolor{green!45!black}{\textbf{Đạt}} \\
+    MT5 & API, bản đồ web, demo công khai & \textcolor{daumaroon}{\textbf{Đạt một phần}} \\
     \bottomrule
   \end{tabular}
 
@@ -450,14 +581,24 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}[plain]
-  \centering
-  \vfill
-  {\Huge\bfseries\color{daunavy} Xin cảm ơn quý thầy cô và các bạn}
-
-  \vspace{1.2em}
-  {\large Nhóm xin lắng nghe câu hỏi và góp ý.}
-  \vfill
+\begin{frame}[plain, noframenumbering]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[daunavy] (current page.south west) rectangle (current page.north east);
+    \fill[daumaroon] (current page.south west) rectangle
+      ([yshift=0.5cm]current page.south east);
+    \node[anchor=south, opacity=0.18, inner sep=0pt]
+      at ([yshift=0.5cm]current page.south)
+      {\hinh[width=0.7\paperwidth]{../bao-cao-typhoon-vn/assets/dau-campus.png}};
+    \node[text=white, font=\fontsize{22}{26}\selectfont\bfseries]
+      at ([yshift=1.2cm]current page.center) {Xin cảm ơn quý thầy cô và các bạn};
+    \fill[daugold] ([xshift=-1.3cm, yshift=0.35cm]current page.center)
+      rectangle ++(2.6cm, 0.09cm);
+    \node[text=daugold, font=\large]
+      at ([yshift=-0.35cm]current page.center) {Nhóm xin lắng nghe câu hỏi và góp ý};
+    \node[text=white, font=\small\ttfamily]
+      at ([yshift=-1.3cm]current page.center)
+      {github.com/VietManh05/typhoon-track-vietnam \quad|\quad baoviet2026.pages.dev};
+  \end{tikzpicture}
 \end{frame}
 
 \end{document}

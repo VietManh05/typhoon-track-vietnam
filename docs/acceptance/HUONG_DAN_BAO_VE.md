@@ -62,7 +62,7 @@ các lệnh "Tái lập kết quả" trong báo cáo, rồi đặt
 trước khi chạy API.
 
 Docker: `docker build -f infra/docker/Dockerfile -t typhoon-vn .` rồi mount hai
-artefact ở chế độ chỉ đọc (xem `artifacts/README.md`).
+artefact ở chế độ chỉ đọc và đặt hai biến môi trường trên trỏ tới đó.
 
 ## 5. Câu hỏi thường gặp và cách trả lời trung thực
 

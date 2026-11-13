@@ -2,12 +2,15 @@
 
 # 🌀 Typhoon VN
 
-### Xây dựng hệ thống hỗ trợ gợi ý đường đi của cơn bão ảnh hưởng Việt Nam
+### Xây dựng hệ thống hỗ trợ gợi ý đường đi của cơn bão Việt Nam
 
 Dự báo vị trí tâm bão **+6 → +72 giờ**, kèm **nón bất định** và **các cơn bão lịch sử tương tự** để giải thích vì sao hệ thống gợi ý đường đi đó.
 
 [![Demo](https://img.shields.io/badge/demo-baoviet2026.pages.dev-0ea5e9?style=for-the-badge&logo=cloudflare&logoColor=white)](https://baoviet2026.pages.dev)
+[![Báo cáo](https://img.shields.io/badge/b%C3%A1o%20c%C3%A1o-PDF-b91c1c?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)](baocao/Bao-cao-do-an-TTNT-Typhoon-VN.pdf)
+[![Slide](https://img.shields.io/badge/slide-PDF-f59e0b?style=for-the-badge&logo=googleslides&logoColor=white)](baocao/Slide-do-an-TTNT-Typhoon-VN.pdf)
 
+[![CI](https://github.com/VietManh05/typhoon-track-vietnam/actions/workflows/ci.yml/badge.svg)](https://github.com/VietManh05/typhoon-track-vietnam/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-LSTM%20%7C%20Transformer-EE4C2C?logo=pytorch&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white)
@@ -21,6 +24,21 @@ Dự báo vị trí tâm bão **+6 → +72 giờ**, kèm **nón bất định** 
 > [!WARNING]
 > **Chỉ hỗ trợ ra quyết định, phục vụ học tập và nghiên cứu.** Không thay thế bản tin của Trung tâm Dự báo Khí tượng Thủy văn Quốc gia (NCHMF).
 > Forecasts are decision support only, not official weather warnings.
+
+## 🎓 Thông tin đồ án
+
+| | |
+|---|---|
+| **Học phần** | Đồ án Trí tuệ nhân tạo (AIP202) — Khoa Công nghệ Thông tin, Trường Đại học Kiến trúc Đà Nẵng |
+| **Sinh viên** | Nguyễn Viết Mạnh (2351220241) · Nguyễn Đình Phú (2351220247) — lớp 23CT5 |
+| **Giảng viên hướng dẫn** | TS. Đỗ Phúc Hảo |
+| **Năm học** | 2025–2026 |
+
+**Xem nhanh:** [báo cáo PDF](baocao/Bao-cao-do-an-TTNT-Typhoon-VN.pdf) (5 chương, 46 trang) ·
+[slide](baocao/Slide-do-an-TTNT-Typhoon-VN.pdf) ·
+[demo trực tuyến](https://baoviet2026.pages.dev) ·
+[hướng dẫn demo và bảo vệ](docs/acceptance/HUONG_DAN_BAO_VE.md) ·
+[hồ sơ nghiệm thu 28/28 tiêu chí](docs/acceptance/README.md)
 
 ---
 
@@ -106,9 +124,14 @@ python -m pip install -e ".[api,train,ingestion,dev]"
 # 2. Kiểm thử
 python -m pytest -q
 
-# 3. Chạy API, rồi mở http://127.0.0.1:8000/docs
+# 3. Chạy API, rồi mở http://127.0.0.1:8000 (bản đồ) hoặc /docs (Swagger)
 python -m uvicorn typhoon_vn.api.app:app --reload
 ```
+
+Kết quả mong đợi: `177 passed, 4 skipped` (2 test chỉ chạy khi có PostGIS). Mỗi lần push, [GitHub Actions](.github/workflows/ci.yml) chạy lại lint, toàn bộ test (có PostGIS thật), 42 test frontend và build bản đồ.
+
+> [!NOTE]
+> Mô hình đã huấn luyện (`checkpoints/`, `runs/`) và dữ liệu thô (`data/raw/`) không đưa lên git vì dung lượng lớn. Khi chưa có, API tự dùng mốc persistence; tạo lại mô hình bằng các lệnh ở mục bên dưới. Bản demo trực tuyến đã có sẵn kết quả của mô hình thật.
 
 <details>
 <summary><b>Huấn luyện và tái lập kết quả</b></summary>
@@ -160,14 +183,20 @@ typhoon-track-vietnam/
 ├── src/typhoon_vn/      # Gói Python: ingestion → features → models → training → inference → api
 │   └── dashboard/       # Bản build của bản đồ web (được Cloudflare Pages phục vụ)
 ├── viz/frontend/        # Mã nguồn bản đồ web React + Cloudflare Pages Functions
-├── tests/               # Bộ kiểm thử pytest
+├── tests/               # Bộ kiểm thử pytest (177 test)
 ├── scripts/             # Benchmark, so sánh mô hình, vẽ biểu đồ, tải dữ liệu
 ├── configs/             # Cấu hình huấn luyện (YAML)
-├── docs/                # Báo cáo, kiến trúc, hợp đồng dữ liệu, nhật ký quá trình
-├── baocao/              # Báo cáo đồ án (LaTeX + PDF) và slide trình bày
+├── baocao/              # ★ Báo cáo đồ án và slide: PDF ở đây, mã LaTeX trong thư mục con
+├── docs/
+│   ├── report/          # Báo cáo đánh giá mô hình: so sánh, kiểm định, ca YAGI/SAOLA/YINXING
+│   ├── acceptance/      # Hồ sơ nghiệm thu 28 tiêu chí + hướng dẫn bảo vệ
+│   ├── contracts/       # Hợp đồng dữ liệu: quan trắc, đặc trưng, gói mô hình
+│   ├── architecture.md  # Kiến trúc hệ thống
+│   └── planning/        # Nhật ký quá trình: kế hoạch WBS, bằng chứng từng hạng mục
 ├── infra/               # Dockerfile, lịch chạy worker
 ├── data/ checkpoints/   # Chỗ để dữ liệu và mô hình (không đưa lên git)
-└── pyproject.toml       # Khai báo gói và phụ thuộc
+├── docker-compose.yml   # API + worker + PostGIS
+└── pyproject.toml       # Khai báo gói và phụ thuộc (requirements.txt trỏ về đây)
 ```
 
 ## 📚 Tài liệu

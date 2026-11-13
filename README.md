@@ -95,7 +95,7 @@ flowchart LR
 
 ## 🚀 Cài đặt và chạy
 
-**Yêu cầu:** Python 3.11, Node.js 20+ (cho bản đồ web).
+**Yêu cầu:** Python 3.11, Node.js 22.18+ (cho bản đồ web).
 
 ```powershell
 # 1. Môi trường Python

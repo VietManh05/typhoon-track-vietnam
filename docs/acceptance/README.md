@@ -16,6 +16,9 @@ còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt"
 | `flake8` / `isort --check` / `black --check` trên `src tests scripts` | sạch |
 | `cd viz/frontend && npx tsc --noEmit && npm test` | TypeScript sạch; 42/42 test Node |
 | `python scripts/check_dashboard_sync.py` (sau `vite build --outDir dist`) | dashboard khớp bản build (44 file) |
+| `TEST_POSTGRES_URL=… pytest tests/test_migrations.py tests/test_spatial.py` (PostGIS 16-3.4 trong Docker, 2026-11-13) | 7 passed: migration Alembic và truy vấn không gian chạy trên PostGIS thật |
+| `docker build -f infra/docker/Dockerfile .` rồi chạy container (2026-11-13) | build thành công; `/health` ok; user `app`; `APP_ENV=production` thiếu `API_KEY` thì từ chối khởi động |
+| HawkScan (DAST) trên API cục bộ, đủ 12 route OpenAPI, có xác thực (2026-11-13) | 1 Medium "CSP: Wildcard Directive" đã sửa (`0e403b2`) và quét lại xác nhận; còn 1 Medium "CSP: style-src unsafe-inline" (xem rủi ro 6) |
 
 ## Bảng nghiệm thu
 
@@ -77,3 +80,7 @@ còn giới hạn nêu rõ; **Chưa đạt** = chưa có. Không đánh "Đạt"
    độ phân giải cao hơn / đặc trưng dạng ảnh.
 5. JMA không cung cấp thời điểm cho quỹ đạo quá khứ, nên website không chạy mô
    hình trên bão đang hoạt động (chỉ trên hindcast).
+6. **CSP còn `style-src 'unsafe-inline'`** (HawkScan, Medium): Leaflet dựng marker
+   và popup bằng chuỗi HTML có thuộc tính `style`, Windy chèn thẻ `<style>`; bỏ
+   ngay sẽ làm vỡ bản đồ. Muốn bỏ cần chuyển các style đó sang class CSS hoặc
+   dùng nonce/hash. Các chỉ thị khác đã giới hạn đúng máy chủ.
